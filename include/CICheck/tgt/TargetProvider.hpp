@@ -20,7 +20,7 @@
 namespace cic {
 namespace tgt {
 
-class TargetDecl;
+struct TargetDecl;
 class Target;
 
 //class Target
