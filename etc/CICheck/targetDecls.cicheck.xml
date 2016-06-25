@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<targets>
+	<target name="TgtDefaultLocation" />
+	<target name="TgtRelDefaultLocation" path="extra_dir/" />
+	<target name="TgtAbsLocation" path="/Users/mezozoy/tmp/CICheck_test_target" />
+</targets>
