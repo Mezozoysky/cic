@@ -7,6 +7,7 @@
 #include <Poco/Util/HelpFormatter.h>
 #include <iostream>
 #include <sstream>
+#include <fmt/format.h>
 
 namespace cic
 {
@@ -40,15 +41,14 @@ void Application::initialize( Poco::Util::Application& self )
         config().setString( "cic.dir.etc", Poco::Path::forDirectory( "./etc/CICheck" ).makeAbsolute( prefixDirPath ).toString() );
     }
 
-    std::cout
-        << "cic.dir.bin:   " << config().getString( "cic.dir.bin" )     << std::endl
-        << "cic.dir.share: " << config().getString( "cic.dir.share" )   << std::endl
-        << "cic.dir.etc:   " << config().getString( "cic.dir.etc" )     << std::endl;
+	fmt::print( "cic.dir.bin:   {}\n", config().getString( "cic.dir.bin" ) );
+	fmt::print( "cic.dir.share: {}\n", config().getString( "cic.dir.share" ) );
+	fmt::print( "cic.dir.etc:   {}\n", config().getString( "cic.dir.etc" ) );
 
     // super initialize
     Poco::Util::Application::initialize ( self );
 
-	//TODO: specific initialize stuff
+
     mTargetProvider = new tgt::TargetProvider();
     mTargetProvider->addDeclPath( Poco::Path::forDirectory( config().getString( "cic.dir.etc" ) ).setFileName( "targetDecls.cicheck.xml" ).toString() );
     mTargetProvider->addDeclPath( "/dev/null/targets.xml" );
@@ -56,8 +56,7 @@ void Application::initialize( Poco::Util::Application& self )
 
 void Application::uninitialize()
 {
-	//TODO: specific uninitialize stuff
-    delete mTargetProvider;
+	delete mTargetProvider;
 
     Poco::Util::Application::uninitialize();
 }
@@ -88,18 +87,14 @@ int Application::main( const std::vector< std::string >& args )
 	}
 	if ( args.empty() )
 	{
-		std::cout << "error: no arguments given" << std::endl;
-		std::cout << formatHelpText() << std::endl;
+		fmt::print( "error: no arguments given\n{}\n", formatHelpText() );
 		return ( EXIT_USAGE );
 	}
 
 	std::string targetName{ args[ 0 ] };
 	std::string ruleName{ args.size() > 1 ? args[ 1 ] : "build" };
 	
-	std::cout
-		<< "target: "               << targetName	<< std::endl
-		<< "requested rule: "		<< ruleName		<< std::endl;
-
+	fmt::print( "requested target: '{0}'; requested rule: '{1}'\n", targetName, ruleName );
 
 //    std::cout
 //        << "rules count: "  << Rules::count()           << std::endl

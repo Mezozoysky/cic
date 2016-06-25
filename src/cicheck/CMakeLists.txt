@@ -57,6 +57,9 @@ target_link_libraries( cicheck
 	tgt
 )
 target_link_libraries( cicheck
+	${FMT_LIBRARY}
+)
+target_link_libraries( cicheck
 	${Poco_Util_LIBRARY}
 	${Poco_XML_LIBRARY}
 	${Poco_JSON_LIBRARY}  

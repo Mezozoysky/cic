@@ -13,7 +13,8 @@ project( CICheck C CXX )
 option( CIC_BUILD_TGT_LIB "Build tgt library"  ON )
 option( CIC_BUILD_CICHECK "Build cicheck tool"  ON )
 
-set( Poco_DIR "${CMAKE_SOURCE_DIR}/deps/" CACHE PATH "Directory containing includes and libraries of Poco" )
+set( Poco_DIR "${CMAKE_SOURCE_DIR}/deps/" CACHE PATH "Directory containing Poco libraries and includes" )
+set( FMT_DIR "${CMAKE_SOURCE_DIR}/deps/" CACHE PATH "Deractory containing FMT library and includes" )
 
 #
 # OS definitions
