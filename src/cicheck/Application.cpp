@@ -5,7 +5,6 @@
 #include "Application.hpp"
 #include "Rules.hpp"
 #include <Poco/Util/HelpFormatter.h>
-#include <iostream>
 #include <sstream>
 #include <fmt/format.h>
 
@@ -104,8 +103,7 @@ int Application::main( const std::vector< std::string >& args )
 
     if ( Rules::index( ruleName ) == Rules::badIndex() )
     {
-        std::cout << "error: unknown rule '" << ruleName << "'" << std::endl;
-        std::cout << formatHelpText() << std::endl;
+		fmt::print( "error: unknown rule '{}'\n{}\n", ruleName, formatHelpText() );
         return ( EXIT_USAGE );
     }
 
@@ -117,7 +115,7 @@ int Application::main( const std::vector< std::string >& args )
 
     for ( std::size_t rule{ 0 }; rule <= Rules::index( ruleName ); ++rule )
     {
-        std::cout <<  "-- checking: " << targetName << " " << Rules::names[ rule ] << std::endl;
+		fmt::print( "-- checking target '{0}', rule '{1}'\n", targetName, Rules::names[ rule ] );
     }
 
 	return ( EXIT_OK );
@@ -126,7 +124,7 @@ int Application::main( const std::vector< std::string >& args )
 void Application::helpOptionCallback( const std::string& name, const std::string& value )
 {
 	mIsHelpOptionRequested = true;
-	std::cout << formatHelpText() << std::endl;
+	fmt::print( "{}", formatHelpText() );
 	stopOptionsProcessing();
 }
 
