@@ -7,6 +7,7 @@
 #include <Poco/Util/HelpFormatter.h>
 #include <sstream>
 #include <fmt/format.h>
+#include <CICheck/tgt/Target.hpp>
 
 namespace cic
 {
@@ -110,8 +111,17 @@ int Application::main( const std::vector< std::string >& args )
             config().getString( "cic.dir.etc" )
         ).setFileName( "targetDecls.cicheck.xml" ).toString()
     );
-    mTgtProv->loadDecls( "/dev/null/targets.xml" );
 
+    {
+        fmt::MemoryWriter mw;
+        mw.write( "Declared:\n" );
+        auto decls( mTgtProv->getDecls() );
+        for ( auto decl: decls )
+        {
+            mw.write( "\tname: '{}'; path: '{}';\n", decl.name, decl.path );
+        }
+        std::cout << mw.str();
+    }
 
     for ( std::size_t rule{ 0 }; rule <= Rules::index( ruleName ); ++rule )
     {

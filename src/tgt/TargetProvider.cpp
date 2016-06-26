@@ -8,8 +8,13 @@
 
 #include <CICheck/tgt/TargetProvider.hpp>
 #include <CICheck/tgt/Target.hpp>
-//#include <Poco/SAX/SAXParser.h>
-//#include <Poco/SAX/ContentHandler.h>
+#include <Poco/SAX/InputSource.h>
+#include <Poco/DOM/DOMParser.h>
+#include <Poco/DOM/Document.h>
+#include <Poco/DOM/NodeIterator.h>
+#include <Poco/DOM/NodeFilter.h>
+#include <Poco/DOM/NamedNodeMap.h>
+#include <Poco/DOM/NodeList.h>
 #include <iostream>
 #include <sstream>
 #include <fmt/format.h>
@@ -56,10 +61,97 @@ TargetProvider::~TargetProvider() noexcept
 
 void TargetProvider::loadDecls( const std::string& declsPath )
 {
-    //TODO: load all the declarations avilable by given paths
+    fmt::print( "[info] loading declaration from '{}'\n", declsPath );
 
-    fmt::print( "targets file: '{}'\n", declsPath );
-    //            Poco::FileInputStream istr{ tgtsFilePath.toString() };
+	Poco::FileInputStream istr{ declsPath };
+	Poco::XML::InputSource input{ istr };
+
+	try
+	{
+		Poco::XML::DOMParser parser;
+		auto doc( parser.parse( &input ) );
+
+		Poco::XML::Node* declsNode{ doc->getNodeByPath( "/targetDeclarations" ) };
+
+		if ( declsNode && declsNode->nodeType() == Poco::XML::Node::ELEMENT_NODE )
+		{
+			Poco::XML::NodeList* nodeList{ declsNode->childNodes() };
+			for ( std::size_t i{ 0 }; i < nodeList->length(); ++i )
+			{
+				Poco::XML::Node* node{ nodeList->item( i ) };
+				if ( !node /*nerdy?*/ || node->nodeType() != Poco::XML::Node::ELEMENT_NODE )
+				{
+					continue;
+				}
+
+				if ( node->nodeName() == "decl" )
+				{
+					auto attrs( node->attributes() );
+
+					auto attr( attrs->getNamedItem( "name" ) );
+					if ( !attr )
+					{
+						fmt::print(
+								   stderr
+								   , "[error] found declaration without 'name' attribute;\n"\
+								   "\tignoring declaration;"
+						);
+						continue;
+					}
+
+					std::string newDeclName{ attr->getNodeValue() };
+					std::string newDeclPath;
+
+					attr = attrs->getNamedItem( "path" );
+					if ( !attr )
+					{
+						newDeclPath = "_decl_path_internal_(_not_implemented_)_";
+						fmt::print(
+								   stderr
+								   , "[error] found declaration without 'path' attribute;\n"\
+								   "\tinternal path feature is not implemented;\n"\
+								   "\tignoring declaration;\n"
+						);
+						continue;
+					}
+					else
+					{
+						newDeclPath = attr->getNodeValue();
+						Poco::Path path{ newDeclPath };
+						if ( path.isRelative() )
+						{
+							newDeclPath = "_decl_path_relative_(_not_implemented_)_";
+							fmt::print(
+									   stderr
+									   , "[error] found declaration with relative value in 'path' attribute;\n"\
+									   "\trelative path feature is not implemented;\n"\
+									   "\tignoring declaration;\n"
+							);
+							continue;
+						}
+					}
+					declare( newDeclName, newDeclPath );
+				}
+				else
+				{
+					fmt::print(
+							   stderr
+							   , "[error] Unexpected xml element '{0}' inside 'targetDeclarations' container;\n"\
+							   "\tignoring '{0}';\n"
+							   , node->nodeName()
+					);
+				}
+			}
+		}
+		else
+		{
+			fmt::print( stderr, "[error] xml element 'targetDeclarations' not found, so no target declarations loaded;\n" );
+		}
+	}
+	catch ( Poco::Exception& e )
+	{
+		fmt::print( stderr, "[error] {}\n", e.displayText() );
+	}
 }
 
 void TargetProvider::dropDecls() noexcept
