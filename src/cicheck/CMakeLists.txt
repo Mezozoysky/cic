@@ -13,7 +13,7 @@ if( CIC_OS_LINUX )
 endif()
 
 if( CIC_OS_OSX )
-    set( CICHECK_OS_SPECIFIC_LIBS ${CICHECK_TOOL_OS_SPECIFIC_LIBS}
+    set( CICHECK_OS_SPECIFIC_LIBS ${CICHECK_OS_SPECIFIC_LIBS}
     )
 endif()
 
@@ -65,7 +65,7 @@ target_link_libraries( cicheck
 	${Poco_JSON_LIBRARY}  
 	${Poco_Foundation_LIBRARY}
 )
-target_link_libraries( cicheck ${CIC_OS_SPECIFIC_LIBS} )
+target_link_libraries( cicheck ${CICHECK_OS_SPECIFIC_LIBS} )
 
 #add_custom_command(
 #    TARGET cicheck POST_BUILD
