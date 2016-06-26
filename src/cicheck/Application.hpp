@@ -32,7 +32,7 @@ protected:
 private:
 	bool mIsHelpOptionRequested;
 
-    tgt::TargetProvider* mTargetProvider;
+    tgt::TargetProvider* mTgtProv;
 };
 
 } // namespace cic

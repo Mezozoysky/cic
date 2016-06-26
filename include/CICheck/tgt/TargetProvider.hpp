@@ -53,11 +53,7 @@ public:
     TargetProvider() noexcept;
     virtual ~TargetProvider() noexcept;
 
-	void addDeclPath( const std::string& path ) noexcept;
-    void dropDeclPaths() noexcept;
-    const std::vector< std::string >& getDeclPaths() const noexcept;
-
-	void reloadDecls();
+    void loadDecls( const std::string& declsPath );
     void dropDecls() noexcept;
     const std::vector< TargetDecl >& getDecls() const noexcept;
 
@@ -71,7 +67,6 @@ protected:
 	void declare( const std::string& name, const std::string& path );
 
 private:
-    std::vector< std::string > mDeclPaths;
     std::vector< TargetDecl > mDecls;
 };
 

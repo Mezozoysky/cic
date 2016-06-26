@@ -54,34 +54,12 @@ TargetProvider::~TargetProvider() noexcept
 {
 }
 
-void TargetProvider::addDeclPath( const std::string& path ) noexcept
+void TargetProvider::loadDecls( const std::string& declsPath )
 {
-    mDeclPaths.push_back( path );
-}
-
-void TargetProvider::dropDeclPaths() noexcept
-{
-    mDeclPaths.clear();
-}
-
-const std::vector< std::string >& TargetProvider::getDeclPaths() const noexcept
-{
-    return ( mDeclPaths );
-}
-
-void TargetProvider::reloadDecls()
-{
-    dropDecls();
-
     //TODO: load all the declarations avilable by given paths
 
-	for ( std::size_t i{ 0 }; i < mDeclPaths.size(); ++i )
-    {
-        Poco::Path path{ mDeclPaths[ i ] };
-        std::cout << "targets file: " << path.toString() << std::endl;
-        //            Poco::FileInputStream istr{ tgtsFilePath.toString() };
-
-    }
+    fmt::print( "targets file: '{}'\n", declsPath );
+    //            Poco::FileInputStream istr{ tgtsFilePath.toString() };
 }
 
 void TargetProvider::dropDecls() noexcept

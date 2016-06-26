@@ -48,14 +48,12 @@ void Application::initialize( Poco::Util::Application& self )
     Poco::Util::Application::initialize ( self );
 
 
-    mTargetProvider = new tgt::TargetProvider();
-    mTargetProvider->addDeclPath( Poco::Path::forDirectory( config().getString( "cic.dir.etc" ) ).setFileName( "targetDecls.cicheck.xml" ).toString() );
-    mTargetProvider->addDeclPath( "/dev/null/targets.xml" );
+    mTgtProv = new tgt::TargetProvider();
 }
 
 void Application::uninitialize()
 {
-	delete mTargetProvider;
+	delete mTgtProv;
 
     Poco::Util::Application::uninitialize();
 }
@@ -86,7 +84,7 @@ int Application::main( const std::vector< std::string >& args )
 	}
 	if ( args.empty() )
 	{
-		fmt::print( "error: no arguments given\n{}\n", formatHelpText() );
+		fmt::print( "[error] no arguments given\n{}\n", formatHelpText() );
 		return ( EXIT_USAGE );
 	}
 
@@ -107,15 +105,17 @@ int Application::main( const std::vector< std::string >& args )
         return ( EXIT_USAGE );
     }
 
-    mTargetProvider->reloadDecls();
-//	if ( mTargets.isAvailable( targetName ) )
-//	{
-//		
-//	}
+    mTgtProv->loadDecls(
+        Poco::Path::forDirectory(
+            config().getString( "cic.dir.etc" )
+        ).setFileName( "targetDecls.cicheck.xml" ).toString()
+    );
+    mTgtProv->loadDecls( "/dev/null/targets.xml" );
+
 
     for ( std::size_t rule{ 0 }; rule <= Rules::index( ruleName ); ++rule )
     {
-		fmt::print( "-- checking target '{0}', rule '{1}'\n", targetName, Rules::names[ rule ] );
+		fmt::print( "-- checking target '{}', rule '{}'\n", targetName, Rules::names[ rule ] );
     }
 
 	return ( EXIT_OK );
