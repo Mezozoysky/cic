@@ -10,7 +10,11 @@
 #include <CICheck/tgt/Target.hpp>
 #include <Poco/SAX/SAXParser.h>
 #include <Poco/SAX/ContentHandler.h>
+#include <iostream>
 #include <sstream>
+#include <fmt/format.h>
+
+using namespace fmt::literals;
 
 namespace cic {
 namespace tgt {
@@ -31,14 +35,12 @@ public:
 
     virtual void startDocument() override
     {
-        std::cout << "START DOCUMENT" << std::endl;
-		std::cout << getLocation()    << std::endl;
+        fmt::print( "START DOCUMENT at [{}]\n", getLocation() );
     }
 
     virtual void endDocument() override
     {
-        std::cout << "END DOCUMENT" << std::endl;
-		std::cout << getLocation()  << std::endl;
+        fmt::print( "END DOCUMENT at [{}]\n", getLocation() );
     }
 
 	virtual void startElement(
@@ -48,8 +50,15 @@ public:
 					  , const Poco::XML::Attributes& attrList
 	) override
     {
-		std::cout << "START ELEMENT \"" << localName << "\"" << std::endl;
-		std::cout << getLocation()      << std::endl;
+        fmt::print( "START ELEMENT '{1}' at [{0}]\n", getLocation(), localName );
+        if ( localName == "targets" )
+        {
+            if ( mIsInTargetsList )
+            {
+                fmt::print( stderr, "[error] new <targets> element inside another one" );
+            }
+            mIsInTargetsList = true;
+        }
     }
 
 	virtual void endElement(
@@ -58,66 +67,64 @@ public:
 					, const Poco::XML::XMLString& qname
 	) override
 	{
-		std::cout << "END ELEMENT \"" << localName << "\"" << std::endl;
-		std::cout << getLocation()    << std::endl;
-	}
+        fmt::print( "END ELEMENT '{1}' at [{0}]\n", getLocation(), localName );
+    }
 
 	virtual void characters( const Poco::XML::XMLChar ch[], int start, int length ) override
 	{
-		std::cout << "CHARACTERS \"" << std::string( ch + start, length ) << "\"" << std::endl;
-		std::cout << getLocation()   << std::endl;
+        fmt::print( "CHARACTERS at [{}]\n", getLocation() );
+        fmt::print( "\tline: '{}'\n", std::string( ch + start, length ) );
 	}
 
 	virtual void ignorableWhitespace( const Poco::XML::XMLChar ch[], int start, int length ) override
 	{
-		std::cout << "IGNORABLE WHITESPACE \"" << std::string( ch + start, length ) << "\"" << std::endl;
-		std::cout << getLocation()             << std::endl;
+        fmt::print( "IGNORABLE WS at [{}]\n", getLocation() );
+        fmt::print( "\tline: '{}'\n", std::string( ch + start, length ) );
 	}
 
 	virtual void processingInstruction( const Poco::XML::XMLString& target, const Poco::XML::XMLString& data ) override
 	{
-		std::cout << "PROCESSING INSTRUCTION" << std::endl;
-		std::cout << getLocation()            << std::endl;
-	}
+        fmt::print( "PROCESSING INSTUCTION at [{}]\n", getLocation() );
+    }
 
 	virtual void startPrefixMapping( const Poco::XML::XMLString& prefix, const Poco::XML::XMLString& uri ) override
 	{
-		std::cout << "START PREFIX MAPPING \"" << prefix << "\"" << std::endl;
-		std::cout << getLocation()             << std::endl;
-	}
+        fmt::print( "START PREFIX MAPPING '{1}' at [{0}]\n", getLocation(), prefix );
+    }
 
 	virtual void endPrefixMapping( const Poco::XML::XMLString& prefix ) override
 	{
-		std::cout << "END PREFIX MAPPING \"" << prefix << "\"" << std::endl;
-		std::cout << getLocation()           << std::endl;
+        fmt::print( "END PREFIX MAPPING '{1}' at [{0}]\n", getLocation(), prefix );
 	}
 
 	virtual void skippedEntity(const Poco::XML::XMLString& name) override
 	{
-		std::cout << "SKIPPED ENTIY \"" << name << "\"" << std::endl;
-		std::cout << getLocation()      << std::endl;
+        fmt::print( "SKIPPED ENTITY '{1}' at [{0}]\n", getLocation(), name );
 	}
 
 
 protected:
 	std::string getLocation()
 	{
-		std::ostringstream ostr;
-		if ( mLocator )
-		{
-			ostr << mLocator->getSystemId()
-			     << ", line: " << mLocator->getLineNumber()
-			     << ", col: "  << mLocator->getColumnNumber();
+        std::string location;
+        if ( mLocator )
+        {
+            location = "{0}, line {1}, col {2}"_format(
+                                                    mLocator->getSystemId()
+                                                    , mLocator->getLineNumber()
+                                                    , mLocator->getColumnNumber()
+                                                    );
 		}
 		else
 		{
-			ostr << "location unknown";
+			location = "location unknown";
 		}
-		return ( ostr.str() );
+		return ( location );
 	}
 
 private:
     const Poco::XML::Locator* mLocator;
+    bool mIsInTargetsList;
 };
 
 //Target::Target() noexcept
