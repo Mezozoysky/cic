@@ -1,5 +1,5 @@
 # CICheck
-"CI" is for Continuous Intergation and "Check" for checking!.
+"CI" is for Continuous Intergation and "Check" for checking!
 
 ## Dependencies
 
@@ -16,18 +16,62 @@ in order to build __cicheck__ command line tool.
 Download latest from http://fmtlib.net/latest/index.html
 or ``` git clone git@github.com:fmtlib/fmt.git ```
 
-## Build
+## Build / install
 
 ### OS X
-#### Create project for XCode
+
+#### Build with XCode
+
+Create project for XCode
 ```bash
 cd /path/to/CICheck
 mkdir build
 cd build
-cmake -DPoco_DIR=/path/to/poco/dir -DFMT_DIR=/path/to/fmt/dir ..
+# add -DCMAKE_INSTALL_PREFIX=/my/install/prefix into the line below for custom install location
+cmake -GXcode -DPoco_DIR=/path/to/poco/dir -DFMT_DIR=/path/to/fmt/dir ..
 ```
-#### Build XCode project from command line
+Build XCode project from command line
 ```bash
 # assuming we still in /path/to/CICheck/build
-xcodebuild -target BUILD_ALL
+xcodebuild -target ALL_BUILD
+```
+Install from command line (default prefix path is /usr/local)
+```bash
+# assuming we still in /path/to/CICheck/build
+xcodebuild -target install
+```
+
+#### Build with Make
+
+Build
+```bash
+cd /path/to/CICheck
+mkdir build
+cd build
+# add -DCMAKE_INSTALL_PREFIX=/my/install/prefix into the line below for custom install location
+cmake -G"Unix Makefiles" -DPoco_DIR=/path/to/poco/dir -DFMT_DIR=/path/to/fmt/dir ..
+make
+```
+Install (default prefix path is /usr/local)
+```bash
+# assuming we still in /path/to/CICheck/build
+make install
+```
+
+
+### Linux
+
+Build
+```bash
+cd /path/to/CICheck
+mkdir build
+cd build
+# add -DCMAKE_INSTALL_PREFIX=/my/install/prefix into the line below for custom install location
+cmake -DPoco_DIR=/path/to/poco/dir -DFMT_DIR=/path/to/fmt/dir ..
+make
+```
+Install (default prefix path is /usr/local)
+```bash
+# assuming we still in /path/to/CICheck/build
+make install
 ```
