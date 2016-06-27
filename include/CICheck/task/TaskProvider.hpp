@@ -16,6 +16,7 @@
 #include <map>
 #include <iostream>
 #include <vector>
+#include <Poco/DOM/DOMParser.h>
 
 namespace cic {
 namespace task {
@@ -50,24 +51,25 @@ class TaskProvider
 {
 public:
 
-    TaskProvider() noexcept;
-    virtual ~TaskProvider() noexcept;
+	TaskProvider() noexcept;
+	virtual ~TaskProvider() noexcept;
 
-    void loadDecls( const std::string& declsPath );
-    void dropDecls() noexcept;
-    const std::vector< TaskDecl >& getDecls() const noexcept;
+	void loadDecls( const std::string& declsPath );
+	void dropDecls() noexcept;
+	const std::vector< TaskDecl >& getDecls() const noexcept;
 
 	bool isDeclared( const std::string& name ) const noexcept;
-    
+
 //	const Task& operator [] ( const std::string& name ) const;
 
 protected:
 
-    void declare( const TaskDecl& decl );
+	void declare( const TaskDecl& decl );
 	void declare( const std::string& name, const std::string& path );
 
 private:
-    std::vector< TaskDecl > mDecls;
+	std::vector< TaskDecl > mDecls;
+	Poco::XML::DOMParser mParser;
 };
 
 } // namespace task

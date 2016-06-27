@@ -9,7 +9,6 @@
 #include <CICheck/task/TaskProvider.hpp>
 #include <CICheck/task/Task.hpp>
 #include <Poco/SAX/InputSource.h>
-#include <Poco/DOM/DOMParser.h>
 #include <Poco/DOM/Document.h>
 #include <Poco/DOM/NodeIterator.h>
 #include <Poco/DOM/NodeFilter.h>
@@ -18,6 +17,7 @@
 #include <iostream>
 #include <sstream>
 #include <fmt/format.h>
+#include <Poco/AutoPtr.h>
 
 using namespace fmt::literals;
 
@@ -61,15 +61,14 @@ TaskProvider::~TaskProvider() noexcept
 
 void TaskProvider::loadDecls( const std::string& declsPath )
 {
-    fmt::print( "[info] loading declaration from '{}'\n", declsPath );
+	fmt::print( "[info] loading declaration from '{}'\n", declsPath );
 
 	Poco::FileInputStream istr{ declsPath };
 	Poco::XML::InputSource input{ istr };
 
 	try
 	{
-		Poco::XML::DOMParser parser;
-		auto doc( parser.parse( &input ) );
+		Poco::AutoPtr< Poco::XML::Document > doc{ mParser.parse( &input ) };
 
 		Poco::XML::Node* declsNode{ doc->getNodeByPath( "/taskDeclarations" ) };
 
@@ -136,7 +135,7 @@ void TaskProvider::loadDecls( const std::string& declsPath )
 				{
 					fmt::print(
 							   stderr
-							   , "[error] Unexpected xml element '{0}' inside 'TaskDeclarations' container;\n"\
+							   , "[error] Unexpected xml element '{0}' inside 'taskDeclarations' container;\n"\
 							   "\tignoring '{0}';\n"
 							   , node->nodeName()
 					);
@@ -145,7 +144,7 @@ void TaskProvider::loadDecls( const std::string& declsPath )
 		}
 		else
 		{
-			fmt::print( stderr, "[error] xml element 'TaskDeclarations' not found, so no Task declarations loaded;\n" );
+			fmt::print( stderr, "[error] xml element 'taskDeclarations' not found, so no Task declarations loaded;\n" );
 		}
 	}
 	catch ( Poco::Exception& e )

@@ -149,11 +149,12 @@ std::string Application::formatHelpText() const
 
 	Poco::Util::HelpFormatter hf( options() );
 	hf.setCommand( commandName() );
-	hf.setUsage( "[options] <task> <rule>" );
+	hf.setUsage( "[options] [<task> [target]]" );
 	hf.setHeader(
 R"(where:
-    task        task name to check
-    rule        one of clean, configure, build, buildtests, runtests
+    task        task name to check;
+    target      one of clean, configure, build, buildtests, runtests;
+                default is clean;
 options are listed below:)"
 	);
 	hf.setFooter( "Please dont wash your pet with this software!" );
