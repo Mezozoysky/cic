@@ -1,13 +1,13 @@
 //
-//  TargetProvider.hpp
+//  TaskProvider.hpp
 //  CICheck
 //
 //  Created by Stanislav Demyanovich on 23.06.16.
 //
 //
 
-#ifndef CICHECK_TargetProvider_hpp
-#define CICHECK_TargetProvider_hpp
+#ifndef CICHECK_TASK_TASKPROVIDER_HPP
+#define CICHECK_TASK_TASKPROVIDER_HPP
 
 #include <string>
 #include <memory>
@@ -18,18 +18,18 @@
 #include <vector>
 
 namespace cic {
-namespace tgt {
+namespace task {
 
-struct TargetDecl;
-class Target;
+struct TaskDecl;
+class Task;
 
-//class Target
+//class Task
 //{
 //public:
-//    friend class TargetProvider;
+//    friend class TaskProvider;
 //
-//    Target() noexcept;
-//    ~Target() noexcept;
+//    Task() noexcept;
+//    ~Task() noexcept;
 //
 //    void load();
 //    void unload() noexcept;
@@ -37,40 +37,40 @@ class Target;
 //
 //private:
 //    Poco::Path      mConfigPath;
-//    TargetConfig*   mConfig;
+//    TaskConfig*   mConfig;
 //};
 
-//inline bool Target::isLoaded() const noexcept
+//inline bool Task::isLoaded() const noexcept
 //{
 //    return ( mConfig != nullptr );
 //}
 
 
-class TargetProvider
+class TaskProvider
 {
 public:
 
-    TargetProvider() noexcept;
-    virtual ~TargetProvider() noexcept;
+    TaskProvider() noexcept;
+    virtual ~TaskProvider() noexcept;
 
     void loadDecls( const std::string& declsPath );
     void dropDecls() noexcept;
-    const std::vector< TargetDecl >& getDecls() const noexcept;
+    const std::vector< TaskDecl >& getDecls() const noexcept;
 
 	bool isDeclared( const std::string& name ) const noexcept;
     
-//	const Target& operator [] ( const std::string& name ) const;
+//	const Task& operator [] ( const std::string& name ) const;
 
 protected:
 
-    void declare( const TargetDecl& decl );
+    void declare( const TaskDecl& decl );
 	void declare( const std::string& name, const std::string& path );
 
 private:
-    std::vector< TargetDecl > mDecls;
+    std::vector< TaskDecl > mDecls;
 };
 
-} // namespace tgt
+} // namespace task
 } // namespace cic
 
-#endif /* CICHECK_TargetProvider_hpp */
+#endif /* CICHECK_TASK_TASKPROVIDER_HPP */

@@ -7,7 +7,7 @@
 #include <Poco/Util/HelpFormatter.h>
 #include <sstream>
 #include <fmt/format.h>
-#include <CICheck/tgt/Target.hpp>
+#include <CICheck/task/Task.hpp>
 
 namespace cic
 {
@@ -49,12 +49,12 @@ void Application::initialize( Poco::Util::Application& self )
     Poco::Util::Application::initialize ( self );
 
 
-    mTgtProv = new tgt::TargetProvider();
+    mTaskProv = new task::TaskProvider();
 }
 
 void Application::uninitialize()
 {
-	delete mTgtProv;
+	delete mTaskProv;
 
     Poco::Util::Application::uninitialize();
 }
@@ -85,14 +85,14 @@ int Application::main( const std::vector< std::string >& args )
 	}
 	if ( args.empty() )
 	{
-		fmt::print( "[error] no arguments given\n{}\n", formatHelpText() );
+		fmt::print( stderr, "[error] no arguments given\n{}\n", formatHelpText() );
 		return ( EXIT_USAGE );
 	}
 
-	std::string targetName{ args[ 0 ] };
+	std::string taskName{ args[ 0 ] };
 	std::string ruleName{ args.size() > 1 ? args[ 1 ] : "build" };
 	
-	fmt::print( "requested target: '{0}'; requested rule: '{1}'\n", targetName, ruleName );
+	fmt::print( "requested task: '{0}'; requested rule: '{1}'\n", taskName, ruleName );
 
 //    std::cout
 //        << "rules count: "  << Rules::count()           << std::endl
@@ -106,16 +106,16 @@ int Application::main( const std::vector< std::string >& args )
         return ( EXIT_USAGE );
     }
 
-    mTgtProv->loadDecls(
+    mTaskProv->loadDecls(
         Poco::Path::forDirectory(
             config().getString( "cic.dir.etc" )
-        ).setFileName( "targetDecls.cicheck.xml" ).toString()
+        ).setFileName( "cicheck__task_declarations.xml" ).toString()
     );
 
     {
         fmt::MemoryWriter mw;
         mw.write( "Declared:\n" );
-        auto decls( mTgtProv->getDecls() );
+        auto decls( mTaskProv->getDecls() );
         for ( auto decl: decls )
         {
             mw.write( "\tname: '{}'; path: '{}';\n", decl.name, decl.path );
@@ -123,9 +123,14 @@ int Application::main( const std::vector< std::string >& args )
         std::cout << mw.str();
     }
 
+    if ( !mTaskProv->isDeclared( taskName ) )
+    {
+        fmt::print( stderr, "[fatal] requested task '{}' is not declared; terminating;", taskName );
+        return ( EXIT_UNAVAILABLE );
+    }
     for ( std::size_t rule{ 0 }; rule <= Rules::index( ruleName ); ++rule )
     {
-		fmt::print( "-- checking target '{}', rule '{}'\n", targetName, Rules::names[ rule ] );
+		fmt::print( "-- checking task '{}', rule '{}'\n", taskName, Rules::names[ rule ] );
     }
 
 	return ( EXIT_OK );
@@ -144,10 +149,10 @@ std::string Application::formatHelpText() const
 
 	Poco::Util::HelpFormatter hf( options() );
 	hf.setCommand( commandName() );
-	hf.setUsage( "[options] <target> <rule>" );
+	hf.setUsage( "[options] <task> <rule>" );
 	hf.setHeader(
 R"(where:
-    target      target name to check
+    task        task name to check
     rule        one of clean, configure, build, buildtests, runtests
 options are listed below:)"
 	);

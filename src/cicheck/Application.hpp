@@ -2,12 +2,12 @@
 //	Project:	CICheck
 //	Author:		Stanislav Demyanovich <mezozoysky@gmail.com>
 
-#ifndef CICHECK_APPLICATION_H
-#define CICHECK_APPLICATION_H
+#ifndef CICHECK_CICHECK_APPLICATION_H
+#define CICHECK_CICHECK_APPLICATION_H
 
 #include <Poco/Util/Application.h>
 #include <memory>
-#include <CICheck/tgt/TargetProvider.hpp>
+#include <CICheck/task/TaskProvider.hpp>
 
 namespace cic
 {
@@ -32,9 +32,9 @@ protected:
 private:
 	bool mIsHelpOptionRequested;
 
-    tgt::TargetProvider* mTgtProv;
+    task::TaskProvider* mTaskProv;
 };
 
 } // namespace cic
 
-#endif // CICHECK_APPLICATION_H
+#endif // CICHECK_CICHECK_APPLICATION_H

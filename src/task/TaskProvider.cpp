@@ -1,13 +1,13 @@
 //
-//  TargetProvider.cpp
+//  TaskProvider.cpp
 //  CICheck
 //
 //  Created by Stanislav Demyanovich on 23.06.16.
 //
 //
 
-#include <CICheck/tgt/TargetProvider.hpp>
-#include <CICheck/tgt/Target.hpp>
+#include <CICheck/task/TaskProvider.hpp>
+#include <CICheck/task/Task.hpp>
 #include <Poco/SAX/InputSource.h>
 #include <Poco/DOM/DOMParser.h>
 #include <Poco/DOM/Document.h>
@@ -22,26 +22,26 @@
 using namespace fmt::literals;
 
 namespace cic {
-namespace tgt {
+namespace task {
 
-//Target::Target() noexcept
+//Task::Task() noexcept
 //: mConfig{ nullptr }
 //{
 //}
 //
-//Target::~Target() noexcept
+//Task::~Task() noexcept
 //{
 //    unload();
 //}
 //
-//void Target::load()
+//void Task::load()
 //{
 //    Poco::FileInputStream istr( mConfigPath.toString() );
 //    unload();
-//    mConfig = new TargetConfig();
+//    mConfig = new TaskConfig();
 //}
 //
-//void Target::unload() noexcept
+//void Task::unload() noexcept
 //{
 //    if ( mConfig != nullptr )
 //    {
@@ -51,15 +51,15 @@ namespace tgt {
 //}
 
 
-TargetProvider::TargetProvider() noexcept
+TaskProvider::TaskProvider() noexcept
 {
 }
 
-TargetProvider::~TargetProvider() noexcept
+TaskProvider::~TaskProvider() noexcept
 {
 }
 
-void TargetProvider::loadDecls( const std::string& declsPath )
+void TaskProvider::loadDecls( const std::string& declsPath )
 {
     fmt::print( "[info] loading declaration from '{}'\n", declsPath );
 
@@ -71,7 +71,7 @@ void TargetProvider::loadDecls( const std::string& declsPath )
 		Poco::XML::DOMParser parser;
 		auto doc( parser.parse( &input ) );
 
-		Poco::XML::Node* declsNode{ doc->getNodeByPath( "/targetDeclarations" ) };
+		Poco::XML::Node* declsNode{ doc->getNodeByPath( "/taskDeclarations" ) };
 
 		if ( declsNode && declsNode->nodeType() == Poco::XML::Node::ELEMENT_NODE )
 		{
@@ -136,7 +136,7 @@ void TargetProvider::loadDecls( const std::string& declsPath )
 				{
 					fmt::print(
 							   stderr
-							   , "[error] Unexpected xml element '{0}' inside 'targetDeclarations' container;\n"\
+							   , "[error] Unexpected xml element '{0}' inside 'TaskDeclarations' container;\n"\
 							   "\tignoring '{0}';\n"
 							   , node->nodeName()
 					);
@@ -145,7 +145,7 @@ void TargetProvider::loadDecls( const std::string& declsPath )
 		}
 		else
 		{
-			fmt::print( stderr, "[error] xml element 'targetDeclarations' not found, so no target declarations loaded;\n" );
+			fmt::print( stderr, "[error] xml element 'TaskDeclarations' not found, so no Task declarations loaded;\n" );
 		}
 	}
 	catch ( Poco::Exception& e )
@@ -154,12 +154,12 @@ void TargetProvider::loadDecls( const std::string& declsPath )
 	}
 }
 
-void TargetProvider::dropDecls() noexcept
+void TaskProvider::dropDecls() noexcept
 {
     mDecls.clear();
 }
 
-const std::vector< TargetDecl >& TargetProvider::getDecls() const noexcept
+const std::vector< TaskDecl >& TaskProvider::getDecls() const noexcept
 {
     return ( mDecls );
 }
@@ -168,20 +168,20 @@ const std::vector< TargetDecl >& TargetProvider::getDecls() const noexcept
 //    {
 //        Poco::Path binaryDirPath( true );
 //        binaryDirPath.assign( "/Users/mezozoy/ws/CICheck/build/bin/Debug", Poco::Path::Style::PATH_UNIX );
-//        Poco::Path tgtPath( false );
-//        tgtPath.assign( "../share/CICheck", Poco::Path::Style::PATH_UNIX );
-//        tgtPath.makeAbsolute( binaryDirPath );
-//        std::unique_ptr< Target > tgt{ new Target() };
-//        mTargets.insert( std::make_pair( name, std::move( tgt ) ) );
+//        Poco::Path taskPath( false );
+//        taskPath.assign( "../share/CICheck", Poco::Path::Style::PATH_UNIX );
+//        taskPath.makeAbsolute( binaryDirPath );
+//        std::unique_ptr< Task > task{ new Task() };
+//        mTasks.insert( std::make_pair( name, std::move( task ) ) );
 //    }
 
-bool TargetProvider::isDeclared( const std::string& name ) const noexcept
+bool TaskProvider::isDeclared( const std::string& name ) const noexcept
 {
     auto it(
         std::find_if(
             mDecls.begin(),
             mDecls.end(),
-            [ name ]( const TargetDecl& decl )
+            [ name ]( const TaskDecl& decl )
             {
                 return ( decl.name == name );
             }
@@ -191,20 +191,20 @@ bool TargetProvider::isDeclared( const std::string& name ) const noexcept
     return ( it != mDecls.end() );
 }
 
-//const Target& TargetProvider::operator [] ( const std::string& name ) const
+//const Task& TaskProvider::operator [] ( const std::string& name ) const
 //{
-//    return ( mTargets.at( name ) );
+//    return ( mTasks.at( name ) );
 //}
 
-void TargetProvider::declare( const cic::tgt::TargetDecl &decl )
+void TaskProvider::declare( const cic::task::TaskDecl &decl )
 {
     mDecls.push_back( decl );
 }
 
-void TargetProvider::declare( const std::string &name, const std::string &path )
+void TaskProvider::declare( const std::string &name, const std::string &path )
 {
     declare( { name, path } );
 }
 
-} // namespace tgt
+} // namespace task
 } // namespace cic

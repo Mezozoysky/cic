@@ -10,7 +10,7 @@ set( CMAKE_VERBOSE_MAKEFILE 1 )
 
 project( CICheck C CXX )
 
-option( CIC_BUILD_TGT_LIB "Build tgt library"  ON )
+option( CIC_BUILD_TASK_LIB "Build task library"  ON )
 option( CIC_BUILD_CICHECK "Build cicheck tool"  ON )
 
 set( Poco_DIR "${CMAKE_SOURCE_DIR}/deps/" CACHE PATH "Directory containing Poco libraries and includes" )

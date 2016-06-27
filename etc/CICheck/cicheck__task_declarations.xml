@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<taskDeclarations>
+	<decl name="task_internal" />
+	<decl name="task_rel" path="rel_path/task_rel" />
+	<decl name="task_abs" path="/Users/mezozoy/tmp/task_abs" />
+	<decl name="cicheck_fake_task" path="/Users/mezozoy/tmp/cicheck_fake_task" />
+	<zasada />
+</taskDeclarations>
