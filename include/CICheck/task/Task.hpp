@@ -15,6 +15,7 @@
 #include <type_traits>
 #include <Poco/DOM/DOMParser.h>
 #include <Poco/DOM/Node.h>
+#include <CICheck/task/TargetSet.hpp>
 
 namespace cic {
 namespace task {
@@ -57,6 +58,7 @@ protected:
 private:
 	TaskDecl mDecl;
 	std::string mDescription;
+    TargetSet::Ptr mTargetSet;
 };
 
 

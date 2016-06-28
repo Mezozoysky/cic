@@ -10,11 +10,15 @@ set(GROUP_HEADERS
 	${CMAKE_SOURCE_DIR}/include/CICheck/task/TaskDecl.hpp
 	${CMAKE_SOURCE_DIR}/include/CICheck/task/Task.hpp
 	${CMAKE_SOURCE_DIR}/include/CICheck/task/TaskProvider.hpp
+	${CMAKE_SOURCE_DIR}/include/CICheck/task/Target.hpp
+	${CMAKE_SOURCE_DIR}/include/CICheck/task/TargetSet.hpp
 )
 set(GROUP_SOURCES
 	${CMAKE_SOURCE_DIR}/src/task/TaskDecl.cpp
 	${CMAKE_SOURCE_DIR}/src/task/Task.cpp
 	${CMAKE_SOURCE_DIR}/src/task/TaskProvider.cpp
+	${CMAKE_SOURCE_DIR}/src/task/Target.cpp
+	${CMAKE_SOURCE_DIR}/src/task/TargetSet.cpp
 )
 source_group( "task" FILES ${GROUP_HEADERS} ${GROUP_SOURCES} )
 set( TASK_LIB_HEADERS ${TASK_LIB_HEADERS} ${GROUP_HEADERS} )
