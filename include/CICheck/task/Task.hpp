@@ -11,9 +11,15 @@
 
 #include <string>
 #include <CICheck/task/TaskDecl.hpp>
+#include <memory>
+#include <type_traits>
+#include <Poco/DOM/DOMParser.h>
+#include <Poco/DOM/Node.h>
 
 namespace cic {
 namespace task {
+
+
 
 class Task
 {
@@ -22,15 +28,35 @@ class Task
     void operator = ( const Task& ) = delete;
 
 public:
-    explicit Task( const std::string& name, const std::string& path ) noexcept;
-    explicit Task( const TaskDecl& decl ) noexcept;
-    virtual ~Task() noexcept;
+	using Ptr = std::shared_ptr< Task >;
 
-    inline const TaskDecl& getDecl() const noexcept;
+	template< typename TaskT, typename... ArgsT >
+	static Task::Ptr createPtr( ArgsT&&... args ) noexcept
+	{
+		static_assert(
+			std::is_base_of< Task, TaskT >::value
+			, "TaskT should extend cic::task::Task class"
+		);
+		Task::Ptr task{ std::make_shared< TaskT >( args... ) };
+		return ( task );
+	}
+
+	explicit Task( const std::string& name, const std::string& path ) noexcept;
+	explicit Task( const TaskDecl& decl ) noexcept;
+	virtual ~Task() noexcept;
+
+	virtual bool load( Poco::XML::DOMParser& parser );
+
+	inline const TaskDecl& getDecl() const noexcept;
+	inline const std::string& getDescription() const noexcept;
+
+protected:
+	virtual bool loadTask( const Poco::XML::Node* node );
+	virtual bool loadDescription( const Poco::XML::Node* node );
 
 private:
-    TaskDecl mDecl;
-//    std::string mDescription;
+	TaskDecl mDecl;
+	std::string mDescription;
 };
 
 
@@ -40,7 +66,12 @@ private:
 
 inline const TaskDecl& Task::getDecl() const noexcept
 {
-    return ( mDecl );
+	return ( mDecl );
+}
+
+inline const std::string& Task::getDescription() const noexcept
+{
+	return ( mDescription );
 }
 
 

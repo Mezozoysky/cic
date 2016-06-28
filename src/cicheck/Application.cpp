@@ -123,16 +123,28 @@ int Application::main( const std::vector< std::string >& args )
         std::cout << mw.str();
     }
 
-    if ( !mTaskProv->isDeclared( taskName ) )
+    if ( !mTaskProv->isTaskDeclared( taskName ) )
     {
-        fmt::print( stderr, "[fatal] requested task '{}' is not declared; terminating;", taskName );
-        return ( EXIT_UNAVAILABLE );
-    }
-    for ( std::size_t rule{ 0 }; rule <= Rules::index( ruleName ); ++rule )
-    {
-		fmt::print( "-- checking task '{}', rule '{}'\n", taskName, Rules::names[ rule ] );
+        fmt::print(
+				   stderr
+				   , "[fatal] requested task '{}' is not declared;\n"\
+				     "\tterminating;\n"
+				   , taskName
+		);
+        return ( EXIT_CONFIG );
     }
 
+	auto task( mTaskProv->loadTask( taskName ) );
+	if ( task == nullptr )
+	{
+		fmt::print(
+				   "[fatal] can't load requested task '{}'\n"\
+				   "\tterminating;\n"
+				   , taskName
+		);
+		return ( EXIT_CONFIG );
+	}
+	fmt::print( "'{}' task description: '{}'\n", taskName, task->getDescription() );
 	return ( EXIT_OK );
 }
 

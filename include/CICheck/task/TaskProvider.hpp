@@ -58,9 +58,12 @@ public:
 	void dropDecls() noexcept;
 	const std::vector< TaskDecl >& getDecls() const noexcept;
 
-	bool isDeclared( const std::string& name ) const noexcept;
-
-//	const Task& operator [] ( const std::string& name ) const;
+	std::shared_ptr< Task > loadTask( const std::string& name );
+	void dropTask( const std::string& name ) noexcept;
+	void dropTasks() noexcept;
+	std::shared_ptr< Task > getTask( const std::string& name );
+	bool isTaskDeclared( const std::string& name ) const noexcept;
+	bool isTaskLoaded( const std::string& name ) const noexcept;
 
 protected:
 
@@ -69,6 +72,7 @@ protected:
 
 private:
 	std::vector< TaskDecl > mDecls;
+	std::map< std::string, std::shared_ptr< Task > > mTasks;
 	Poco::XML::DOMParser mParser;
 };
 
