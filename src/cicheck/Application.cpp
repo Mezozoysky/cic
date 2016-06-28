@@ -98,18 +98,14 @@ int Application::main( const std::vector< std::string >& args )
 
 	fmt::print( "requested task: '{0}'; requested tgt: '{1}'\n", taskName, tgtName );
 
-	//    if ( Rules::index( ruleName ) == Rules::badIndex() )
-	//    {
-	//		fmt::print( "error: unknown rule '{}'\n{}\n", ruleName, formatHelpText() );
-	//        return ( EXIT_USAGE );
-	//    }
-
+	// Load declarations
 	mTaskProv->loadDecls(
 		Poco::Path::forDirectory( config().getString( "cic.dir.etc" ) )
 				.setFileName( "cicheck__task_declarations.xml" )
 				.toString()
 	);
 
+	// Output declarations
 	{
 		fmt::MemoryWriter mw;
 		mw.write( "Declared:\n" );
@@ -121,6 +117,7 @@ int Application::main( const std::vector< std::string >& args )
 		std::cout << mw.str();
 	}
 
+	// Test for requested task declaration
 	if ( !mTaskProv->isTaskDeclared( taskName ) )
 	{
 		fmt::print(
@@ -132,6 +129,7 @@ int Application::main( const std::vector< std::string >& args )
 		return ( EXIT_CONFIG );
 	}
 
+	// Load task
 	auto task( mTaskProv->loadTask( taskName ) );
 	if ( task == nullptr )
 	{
@@ -142,8 +140,24 @@ int Application::main( const std::vector< std::string >& args )
 		);
 		return ( EXIT_CONFIG );
 	}
+
+	// Output task description
 	fmt::print( "'{}' task description: '{}'\n", taskName, task->getDescription() );
 
+	// Test for requested target
+	if ( ! task->getTargetSet()->count( tgtName ) )
+	{
+		fmt::print(
+				   stderr
+				   , "[fatal] task '{}' has no requested target '{}';\n"\
+				   "\tterminating;\n"
+				   , taskName
+				   , tgtName
+				   );
+		return ( EXIT_USAGE );
+	}
+
+	//Output sequence for requested target
 	{
 		const task::AbstractTargetSet::Sequence seq{
 			task->getTargetSet()->calcSequenceFor( tgtName )
