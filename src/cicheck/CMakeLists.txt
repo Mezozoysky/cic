@@ -34,12 +34,10 @@ set( CICHECK_SOURCES "" )
 # =======================
 set(GROUP_HEADERS
 	${CMAKE_SOURCE_DIR}/src/cicheck/Application.hpp
-    ${CMAKE_SOURCE_DIR}/src/cicheck/Rules.hpp
 )
 set(GROUP_SOURCES
 	${CMAKE_SOURCE_DIR}/src/cicheck/main.cpp
 	${CMAKE_SOURCE_DIR}/src/cicheck/Application.cpp
-    ${CMAKE_SOURCE_DIR}/src/cicheck/Rules.cpp
 )
 source_group( "cicheck" FILES ${GROUP_HEADERS} ${GROUP_SOURCES} )
 set( CICHECK_HEADERS ${CICHECK_HEADERS} ${GROUP_HEADERS} )
