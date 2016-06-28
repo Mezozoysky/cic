@@ -24,28 +24,6 @@ namespace task {
 struct TaskDecl;
 class Task;
 
-//class Task
-//{
-//public:
-//    friend class TaskProvider;
-//
-//    Task() noexcept;
-//    ~Task() noexcept;
-//
-//    void load();
-//    void unload() noexcept;
-//    inline bool isLoaded() const noexcept;
-//
-//private:
-//    Poco::Path      mConfigPath;
-//    TaskConfig*   mConfig;
-//};
-
-//inline bool Task::isLoaded() const noexcept
-//{
-//    return ( mConfig != nullptr );
-//}
-
 
 class TaskProvider
 {
