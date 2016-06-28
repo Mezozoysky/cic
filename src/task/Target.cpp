@@ -18,20 +18,30 @@ Target::Target( const std::string& name ) noexcept
 {
 }
 
-Target::Target( const std::string& name, const std::vector< std::string > & deps ) noexcept
+Target::Target( const std::string& name, std::vector< std::string >&& deps ) noexcept
 : mName{ name }
-, mDeps{ deps }
+, mDeps{ std::move( deps ) }
 {
 }
 
-void Target::addDep( const std::string &name ) noexcept
+Target::Target( Target&& other ) noexcept
+: mName{ std::move( other.mName ) }
+, mDeps{ std::move( other.mDeps ) }
 {
-    mDeps.push_back( name );
 }
 
-void Target::addDeps( const DepsList &deps ) noexcept
+Target::~Target() noexcept
 {
-    mDeps = deps;
+}
+
+void Target::addDep( const std::string& name ) noexcept
+{
+	mDeps.push_back( name );
+}
+
+void Target::addDeps( const DepsList& deps ) noexcept
+{
+	mDeps = deps;
 }
 
 } // namespace task

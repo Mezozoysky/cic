@@ -15,7 +15,7 @@
 #include <type_traits>
 #include <Poco/DOM/DOMParser.h>
 #include <Poco/DOM/Node.h>
-#include <CICheck/task/TargetSet.hpp>
+#include <CICheck/task/AbstractTargetSet.hpp>
 
 namespace cic {
 namespace task {
@@ -50,15 +50,17 @@ public:
 
 	inline const TaskDecl& getDecl() const noexcept;
 	inline const std::string& getDescription() const noexcept;
+	inline AbstractTargetSet::Ptr getTargetSet() noexcept;
 
 protected:
 	virtual bool loadTask( const Poco::XML::Node* node );
 	virtual bool loadDescription( const Poco::XML::Node* node );
+	virtual bool loadTargetSet( const Poco::XML::Node* node );
 
 private:
 	TaskDecl mDecl;
 	std::string mDescription;
-    TargetSet::Ptr mTargetSet;
+	AbstractTargetSet::Ptr mTargetSet;
 };
 
 
@@ -76,6 +78,10 @@ inline const std::string& Task::getDescription() const noexcept
 	return ( mDescription );
 }
 
+inline AbstractTargetSet::Ptr Task::getTargetSet() noexcept
+{
+	return ( mTargetSet );
+}
 
 } // namespace task
 } // namespace cic

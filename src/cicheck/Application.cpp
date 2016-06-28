@@ -3,7 +3,6 @@
 //	Author:		Stanislav Demyanovich <mezozoysky@gmail.com>
 
 #include "Application.hpp"
-#include "Rules.hpp"
 #include <Poco/Util/HelpFormatter.h>
 #include <sstream>
 #include <fmt/format.h>
@@ -90,61 +89,78 @@ int Application::main( const std::vector< std::string >& args )
 	}
 
 	std::string taskName{ args[ 0 ] };
-	std::string ruleName{ args.size() > 1 ? args[ 1 ] : "build" };
-	
-	fmt::print( "requested task: '{0}'; requested rule: '{1}'\n", taskName, ruleName );
+	std::string tgtName;
 
-//    std::cout
-//        << "rules count: "  << Rules::count()           << std::endl
-//        << "bad index: "    << Rules::badIndex()        << std::endl
-//        << "first rule: "   << Rules::names[ 0 ]        << std::endl
-//        << "clean index: "  << Rules::index( "clean" )  << std::endl;
+	if ( args.size() > 1 )
+	{
+		tgtName = args[ 1 ];
+	}
 
-    if ( Rules::index( ruleName ) == Rules::badIndex() )
-    {
-		fmt::print( "error: unknown rule '{}'\n{}\n", ruleName, formatHelpText() );
-        return ( EXIT_USAGE );
-    }
+	fmt::print( "requested task: '{0}'; requested tgt: '{1}'\n", taskName, tgtName );
 
-    mTaskProv->loadDecls(
-        Poco::Path::forDirectory(
-            config().getString( "cic.dir.etc" )
-        ).setFileName( "cicheck__task_declarations.xml" ).toString()
-    );
+	//    if ( Rules::index( ruleName ) == Rules::badIndex() )
+	//    {
+	//		fmt::print( "error: unknown rule '{}'\n{}\n", ruleName, formatHelpText() );
+	//        return ( EXIT_USAGE );
+	//    }
 
-    {
-        fmt::MemoryWriter mw;
-        mw.write( "Declared:\n" );
-        auto decls( mTaskProv->getDecls() );
-        for ( auto decl: decls )
-        {
-            mw.write( "\tname: '{}'; path: '{}';\n", decl.name, decl.path );
-        }
-        std::cout << mw.str();
-    }
+	mTaskProv->loadDecls(
+		Poco::Path::forDirectory( config().getString( "cic.dir.etc" ) )
+				.setFileName( "cicheck__task_declarations.xml" )
+				.toString()
+	);
 
-    if ( !mTaskProv->isTaskDeclared( taskName ) )
-    {
-        fmt::print(
-				   stderr
-				   , "[fatal] requested task '{}' is not declared;\n"\
-				     "\tterminating;\n"
-				   , taskName
+	{
+		fmt::MemoryWriter mw;
+		mw.write( "Declared:\n" );
+		auto decls( mTaskProv->getDecls() );
+		for ( auto decl: decls )
+		{
+			mw.write( "\tname: '{}'; path: '{}';\n", decl.name, decl.path );
+		}
+		std::cout << mw.str();
+	}
+
+	if ( !mTaskProv->isTaskDeclared( taskName ) )
+	{
+		fmt::print(
+			stderr
+			, "[fatal] requested task '{}' is not declared;\n"\
+			 "\tterminating;\n"
+			, taskName
 		);
-        return ( EXIT_CONFIG );
-    }
+		return ( EXIT_CONFIG );
+	}
 
 	auto task( mTaskProv->loadTask( taskName ) );
 	if ( task == nullptr )
 	{
 		fmt::print(
-				   "[fatal] can't load requested task '{}'\n"\
-				   "\tterminating;\n"
-				   , taskName
+			"[fatal] can't load requested task '{}'\n"\
+			"\tterminating;\n"
+			, taskName
 		);
 		return ( EXIT_CONFIG );
 	}
 	fmt::print( "'{}' task description: '{}'\n", taskName, task->getDescription() );
+
+	{
+		const task::AbstractTargetSet::Sequence seq{
+			task->getTargetSet()->calcSequenceFor( tgtName )
+		};
+		fmt::MemoryWriter mw;
+		mw.write( "\n" );
+		for ( const auto t: seq )
+		{
+			mw.write( "\t'{}'\n", t );
+		}
+		fmt::print(
+			"Sequence for target '{0}': [{1}];\n"
+			, tgtName
+			, mw.str()
+		);
+	}
+
 	return ( EXIT_OK );
 }
 

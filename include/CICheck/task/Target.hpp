@@ -20,32 +20,34 @@ namespace task
 class Target
 {
 public:
-    using DepsList = std::vector< std::string >;
+	using DepsList = std::vector< std::string >;
 
-    Target( const std::string& name ) noexcept;
-    Target( const std::string& name, const std::vector< std::string >& deps ) noexcept;
+	Target( const std::string& name ) noexcept;
+	Target( const std::string& name, std::vector< std::string >&& deps ) noexcept;
+	Target( Target&& other ) noexcept;
+	~Target() noexcept;
 
-    inline const std::string& name() const noexcept;
-    inline const DepsList& deps() const noexcept;
+	inline const std::string& name() const noexcept;
+	inline const DepsList& deps() const noexcept;
 
 protected:
-    void addDep( const std::string& name ) noexcept;
-    void addDeps( const DepsList& deps ) noexcept;
+	void addDep( const std::string& name ) noexcept;
+	void addDeps( const DepsList& deps ) noexcept;
 
 private:
-    std::string mName;
-    DepsList mDeps;
+	std::string mName;
+	DepsList mDeps;
 };
 
 // Inliners
 inline const std::string& Target::name() const noexcept
 {
-    return ( mName );
+	return ( mName );
 }
 
 inline const Target::DepsList& Target::deps() const noexcept
 {
-    return ( mDeps );
+	return ( mDeps );
 }
 
 
