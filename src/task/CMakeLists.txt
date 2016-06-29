@@ -13,6 +13,10 @@ set(GROUP_HEADERS
 	${CMAKE_SOURCE_DIR}/include/CICheck/task/Target.hpp
 	${CMAKE_SOURCE_DIR}/include/CICheck/task/AbstractTargetSet.hpp
 	${CMAKE_SOURCE_DIR}/include/CICheck/task/LinearTargetSet.hpp
+	${CMAKE_SOURCE_DIR}/include/CICheck/task/CheckMap.hpp
+	${CMAKE_SOURCE_DIR}/include/CICheck/task/RuleSet.hpp
+	${CMAKE_SOURCE_DIR}/include/CICheck/task/AbstractRule.hpp
+#	${CMAKE_SOURCE_DIR}/include/CICheck/task/Rule.hpp
 )
 set(GROUP_SOURCES
 	${CMAKE_SOURCE_DIR}/src/task/TaskDecl.cpp
@@ -21,6 +25,10 @@ set(GROUP_SOURCES
 	${CMAKE_SOURCE_DIR}/src/task/Target.cpp
 	${CMAKE_SOURCE_DIR}/src/task/AbstractTargetSet.cpp
 	${CMAKE_SOURCE_DIR}/src/task/LinearTargetSet.cpp
+	${CMAKE_SOURCE_DIR}/src/task/CheckMap.cpp
+	${CMAKE_SOURCE_DIR}/src/task/RuleSet.cpp
+	${CMAKE_SOURCE_DIR}/src/task/AbstractRule.cpp
+#	${CMAKE_SOURCE_DIR}/src/task/Rule.cpp
 )
 source_group( "task" FILES ${GROUP_HEADERS} ${GROUP_SOURCES} )
 set( TASK_LIB_HEADERS ${TASK_LIB_HEADERS} ${GROUP_HEADERS} )
