@@ -1,5 +1,5 @@
 //
-//  TargetSet.hpp
+//  AbstractTargetSet.hpp
 //  CICheck
 //
 //  Created by Stanislav Demyanovich on 28.06.16.

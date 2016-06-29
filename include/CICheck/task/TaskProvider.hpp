@@ -6,8 +6,8 @@
 //
 //
 
-#ifndef CICHECK_TASK_TASKPROVIDER_HPP
-#define CICHECK_TASK_TASKPROVIDER_HPP
+#ifndef CICHECK_TASK__TASK_PROVIDER_HPP
+#define CICHECK_TASK__TASK_PROVIDER_HPP
 
 #include <string>
 #include <memory>
@@ -57,4 +57,4 @@ private:
 } // namespace task
 } // namespace cic
 
-#endif /* CICHECK_TASK_TASKPROVIDER_HPP */
+#endif /* CICHECK_TASK__TASK_PROVIDER_HPP */

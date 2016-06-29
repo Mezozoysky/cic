@@ -6,8 +6,8 @@
 //
 //
 
-#ifndef CICHECK_TASK_TARGET_HPP
-#define CICHECK_TASK_TARGET_HPP
+#ifndef CICHECK_TASK__TARGET_HPP
+#define CICHECK_TASK__TARGET_HPP
 
 #include <string>
 #include <vector>
@@ -54,4 +54,4 @@ inline const Target::DepsList& Target::deps() const noexcept
 } // namespace task
 } // namespace cic
 
-#endif /* CICHECK_TASK_TARGET_HPP */
+#endif /* CICHECK_TASK__TARGET_HPP */

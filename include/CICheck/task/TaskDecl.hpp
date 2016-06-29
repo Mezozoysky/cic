@@ -6,8 +6,8 @@
 //
 //
 
-#ifndef CICHECK_TASK_TASKDECL_HPP
-#define CICHECK_TASK_TASKDECL_HPP
+#ifndef CICHECK_TASK__TASK_DECL_HPP
+#define CICHECK_TASK__TASK_DECL_HPP
 
 #include <string>
 
@@ -25,4 +25,4 @@ struct TaskDecl
 } // namespace task
 } // namespace cic
 
-#endif /* CICHECK_TASK_TASKDECL_HPP */
+#endif /* CICHECK_TASK__TASK_DECL_HPP */

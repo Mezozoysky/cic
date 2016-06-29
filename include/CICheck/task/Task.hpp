@@ -6,8 +6,8 @@
 //
 //
 
-#ifndef CICHECK_TASK_TASK_HPP
-#define CICHECK_TASK_TASK_HPP
+#ifndef CICHECK_TASK__TASK_HPP
+#define CICHECK_TASK__TASK_HPP
 
 #include <string>
 #include <CICheck/task/TaskDecl.hpp>
@@ -86,4 +86,4 @@ inline AbstractTargetSet::Ptr Task::getTargetSet() noexcept
 } // namespace task
 } // namespace cic
 
-#endif /* CICHECK_TASK_TASK_HPP */
+#endif /* CICHECK_TASK__TASK_HPP */

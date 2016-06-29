@@ -1,4 +1,4 @@
-//  CICheck/Application.cpp
+//  cicheck/Application.cpp
 //	Project:	CICheck
 //	Author:		Stanislav Demyanovich <mezozoysky@gmail.com>
 
