@@ -9,9 +9,7 @@
 #ifndef CICHECK_TASK__BASH_SCRIPT_RULE_HPP
 #define CICHECK_TASK__BASH_SCRIPT_RULE_HPP
 
-#include <map>
-#include <vector>
-#include <string>
+#include <CICheck/task/AbstractRule.hpp>
 
 namespace cic
 {
@@ -19,15 +17,43 @@ namespace task
 {
 
 
-class AbstractRule
+class BashScriptRule
+: public AbstractRule
 {
 public:
-	AbstractRule() noexcept;
-	~AbstractRule() noexcept;
+	BashScriptRule() noexcept;
+	virtual ~BashScriptRule() noexcept = default;
+
+public:
+	inline const std::string& getPath() const noexcept;
+protected:
+	inline void setPath( const std::string& path ) noexcept;
 
 private:
 	std::string mPath;
 };
+
+// Inliners
+inline const std::string& BashScriptRule::getPath() const noexcept
+{
+	return ( mPath );
+}
+inline void BashScriptRule::setPath( const std::string& path ) noexcept
+{
+	mPath = path;
+}
+
+
+class BashScriptRuleCreator
+: public AbstractRuleCreator
+{
+public:
+	virtual AbstractRule* create() noexcept
+	{
+		return ( new BashScriptRule() );
+	}
+};
+
 
 
 

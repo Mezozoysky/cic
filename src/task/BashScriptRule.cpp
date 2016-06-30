@@ -7,6 +7,7 @@
 //
 
 #include <CICheck/task/BashScriptRule.hpp>
+#include <CICheck/task/AbstractRule.hpp>
 
 namespace cic
 {
@@ -14,11 +15,8 @@ namespace task
 {
 
 
-BashScriptRule::BashScriptRule noexcept
-{
-}
-
-BashScriptRule::~BashScriptRule noexcept
+BashScriptRule::BashScriptRule() noexcept
+: AbstractRule{}
 {
 }
 

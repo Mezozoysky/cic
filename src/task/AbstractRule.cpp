@@ -13,9 +13,6 @@ namespace cic
 namespace task
 {
 
-AbstractRule::~AbstractRule() noexcept
-{
-}
 
 } // namespace task
 } // namespace cic

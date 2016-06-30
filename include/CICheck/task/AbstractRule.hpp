@@ -20,14 +20,30 @@ namespace task
 
 class AbstractRule
 {
-	AbstractRule() = delete;
+protected:
+	AbstractRule() noexcept = default;
+
 public:
-	~AbstractRule() noexcept;
+	virtual ~AbstractRule() noexcept = default;
+
+public:
+	inline const std::string& getName() const noexcept;
+protected:
+	inline void setName( const std::string& name ) noexcept;
 
 private:
 	std::string mName;
 };
 
+// Inliners
+inline const std::string& AbstractRule::getName() const noexcept
+{
+	return ( mName );
+}
+inline void AbstractRule::setName( const std::string& name ) noexcept
+{
+	mName = name;
+}
 
 
 } // namespace task
