@@ -16,10 +16,11 @@ namespace task {
 
 struct TaskDecl
 {
-    std::string name;
-    std::string path;
-    
-    TaskDecl( const std::string& name, const std::string& path ) noexcept;
+	std::string name;
+	std::string path;
+
+	TaskDecl( const std::string& name, const std::string& path ) noexcept;
+	void operator=( const TaskDecl& other ) noexcept;
 };
     
 } // namespace task

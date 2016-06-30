@@ -53,6 +53,9 @@ public:
 	inline AbstractTargetSet::Ptr getTargetSet() noexcept;
 
 protected:
+    inline void setDecl( const TaskDecl& decl ) noexcept;
+
+protected:
 	virtual bool loadTask( const Poco::XML::Node* node );
 	virtual bool loadDescription( const Poco::XML::Node* node );
 	virtual bool loadTargetSet( const Poco::XML::Node* node );
@@ -71,6 +74,11 @@ private:
 inline const TaskDecl& Task::getDecl() const noexcept
 {
 	return ( mDecl );
+}
+
+inline void Task::setDecl( const TaskDecl& decl ) noexcept
+{
+    mDecl = decl;
 }
 
 inline const std::string& Task::getDescription() const noexcept

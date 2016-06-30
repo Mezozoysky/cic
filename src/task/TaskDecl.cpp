@@ -18,5 +18,12 @@ TaskDecl::TaskDecl( const std::string& name, const std::string& path ) noexcept
 {
 }
 
+void TaskDecl::operator=( const cic::task::TaskDecl &other ) noexcept
+{
+	name = other.name;
+	path = other.path;
+}
+
+
 } // namespace task
 } // namespace cic

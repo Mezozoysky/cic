@@ -41,7 +41,7 @@ Task::~Task() noexcept
 {
 }
 
-bool Task::load( XML::DOMParser &parser )
+bool Task::load( XML::DOMParser& parser )
 {
 	AutoPtr<XML::Document> doc;
 
