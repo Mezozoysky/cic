@@ -14,6 +14,10 @@ endif()
 
 include_directories( ${CMAKE_SOURCE_DIR}/include )
 
+if ( CIC_BUILD_TU_LIB OR CIC_BUILD_TASK_LIB OR CIC_BUILD_CICHECK )
+	add_subdirectory( tu )
+endif()
+
 if ( CIC_BUILD_TASK_LIB OR CIC_BUILD_CICHECK )
 	add_subdirectory( task )
 endif()
