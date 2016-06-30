@@ -52,7 +52,8 @@ add_executable( cicheck WIN32 #MACOSX_BUNDLE
 # Build
 #
 target_link_libraries( cicheck
-	task
+	cic-task
+	cic-xmlu
 )
 target_link_libraries( cicheck
 	${FMT_LIBRARY}

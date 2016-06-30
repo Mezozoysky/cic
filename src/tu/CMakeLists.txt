@@ -16,11 +16,11 @@ source_group( "tu" FILES ${GROUP_HEADERS} ${GROUP_SOURCES} )
 set( TU_LIB_HEADERS ${TU_LIB_HEADERS} ${GROUP_HEADERS} )
 set( TU_LIB_SOURCES ${TU_LIB_SOURCES} ${GROUP_SOURCES} )
 
-add_library( tu-fake STATIC
+add_library( cic-tu-fake STATIC
 	${TU_LIB_HEADERS}
 	${TU_LIB_SOURCES}
 )
-set_target_properties( tu-fake PROPERTIES LINKER_LANGUAGE CXX )
+set_target_properties( cic-tu-fake PROPERTIES LINKER_LANGUAGE CXX )
 
 if( CIC_BUILD_TU_LIB )
 	install(

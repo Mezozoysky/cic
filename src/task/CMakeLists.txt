@@ -34,15 +34,15 @@ source_group( "task" FILES ${GROUP_HEADERS} ${GROUP_SOURCES} )
 set( TASK_LIB_HEADERS ${TASK_LIB_HEADERS} ${GROUP_HEADERS} )
 set( TASK_LIB_SOURCES ${TASK_LIB_SOURCES} ${GROUP_SOURCES} )
 
-add_library( task STATIC
+add_library( cic-task STATIC
 	${TASK_LIB_HEADERS}
 	${TASK_LIB_SOURCES}
 )
-set_target_properties( task PROPERTIES LINKER_LANGUAGE CXX )
+set_target_properties( cic-task PROPERTIES LINKER_LANGUAGE CXX )
 
 if( CIC_BUILD_TASK_LIB )
 	install(
-		TARGETS task
+		TARGETS cic-task
 		ARCHIVE DESTINATION lib
 	)
 	install(
