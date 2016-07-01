@@ -31,5 +31,9 @@
 # KDevelop
 *.kdev4
 
+# Sublime Text
+*.sublime-*
+
 # misc
 build
+cicheck.properties
