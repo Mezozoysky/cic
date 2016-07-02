@@ -19,6 +19,13 @@ namespace cic
 namespace task
 {
 
+//template< typename DerivedT >
+//class TaskComponent
+//{
+//public:
+//	using Ptr = std::shared_ptr< DerivedT >;
+//};
+
 class AbstractTargetSet
 {
 public:
@@ -28,9 +35,9 @@ public:
 	static typename TargetSetT::Ptr createPtr( ArgsT&&... args ) noexcept
 	{
 		static_assert(
-					  std::is_base_of< AbstractTargetSet, TargetSetT >::value
-					  , "TargetSetT should extend cic::task::AbstractTargetSet class"
-					  );
+			std::is_base_of< AbstractTargetSet, TargetSetT >::value
+			, "TargetSetT should extend cic::task::AbstractTargetSet class"
+		);
 		typename TargetSetT::Ptr task{ std::make_shared< TargetSetT >( args... ) };
 		return ( task );
 	}

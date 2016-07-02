@@ -9,9 +9,9 @@
 #ifndef CICHECK_TASK__RULE_SET_HPP
 #define CICHECK_TASK__RULE_SET_HPP
 
-#include <map>
 #include <vector>
-#include <string>
+#include <CICheck/task/AbstractRule.hpp>
+#include <memory>
 
 namespace cic
 {
@@ -21,11 +21,13 @@ namespace task
 class RuleSet
 {
 public:
-	RuleSet() noexcept;
-	~RuleSet() noexcept;
+    using ListImpl = std::vector< std::unique_ptr< AbstractRule > >;
+	RuleSet() noexcept = default;
+	~RuleSet() noexcept = default;
+
 
 private:
-
+    ListImpl mRules;
 };
 
 

@@ -20,10 +20,8 @@ namespace task
 
 class AbstractRule
 {
-protected:
-	AbstractRule() noexcept = default;
-
 public:
+	AbstractRule() noexcept = default;
 	virtual ~AbstractRule() noexcept = default;
 
 public:

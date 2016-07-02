@@ -14,13 +14,5 @@ namespace task
 {
 
 
-RuleSet::RuleSet() noexcept
-{
-}
-
-RuleSet::~RuleSet() noexcept
-{
-}
-
 } // namespace task
 } // namespace cic

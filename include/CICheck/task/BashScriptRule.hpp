@@ -44,19 +44,6 @@ inline void BashScriptRule::setPath( const std::string& path ) noexcept
 }
 
 
-class BashScriptRuleCreator
-: public AbstractRuleCreator
-{
-public:
-	virtual AbstractRule* create() noexcept
-	{
-		return ( new BashScriptRule() );
-	}
-};
-
-
-
-
 } // namespace task
 } // namespace cic
 
