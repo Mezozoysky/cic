@@ -1,3 +1,15 @@
+<!-- MarkdownTOC depth=0 -->
+
+- CICheck
+	- Dependencies
+	- Build / install
+		- OS X
+			- Build with XCode
+			- Build with Make
+		- Linux
+
+<!-- /MarkdownTOC -->
+
 # CICheck
 "CI" is for Continuous Intergation and "Check" for checking!
 
