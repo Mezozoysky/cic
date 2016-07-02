@@ -15,11 +15,5 @@ namespace task
 {
 
 
-BashScriptRule::BashScriptRule() noexcept
-: AbstractRule{}
-{
-}
-
-
 } // namespace task
 } // namespace cic

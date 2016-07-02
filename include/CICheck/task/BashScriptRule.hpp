@@ -21,7 +21,7 @@ class BashScriptRule
 : public AbstractRule
 {
 public:
-	BashScriptRule() noexcept;
+	BashScriptRule() noexcept = default;
 	virtual ~BashScriptRule() noexcept = default;
 
 public:
