@@ -22,7 +22,7 @@ namespace cic
 {
 
 Application::Application()
-: Poco::Util::Application()
+: Util::Application()
 , mIsHelpOptionRequested{ false }
 {
 }
@@ -58,13 +58,13 @@ void Application::initialize( Poco::Util::Application& self )
 	}
 
 	// super initialize
-	Poco::Util::Application::initialize ( self );
+	Util::Application::initialize ( self );
 
 	// Init application logger
-	AutoPtr< SplitterChannel > splitterChannel( new SplitterChannel() );
+	auto splitterChannel( new SplitterChannel() );
 
-	AutoPtr< Channel > consoleChannel( new ConsoleChannel() );
-	AutoPtr< FileChannel > rotatedFileChannel( new FileChannel( "cicheck.log" ) );
+	auto consoleChannel( new ConsoleChannel() );
+	auto rotatedFileChannel( new FileChannel( "cicheck.log" ) );
 
 	rotatedFileChannel->setProperty( "rotation", "1M" );
 	rotatedFileChannel->setProperty( "archive", "timestamp" );
@@ -77,11 +77,12 @@ void Application::initialize( Poco::Util::Application& self )
 	splitterChannel->addChannel( rotatedFileChannel );
 
 
-	AutoPtr<Formatter> formatter(new PatternFormatter("|%q|%y.%m.%d %h:%M:%S.%i|%P:%T|%s| %t"));
-	AutoPtr<Channel> formattingChannel(new FormattingChannel(formatter, splitterChannel));
+	auto formatter(new PatternFormatter("|%q|%y.%m.%d %h:%M:%S.%i|%P:%T|%s| %t"));
+	auto formattingChannel(new FormattingChannel(formatter, splitterChannel));
 
-	Logger& logger = Logger::create("cicheck", formattingChannel, Message::PRIO_TRACE);
-	setLogger( logger );
+	auto& logger = Logger::get( "Application" );
+	logger.setChannel( formattingChannel );
+	logger.setLevel( Message::PRIO_TRACE );
 
 	logger.information( "---------------- Start logging" );
 	logger.debug( "Initializing application .." );
@@ -99,12 +100,12 @@ void Application::uninitialize()
 
 	logger().debug( ".. Done uninitializing application" );
 
-	Poco::Util::Application::uninitialize();
+	Util::Application::uninitialize();
 }
 
 void Application::defineOptions( Poco::Util::OptionSet& options )
 {
-	Poco::Util::Application::defineOptions ( options );
+	Util::Application::defineOptions ( options );
 
 	options.addOption(
 			Poco::Util::Option( "help", "h", "print the help screen" )
