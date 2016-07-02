@@ -7,6 +7,16 @@
 #include <sstream>
 #include <fmt/format.h>
 #include <CICheck/task/Task.hpp>
+#include <CICheck/tu/ZarFactory.hpp>
+
+#include <Poco/PatternFormatter.h>
+#include <Poco/FormattingChannel.h>
+#include <Poco/ConsoleChannel.h>
+#include <Poco/FileChannel.h>
+#include <Poco/SplitterChannel.h>
+
+using namespace Poco;
+using namespace fmt::literals;
 
 namespace cic
 {
@@ -15,7 +25,6 @@ Application::Application()
 : Poco::Util::Application()
 , mIsHelpOptionRequested{ false }
 {
-
 }
 
 Application::~Application()
@@ -24,60 +33,106 @@ Application::~Application()
 
 void Application::initialize( Poco::Util::Application& self )
 {
-    std::string binaryDir{ config().getString( "application.dir" ) };
-    config().setString( "cic.dir.bin", binaryDir );
+	// Init default application directories
+	std::string binaryDir{ config().getString( "application.dir" ) };
+	Poco::Path prefixDirPath{ Poco::Path::forDirectory( binaryDir ).parent() };
+	std::string defaultShareDir{ Poco::Path::forDirectory( "./share/CICheck" ).makeAbsolute( prefixDirPath ).toString() };
+	std::string defaultEtcDir{ Poco::Path::forDirectory( "./etc/CICheck" ).makeAbsolute( prefixDirPath ).toString() };
 
-    Poco::Path prefixDirPath{ Poco::Path::forDirectory( binaryDir ).parent() };
+	// TODO:
+	// if ( file exists( share/cicheck.properties ) )
+	// {
+	//		loadConfiguration( share/cicheck.properties );
+	// }
 
-    loadConfiguration();
-    
-    if ( !config().hasProperty( "cic.dir.share" ) )
-    {
-		config().setString( "cic.dir.share", Poco::Path::forDirectory( "./share/CICheck" ).makeAbsolute( prefixDirPath ).toString() );
-    }
-    if ( !config().hasProperty( "cic.dir.etc" ) )
-    {
-        config().setString( "cic.dir.etc", Poco::Path::forDirectory( "./etc/CICheck" ).makeAbsolute( prefixDirPath ).toString() );
-    }
+	// Load default config
+	loadConfiguration();
 
-	fmt::print( "cic.dir.bin:   {}\n", config().getString( "cic.dir.bin" ) );
-	fmt::print( "cic.dir.share: {}\n", config().getString( "cic.dir.share" ) );
-	fmt::print( "cic.dir.etc:   {}\n", config().getString( "cic.dir.etc" ) );
+	if ( !config().hasProperty( "cic.dir.share" ) )
+	{
+		config().setString( "cic.dir.share", defaultShareDir );
+	}
+	if ( !config().hasProperty( "cic.dir.etc" ) )
+	{
+		config().setString( "cic.dir.etc", defaultEtcDir );
+	}
 
-    // super initialize
-    Poco::Util::Application::initialize ( self );
+	// super initialize
+	Poco::Util::Application::initialize ( self );
+
+	// Init application logger
+	AutoPtr< SplitterChannel > splitterChannel( new SplitterChannel() );
+
+	AutoPtr< Channel > consoleChannel( new ConsoleChannel() );
+	AutoPtr< FileChannel > rotatedFileChannel( new FileChannel( "cicheck.log" ) );
+
+	rotatedFileChannel->setProperty( "rotation", "1M" );
+	rotatedFileChannel->setProperty( "archive", "timestamp" );
+	rotatedFileChannel->setProperty( "compress", "true" );
+	rotatedFileChannel->setProperty( "purgeAge", "12 months" );
+	rotatedFileChannel->setProperty( "rotateOnOpen", "false" );
+	rotatedFileChannel->setProperty( "flush", "true" );
+
+	splitterChannel->addChannel( consoleChannel );
+	splitterChannel->addChannel( rotatedFileChannel );
 
 
-    mTaskProv = new task::TaskProvider();
+	AutoPtr<Formatter> formatter(new PatternFormatter("|%q|%y.%m.%d %h:%M:%S.%i|%P:%T|%s| %t"));
+	AutoPtr<Channel> formattingChannel(new FormattingChannel(formatter, splitterChannel));
+
+	Logger& logger = Logger::create("cicheck", formattingChannel, Message::PRIO_TRACE);
+	setLogger( logger );
+
+	logger.information( "---------------- Start logging" );
+	logger.debug( "Initializing application .." );
+
+	mTaskProv = new task::TaskProvider();
+
+	logger.debug( ".. Done initializing application" );
 }
 
 void Application::uninitialize()
 {
+	logger().debug( "Uninitializing application .." );
+
 	delete mTaskProv;
 
-    Poco::Util::Application::uninitialize();
+	logger().debug( ".. Done uninitializing application" );
+
+	Poco::Util::Application::uninitialize();
 }
 
 void Application::defineOptions( Poco::Util::OptionSet& options )
 {
-    Poco::Util::Application::defineOptions ( options );
+	Poco::Util::Application::defineOptions ( options );
 
 	options.addOption(
-		Poco::Util::Option( "help", "h", "print the help screen" )
-		.required( false )
-		.repeatable( false )
-		.callback(
-			Poco::Util::OptionCallback< Application >(
-				this,
-				&Application::helpOptionCallback
+			Poco::Util::Option( "help", "h", "print the help screen" )
+			.required( false )
+			.repeatable( false )
+			.callback(
+					Poco::Util::OptionCallback< Application >(
+							this,
+							&Application::helpOptionCallback
+					)
 			)
-		)
 	);
 }
 
 int Application::main( const std::vector< std::string >& args )
 {
-	
+	logger().debug(
+			"Config:\n"
+			"\tapplication.dir:   '{}'\n"\
+			"\tcic.dir.share: '{}'\n"\
+			"\tcic.dir.etc:   '{}'\n"\
+			""_format(
+					config().getString( "application.dir" )
+					, config().getString( "cic.dir.share" )
+					, config().getString( "cic.dir.etc" )
+			)
+	);
+
 	if ( mIsHelpOptionRequested )
 	{
 		return ( EXIT_OK );
@@ -116,6 +171,12 @@ int Application::main( const std::vector< std::string >& args )
 		}
 		std::cout << mw.str();
 	}
+
+	tu::ZarFactory zarFactory;
+	zarFactory.createFactory< task::AbstractRule >();
+	auto ruleFactory( zarFactory.getFactory< task::AbstractRule >() );
+	ruleFactory->registerId< task::BashScriptRule >( "bashScript" );
+	task::AbstractRule* rptr = ruleFactory->create< task::BashScriptRule >();
 
 	// Test for requested task declaration
 	if ( !mTaskProv->isTaskDeclared( taskName ) )
@@ -157,6 +218,8 @@ int Application::main( const std::vector< std::string >& args )
 		return ( EXIT_USAGE );
 	}
 
+//	task->perform( tgtName );
+
 	//Output sequence for requested target
 	{
 		const task::AbstractTargetSet::Sequence seq{
@@ -174,6 +237,9 @@ int Application::main( const std::vector< std::string >& args )
 			, mw.str()
 		);
 	}
+
+    mRuleFactory.registerId< task::BashScriptRule >( "bashScript" );
+    task::AbstractRule* rule{ mRuleFactory.create( "bashScript" ) };
 
 	return ( EXIT_OK );
 }

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<task typeId="check">
+
+	<!--// Description section //-->
+	<description>Task for testing cicheck features. The first task for cicheck.
+This task uses default target set: clean, configure, build, buildtests, runtests.
+	</description>
+
+	<!--// TargetSet section //-->
+	<targetSet typeId="linear">
+		<target name="clean" />
+		<target name="configure" />
+		<target name="build" />
+	</targetSet>
+	<!--// imaginary default TargetSet XML declaration //-->
+	<!--//
+	<targetSet>
+		<target name="clean" />
+		<target name="configure" />
+			<depends>
+				<value>clean</value>
+			</depends>
+		</target>
+		<target name="build">
+			<depends>
+				<value>configure</value>
+			</depends>
+		</target>
+		<target name="buildtests">
+			<depends>
+				<value>build</value>
+			</depends>
+		</target>
+		<target name="runtests">
+			<depends>
+				<value>buildtests</value>
+			</depends>
+		</target>
+	</targetSet>
+	//-->
+
+	<!--// CheckList section //-->
+	<checkMap typeId>
+		<check target="clean">
+			<ruleset>
+				<rule name="remove_artefacts" type="bashScript" file="bashScripts/target_clean__remove_artefacts.bash" />
+				<rule name="remove_project" type="bashScript" file="bashScripts/target_clean__remove_project.bash" />
+			</ruleset>
+		</check>
+		<check target="configure" >
+			<ruleset>
+				<rule name="update_assets" type="bashScript" file="bashScripts/rule_configure__update_assets.bash" />
+				<rule name="generate_project" type="bashScript" file="bashScripts/rule_configure__generate_project.bash" />
+			</ruleset>
+		</check>
+		<check target="build">
+			<ruleset>
+				<rule name="application" type="bashScript" file="bashScripts/rule_build__application.bash" />
+			</ruleset>
+		</check>
+		<check target="buildtests">
+			<ruleset>
+				<rule name="app_tests" type="bashScript" file="bashScripts/rule_buildtests__app_tests.bash" />
+			</ruleset>
+		</check>
+		<check target="runtests">
+			<ruleset>
+				<rule name="app_tests" type="bashScript" file="bashScripts/rule_runtests__app_tests.bash" />
+			</ruleset>
+		</check>
+	</checkMap>
+</task>

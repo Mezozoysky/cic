@@ -8,6 +8,9 @@
 #include <Poco/Util/Application.h>
 #include <memory>
 #include <CICheck/task/TaskProvider.hpp>
+#include <CICheck/task/BashScriptRule.hpp>
+#include <CICheck/task/AbstractRule.hpp>
+#include <CICheck/tu/Factory.hpp>
 
 namespace cic
 {
@@ -33,6 +36,7 @@ private:
 	bool mIsHelpOptionRequested;
 
     task::TaskProvider* mTaskProv;
+    tu::Factory< task::AbstractRule > mRuleFactory;
 };
 
 } // namespace cic
