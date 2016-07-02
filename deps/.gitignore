@@ -1,4 +1,10 @@
 /*
+
 !.gitignore
+
 !/include
+/include/*
+!/include/tktk
+
 !/lib
+/lib/*
