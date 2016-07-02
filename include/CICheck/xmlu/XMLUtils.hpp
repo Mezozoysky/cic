@@ -14,19 +14,22 @@
 #include <Poco/DOM/Document.h>
 #include <Poco/SAX/InputSource.h>
 #include <Poco/XML/XMLException.h>
+#include <Poco/AutoPtr.h>
 
 namespace cic
 {
 namespace xmlu
 {
 
-using Exception = Poco::XML::XMLException;
+using Exception = Poco::XML::XMLException; // ?? is it ugly?
 using Node = Poco::XML::Node;
 using Parser = Poco::XML::DOMParser;
 using Doc = Poco::XML::Document;
+using DocPtr = Poco::AutoPtr< Doc >;
 using Input = Poco::XML::InputSource;
 
 
+DocPtr fetchDoc( const std::string& path, Parser& parser );
 
 const Node* fetchXML(
 	const Node* root

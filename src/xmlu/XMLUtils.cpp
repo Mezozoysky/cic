@@ -8,7 +8,6 @@
 
 #include <CICheck/xmlu/XMLUtils.hpp>
 #include <Poco/FileStream.h>
-#include <Poco/AutoPtr.h>
 #include <cassert>
 #include <fmt/format.h>
 
@@ -20,6 +19,17 @@ namespace cic
 namespace xmlu
 {
 
+DocPtr fetchDoc( const std::string& path, Parser& parser )
+{
+	DocPtr doc{ nullptr };
+
+	if ( path.empty() ) return ( doc );
+
+	Poco::FileInputStream istr{ path };
+	Input input{ istr };
+	doc = parser.parse( &input );
+	return ( doc );
+}
 
 const Node* fetchXML(
 	const Node* root
@@ -80,14 +90,7 @@ void LoadableFromXML::loadFromXMLFile(
 	, const std::string& nodePath
 )
 {
-	Poco::AutoPtr< Doc > doc;
-
-	{
-		Poco::FileInputStream istr{ path };
-		Input input{ istr };
-		doc = parser.parse( &input );
-	}
-
+	DocPtr doc = fetchDoc( path, parser );
 	if ( doc.isNull() )
 	{
 		throw Exception( "Can't parse file '{}';"_format( path ) );
