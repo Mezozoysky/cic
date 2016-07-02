@@ -9,6 +9,8 @@
 #ifndef CICHECK_TU__FACTORY_HPP
 #define CICHECK_TU__FACTORY_HPP
 
+#include <functional>
+#include <map>
 #include <fmt/format.h>
 
 namespace cic
@@ -16,8 +18,18 @@ namespace cic
 namespace tu
 {
 
+class FactoryMarker
+{
+public:
+	FactoryMarker() noexcept = default;
+	FactoryMarker( const FactoryMarker& ) = delete;
+	virtual ~FactoryMarker() noexcept = default;
+	void operator=( const FactoryMarker& ) = delete;
+};
+
 template< typename AbstractionT, typename IdT = std::string >
 class Factory
+: public FactoryMarker
 {
 private:
 	using Creator = std::function< AbstractionT*() >;
@@ -47,7 +59,7 @@ public:
     }
 
 	template< typename RegT >
-	void registerId( const Id& id ) noexcept
+	void registerId( const Id& id )
 	{
 		static_assert(
 			std::is_default_constructible< RegT >::value
@@ -63,6 +75,7 @@ public:
 
         if ( mMap.count( id ) )
         {
+			//TODO: throw exception!
 			fmt::print(
 				stderr
 				, "[error] Trying to register Id '{}' with factory, which Id is already registered;\n"\
