@@ -189,42 +189,11 @@ int Application::main( const std::vector< std::string >& args )
 			"requested task: '{0}'; requested tgt: '{1}'"_format( taskName, tgtName )
 	);
 
-	// Load declarations
-//	mTaskProv->loadDecls(
-//		Poco::Path::forDirectory( config().getString( "cic.dir.etc" ) )
-//				.setFileName( "cicheck__task_declarations.xml" )
-//				.toString()
-//	);
-
-	// Output declarations
-//	{
-//		fmt::MemoryWriter mw;
-//		mw.write( "Declared:\n" );
-//		auto decls( mTaskProv->getDecls() );
-//		for ( auto decl: decls )
-//		{
-//			mw.write( "\tname: '{}'; path: '{}';\n", decl.name, decl.path );
-//		}
-//		std::cout << mw.str();
-//	}
-
 //	tu::ZarFactory zarFactory;
 //	zarFactory.createFactory< task::AbstractRule >();
 //	auto ruleFactory( zarFactory.getFactory< task::AbstractRule >() );
 //	ruleFactory->registerId< task::BashScriptRule >( "bashScript" );
 //	task::AbstractRule* rptr = ruleFactory->create< task::BashScriptRule >();
-
-	// Test for requested task declaration
-//	if ( !mTaskProv->isTaskDeclared( taskName ) )
-//	{
-//		fmt::print(
-//			stderr
-//			, "[fatal] requested task '{}' is not declared;\n"\
-//			 "\tterminating;\n"
-//			, taskName
-//		);
-//		return ( EXIT_CONFIG );
-//	}
 
 	// Load task
 	auto task( mTaskProv.get( taskName ) );
@@ -235,9 +204,6 @@ int Application::main( const std::vector< std::string >& args )
 		);
 		return ( EXIT_CONFIG );
 	}
-
-	// Output task description
-//	fmt::print( "'{}' task description: '{}'\n", taskName, task->getDescription() );
 
 	// Test for requested target
 //	if ( ! task->getTargetSet()->count( tgtName ) )
