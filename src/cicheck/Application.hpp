@@ -23,6 +23,7 @@ public:
 	virtual ~Application();
 
 	void helpOptionCallback( const std::string& name, const std::string& value );
+	void colorsOptionCallback( const std::string& name, const std::string& value );
 
 protected:
 	virtual void initialize( Poco::Util::Application& self ) override;
@@ -34,6 +35,7 @@ protected:
 
 private:
 	bool mIsHelpOptionRequested;
+	bool mIsColorsOptionRequested;
 
     TaskProvider mTaskProv;
     tu::Factory< task::AbstractRule > mRuleFactory;

@@ -15,6 +15,7 @@
 #include <Poco/FileChannel.h>
 #include <Poco/SplitterChannel.h>
 
+
 using namespace Poco;
 using namespace fmt::literals;
 
@@ -61,11 +62,27 @@ void Application::initialize( Poco::Util::Application& self )
 	Util::Application::initialize ( self );
 
 	// Init application logger
-	auto splitterChannel( new SplitterChannel() );
 
-	auto consoleChannel( new ConsoleChannel() );
+	Poco::Channel* consoleChannel;
+	if ( mIsColorsOptionRequested )
+	{
+		consoleChannel = new ColorConsoleChannel();
+		consoleChannel->setProperty( "enableColors", "true" );
+		consoleChannel->setProperty( "traceColor", "cyan" );
+		consoleChannel->setProperty( "debugColor", "lightCyan" );
+		consoleChannel->setProperty( "informationColor", "white" );
+		consoleChannel->setProperty( "noticeColor", "lightGreen" );
+		consoleChannel->setProperty( "warningColor", "yellow" );
+		consoleChannel->setProperty( "errorColor", "lightRed" );
+		consoleChannel->setProperty( "criticalColor", "lightMagenta" );
+		consoleChannel->setProperty( "fatalColor", "lightMagenta" );
+	}
+	else
+	{
+		consoleChannel = new ConsoleChannel();
+	}
+
 	auto rotatedFileChannel( new FileChannel( "cicheck.log" ) );
-
 	rotatedFileChannel->setProperty( "rotation", "1M" );
 	rotatedFileChannel->setProperty( "archive", "timestamp" );
 	rotatedFileChannel->setProperty( "compress", "true" );
@@ -73,9 +90,9 @@ void Application::initialize( Poco::Util::Application& self )
 	rotatedFileChannel->setProperty( "rotateOnOpen", "false" );
 	rotatedFileChannel->setProperty( "flush", "true" );
 
+	auto splitterChannel( new SplitterChannel() );
 	splitterChannel->addChannel( consoleChannel );
 	splitterChannel->addChannel( rotatedFileChannel );
-
 
 	auto formatter(new PatternFormatter("|%q|%y.%m.%d %h:%M:%S.%i|%P:%T|%s| %t"));
 	auto formattingChannel(new FormattingChannel(formatter, splitterChannel));
@@ -118,8 +135,19 @@ void Application::defineOptions( Poco::Util::OptionSet& options )
 			.repeatable( false )
 			.callback(
 					Poco::Util::OptionCallback< Application >(
-							this,
-							&Application::helpOptionCallback
+							this
+							, &Application::helpOptionCallback
+					)
+			)
+	);
+	options.addOption(
+			Poco::Util::Option( "colors", "c", "use colors for console logging" )
+			.required( false )
+			.repeatable( false )
+			.callback(
+					Poco::Util::OptionCallback< Application >(
+							this
+							, &Application::colorsOptionCallback
 					)
 			)
 	);
@@ -145,7 +173,7 @@ int Application::main( const std::vector< std::string >& args )
 	}
 	if ( args.empty() )
 	{
-		logger().fatal( "No arguments given!" );
+		logger().debug( "No arguments given!" );
 		fmt::print( "{}\n", formatHelpText() );
 		return ( EXIT_USAGE );
 	}
@@ -203,7 +231,7 @@ int Application::main( const std::vector< std::string >& args )
 	auto task( mTaskProv.get( taskName ) );
 	if ( task == nullptr )
 	{
-		logger().fatal(
+		logger().critical(
 			"Requested task '{}' isnt provided in any way;"_format( taskName )
 		);
 		return ( EXIT_CONFIG );
@@ -256,6 +284,11 @@ void Application::helpOptionCallback( const std::string& name, const std::string
 	mIsHelpOptionRequested = true;
 	fmt::print( "{}", formatHelpText() );
 	stopOptionsProcessing();
+}
+
+void Application::colorsOptionCallback( const std::string &name, const std::string &value )
+{
+	mIsColorsOptionRequested = true;
 }
 
 std::string Application::formatHelpText() const
