@@ -11,16 +11,16 @@ using namespace cic;
 
 int main( int argc, char** argv )
 {
-	Poco::AutoPtr< Application > app = new Application();
-	app->setUnixOptions( true );
+	Application app;
+	app.setUnixOptions( true );
 	try
 	{
-		app->init( argc, argv );
+		app.init( argc, argv );
 	}
 	catch ( Poco::Exception& exc )
 	{
-		app->logger().log( exc );
-		return Poco::Util::Application::EXIT_CONFIG;
+		app.logger().log( exc );
+		return Poco::Util::Application::EXIT_SOFTWARE;
 	}
-	return ( app->run() );
+	return ( app.run() );
 }
