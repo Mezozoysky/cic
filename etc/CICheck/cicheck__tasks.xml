@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tasks>
+	<task name="task_rel" path="rel_path/task_rel" />
+	<task name="task_abs" path="/Users/mezozoy/tmp/task_abs" />
+	<task name="sample_task" fileRef="sample_task/task.xml" />
+	<task name="zzz" fileRef="Users/mezozoy/tmp/zzz/task.xml" />
+</tasks>
+
+<!--
+	если указан fileRef, то из декларации берем только имя, остальное в файле
+-->
