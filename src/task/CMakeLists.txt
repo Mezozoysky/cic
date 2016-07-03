@@ -8,6 +8,7 @@ set( TASK_LIB_SOURCES "" )
 # ====================
 set(GROUP_HEADERS
 	${CMAKE_SOURCE_DIR}/include/CICheck/task/TaskDecl.hpp
+	${CMAKE_SOURCE_DIR}/include/CICheck/task/AbstractTask.hpp
 	${CMAKE_SOURCE_DIR}/include/CICheck/task/Task.hpp
 	${CMAKE_SOURCE_DIR}/include/CICheck/task/TaskProvider.hpp
 	${CMAKE_SOURCE_DIR}/include/CICheck/task/Target.hpp
@@ -20,6 +21,7 @@ set(GROUP_HEADERS
 )
 set(GROUP_SOURCES
 	${CMAKE_SOURCE_DIR}/src/task/TaskDecl.cpp
+	${CMAKE_SOURCE_DIR}/src/task/AbstractTask.cpp
 	${CMAKE_SOURCE_DIR}/src/task/Task.cpp
 	${CMAKE_SOURCE_DIR}/src/task/TaskProvider.cpp
 	${CMAKE_SOURCE_DIR}/src/task/Target.cpp
