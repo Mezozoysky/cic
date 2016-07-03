@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <task typeId="check">
 
-	<!--// Description section //-->
+	<!-- Description section -->
 	<description>Task for testing cicheck features. The first task for cicheck.
 This task uses default target set: clean, configure, build, buildtests, runtests.
 	</description>
 
-	<!--// TargetSet section //-->
+	<!-- TargetSet section -->
 	<targetSet typeId="linear">
 		<target name="clean" />
 		<target name="configure" />
 		<target name="build" />
 	</targetSet>
-	<!--// imaginary default TargetSet XML declaration //-->
-	<!--//
-	<targetSet>
+	<!-- imaginary typeId="depTree" TargetSet XML declaration -->
+	<!--
+	<targetSet typeId="depTree">
 		<target name="clean" />
 		<target name="configure" />
 			<depends>
@@ -37,10 +37,14 @@ This task uses default target set: clean, configure, build, buildtests, runtests
 			</depends>
 		</target>
 	</targetSet>
-	//-->
+	-->
+
+	<!-- imaginary typeId="single" TargetSet (with one "default" target) XML declaration -->
+	<!-- <targetSet typeId="single"> -->
+
 
 	<!--// CheckList section //-->
-	<checkMap typeId>
+	<checkMap typeId="">
 		<check target="clean">
 			<ruleset>
 				<rule name="remove_artefacts" type="bashScript" file="bashScripts/target_clean__remove_artefacts.bash" />
