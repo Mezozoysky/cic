@@ -2,15 +2,15 @@
 //	Project:	CICheck
 //	Author:		Stanislav Demyanovich <mezozoysky@gmail.com>
 
-#ifndef CICHECK_CICHECK_APPLICATION_H
-#define CICHECK_CICHECK_APPLICATION_H
+#ifndef CICHECK_CICHECK__APPLICATION_H
+#define CICHECK_CICHECK__APPLICATION_H
 
 #include <Poco/Util/Application.h>
 #include <memory>
-#include <CICheck/task/TaskProvider.hpp>
 #include <CICheck/task/BashScriptRule.hpp>
 #include <CICheck/task/AbstractRule.hpp>
 #include <CICheck/tu/Factory.hpp>
+#include "TaskProvider.hpp"
 
 namespace cic
 {
@@ -35,10 +35,10 @@ protected:
 private:
 	bool mIsHelpOptionRequested;
 
-    task::TaskProvider* mTaskProv;
+    TaskProvider mTaskProv;
     tu::Factory< task::AbstractRule > mRuleFactory;
 };
 
 } // namespace cic
 
-#endif // CICHECK_CICHECK_APPLICATION_H
+#endif // CICHECK_CICHECK__APPLICATION_H
