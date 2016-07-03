@@ -48,7 +48,7 @@ public:
 			mFactories.insert< AbstractionT >( factory );
 		}
 
-		return ( nullptr );
+		return ( factory );
 	}
 
 	template< typename AbstractionT >
