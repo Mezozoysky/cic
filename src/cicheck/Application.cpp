@@ -6,7 +6,6 @@
 #include <Poco/Util/HelpFormatter.h>
 #include <sstream>
 #include <fmt/format.h>
-#include <CICheck/task/Task.hpp>
 #include <CICheck/tu/ZarFactory.hpp>
 
 #include <Poco/PatternFormatter.h>

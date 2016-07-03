@@ -1,12 +1,12 @@
 //
-//  AbstractTask.cpp
+//  ATask.cpp
 //  CICheck
 //
 //  Created by Stanislav Demyanovich on 01.07.16.
 //
 //
 
-#include <CICheck/task/AbstractTask.hpp>
+#include <CICheck/task/ATask.hpp>
 
 namespace cic
 {

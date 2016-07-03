@@ -14,7 +14,7 @@ namespace cic
 {
 
 
-AbstractTask::Ptr TaskProvider::get( const std::string& name )
+ATask::Ptr TaskProvider::get( const std::string& name )
 {
 	if ( !mLoaded.count( name ) )
 	{
@@ -29,9 +29,9 @@ AbstractTask::Ptr TaskProvider::get( const std::string& name )
 	return ( mLoaded.at( name ) );
 }
 
-AbstractTask::Ptr TaskProvider::load( const std::string &name )
+ATask::Ptr TaskProvider::load( const std::string &name )
 {
-	AbstractTask::Ptr task{ nullptr };
+	ATask::Ptr task{ nullptr };
 	for ( auto src : mSources )
 	{
 		DocPtr doc{ fetchDoc( src, mParser) };

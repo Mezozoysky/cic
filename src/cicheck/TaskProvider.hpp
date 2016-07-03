@@ -9,7 +9,7 @@
 #ifndef CICHECK_CICHECK__TASK_PROVIDER_HPP
 #define CICHECK_CICHECK__TASK_PROVIDER_HPP
 
-#include <CICheck/task/AbstractTask.hpp>
+#include <CICheck/task/ATask.hpp>
 #include <vector>
 #include <string>
 #include <map>
@@ -28,7 +28,7 @@ public:
 	TaskProvider() = default;
 	virtual ~TaskProvider() noexcept = default;
 
-	virtual AbstractTask::Ptr get( const std::string& name);
+	virtual ATask::Ptr get( const std::string& name);
 
 	inline void addSource( const std::string& fileName ) noexcept;
 	inline void setSources( std::vector< std::string >&& sources ) noexcept;
@@ -36,11 +36,11 @@ public:
 	inline std::vector< std::string >& sources() noexcept;
 
 protected:
-	virtual AbstractTask::Ptr load( const std::string& name );
+	virtual ATask::Ptr load( const std::string& name );
 
 private:
 	std::vector< std::string > mSources;
-	std::map< std::string, task::AbstractTask::Ptr > mLoaded;
+	std::map< std::string, task::ATask::Ptr > mLoaded;
 	xmlu::Parser mParser;
 };
 

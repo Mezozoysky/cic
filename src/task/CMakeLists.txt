@@ -7,9 +7,7 @@ set( TASK_LIB_SOURCES "" )
 # ==== task group ====
 # ====================
 set(GROUP_HEADERS
-	${CMAKE_SOURCE_DIR}/include/CICheck/task/TaskDecl.hpp
-	${CMAKE_SOURCE_DIR}/include/CICheck/task/AbstractTask.hpp
-	${CMAKE_SOURCE_DIR}/include/CICheck/task/Task.hpp
+	${CMAKE_SOURCE_DIR}/include/CICheck/task/ATask.hpp
 	${CMAKE_SOURCE_DIR}/include/CICheck/task/Target.hpp
 	${CMAKE_SOURCE_DIR}/include/CICheck/task/AbstractTargetSet.hpp
 	${CMAKE_SOURCE_DIR}/include/CICheck/task/LinearTargetSet.hpp
@@ -19,9 +17,7 @@ set(GROUP_HEADERS
 	${CMAKE_SOURCE_DIR}/include/CICheck/task/BashScriptRule.hpp
 )
 set(GROUP_SOURCES
-	${CMAKE_SOURCE_DIR}/src/task/TaskDecl.cpp
-	${CMAKE_SOURCE_DIR}/src/task/AbstractTask.cpp
-	${CMAKE_SOURCE_DIR}/src/task/Task.cpp
+	${CMAKE_SOURCE_DIR}/src/task/ATask.cpp
 	${CMAKE_SOURCE_DIR}/src/task/Target.cpp
 	${CMAKE_SOURCE_DIR}/src/task/AbstractTargetSet.cpp
 	${CMAKE_SOURCE_DIR}/src/task/LinearTargetSet.cpp
