@@ -9,10 +9,34 @@
 #include "TaskProvider.hpp"
 #include <fmt/format.h>
 #include <Poco/String.h>
+#include "task/Task.hpp"
+#include "task/TargetSet.hpp"
+#include <Poco/Path.h>
+#include <Poco/Util/Application.h>
+
+using namespace fmt::literals;
 
 namespace cic
 {
 
+void TaskProvider::init()
+{
+	//TODO: write the normal logger daclator
+	auto& l(
+		Poco::Logger::create(
+				"TaskProvider"
+				, Poco::Logger::get( "Application" ).getChannel()
+		)
+	);
+	l.setLevel( Poco::Logger::get( "Application" ).getLevel() );
+
+	// fill factories
+	auto taskFactory( mFactories.create< Task >() );
+	taskFactory->registerId< Task >( "default" );
+
+	auto tsFactory( mFactories.create< TargetSet >() );
+	tsFactory->registerId< TargetSet >( "default" );
+}
 
 ATask::Ptr TaskProvider::get( const std::string& name )
 {
@@ -29,17 +53,17 @@ ATask::Ptr TaskProvider::get( const std::string& name )
 	return ( mLoaded.at( name ) );
 }
 
-ATask::Ptr TaskProvider::load( const std::string &name )
+Task::Ptr TaskProvider::load( const std::string &name )
 {
-	ATask::Ptr task{ nullptr };
+	Task::Ptr task{ nullptr };
 	for ( auto src : mSources )
 	{
 		DocPtr doc{ fetchDoc( src, mParser) };
-		const Node* tasksRoot = fetchXML( doc, "/tasks", Node::ELEMENT_NODE );
+		const Node* tasksRoot = fetchNode( doc, "/tasks", Node::ELEMENT_NODE );
 
 		if ( tasksRoot == nullptr )
 		{
-			fmt::print( stderr, "[error] no 'tasks' element in '{}';\n", src );
+			logger().error( "Element 'tasks' not found in '{}';\n", src );
 			continue;
 		}
 
@@ -53,11 +77,9 @@ ATask::Ptr TaskProvider::load( const std::string &name )
 			}
 			if ( taskNode->nodeName() != "task" )
 			{
-				fmt::print(
-						stderr
-						, "[error] unknown element '{}' inside 'tasks' in '{}'; ignoring;"
-						, taskNode->nodeName()
-						, src
+				logger().error(
+						"Unexpected element '{}' inside element 'tasks' in '{}';"\
+						" ignoring task;"_format( taskNode->nodeName(), src )
 				);
 				continue;
 			}
@@ -66,18 +88,73 @@ ATask::Ptr TaskProvider::load( const std::string &name )
 			Node* attr{ attrs->getNamedItem( "name" ) };
 			if ( attr == nullptr )
 			{
-				fmt::print(
-						stderr
-						, "[error] 'task' without 'name' in '{}'; ignoring;\n"
-						, src
-			   );
+				logger().error(
+						"Attribute 'name' isnt specified inside element 'task' in '{}';"\
+						" ignoring task;\n"_format( src )
+				);
+				continue;
 			}
 
 			if ( Poco::trim( attr->getNodeValue() ) == name )
 			{
-				fmt::print( "TASK '{}' Is FOUND!\n", name );
+				logger().debug( "Task '{}' declaration is found in '{}';\n"\
+							    ""_format( name, src )
+				);
 
-				//TODO: create and load task!
+				//
+				// creating and loading task starts here!
+				//
+				attr = attrs->getNamedItem( "fileRef" );
+				if ( !attr )
+				{
+					attr = attrs->getNamedItem( "typeId" );
+					std::string typeId;
+					if ( attr )
+					{
+						typeId = attr->getNodeValue();
+					}
+					else
+					{
+						typeId = "default";
+					}
+					task = Task::Ptr( mFactories.get< Task >()->create( typeId ) );
+					task->loadFromXml( taskNode, &mFactories );
+					mLoaded.insert( std::pair< std::string, ATask::Ptr >( name, task ) );
+				}
+				else
+				{
+					Poco::Path fileRef{ attr->getNodeValue() };
+					std::string taskFile;
+					if ( fileRef.isAbsolute() )
+					{
+						taskFile = fileRef.toString();
+					}
+					else
+					{
+						auto& app( Poco::Util::Application::instance() );
+						taskFile = Poco::Path::forDirectory(
+								app.config().getString( "cic.dir.share" )
+						).pushDirectory( "tasks" ).append( fileRef ).toString();
+					}
+
+
+					DocPtr taskDoc = fetchDoc( taskFile, mParser );
+					if ( taskDoc.isNull() )
+					{
+						logger().error( "Can't parse xml from file '{}';"_format( taskFile ) );
+					}
+					else
+					{
+						taskNode = fetchNode( taskDoc.get(), "/task" );
+						attrs = taskNode->attributes();
+						attr = attrs->getNamedItem( "typeId" );
+						std::string typeId{ attr->getNodeValue() };
+						task = Task::Ptr( mFactories.get< Task >()->create( typeId ) );
+						task->setName( name );
+						task->loadFromXml( taskNode, &mFactories );
+						mLoaded.insert( std::pair< std::string, ATask::Ptr >( name, task ) );
+					}
+				}
 
 				break;
 			}

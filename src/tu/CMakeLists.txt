@@ -8,7 +8,7 @@ set( TU_LIB_SOURCES "" )
 # ==================
 set(GROUP_HEADERS
 	${CMAKE_SOURCE_DIR}/include/CICheck/tu/Factory.hpp
-	${CMAKE_SOURCE_DIR}/include/CICheck/tu/ZarFactory.hpp
+	${CMAKE_SOURCE_DIR}/include/CICheck/tu/FactoryOwner.hpp
 )
 set(GROUP_SOURCES
 	${CMAKE_SOURCE_DIR}/src/tu/fake.cpp

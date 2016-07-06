@@ -9,11 +9,13 @@
 #ifndef CICHECK_CICHECK__TASK_PROVIDER_HPP
 #define CICHECK_CICHECK__TASK_PROVIDER_HPP
 
-#include <CICheck/task/ATask.hpp>
+#include "task/Task.hpp"
 #include <vector>
 #include <string>
 #include <map>
 #include <CICheck/xmlu/XMLUtils.hpp>
+#include <CICheck/tu/FactoryOwner.hpp>
+#include <Poco/Logger.h>
 
 using namespace cic::task;
 using namespace cic::xmlu;
@@ -28,6 +30,7 @@ public:
 	TaskProvider() = default;
 	virtual ~TaskProvider() noexcept = default;
 
+	virtual void init();
 	virtual ATask::Ptr get( const std::string& name);
 
 	inline void addSource( const std::string& fileName ) noexcept;
@@ -35,13 +38,15 @@ public:
 	inline const std::vector< std::string >& sources() const noexcept;
 	inline std::vector< std::string >& sources() noexcept;
 
+	inline Poco::Logger& logger() const noexcept;
 protected:
-	virtual ATask::Ptr load( const std::string& name );
+	virtual Task::Ptr load( const std::string& name );
 
 private:
 	std::vector< std::string > mSources;
 	std::map< std::string, task::ATask::Ptr > mLoaded;
 	xmlu::Parser mParser;
+	tu::FactoryOwner mFactories;
 };
 
 // Inliners
@@ -63,6 +68,11 @@ inline const std::vector< std::string >& TaskProvider::sources() const noexcept
 inline std::vector< std::string >& TaskProvider::sources() noexcept
 {
 	return ( mSources );
+}
+
+inline Poco::Logger& TaskProvider::logger() const noexcept
+{
+	return ( Poco::Logger::get( "TaskProvider" ) );
 }
 
 } // namespace cic

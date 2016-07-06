@@ -6,7 +6,7 @@
 //
 //
 
-#include <CICheck/task/AbstractRule.hpp>
+#include <CICheck/task/ARule.hpp>
 
 namespace cic
 {

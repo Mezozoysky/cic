@@ -31,14 +31,14 @@ DocPtr fetchDoc( const std::string& path, Parser& parser )
 	return ( doc );
 }
 
-const Node* fetchXML(
+Node* fetchNode(
 	const Node* root
 	, const std::string& nodePath
 	, unsigned short requiredType
 )
 {
-	if ( !root ) assert( false && "fetchXML: root is NULL!" );
-	const Node* node{ root->getNodeByPath( nodePath ) };
+	if ( !root ) assert( false && "fetchNode: root is NULL!" );
+	Node* node{ root->getNodeByPath( nodePath ) };
 	if ( !node )
 	{
 		fmt::print(
@@ -69,7 +69,7 @@ std::string fetchValue(
 	, const std::string& defaultValue
 )
 {
-	auto node( fetchXML( root, nodePath ) );
+	auto node( fetchNode( root, nodePath ) );
 	if ( !node )
 	{
 		return ( defaultValue );
@@ -81,22 +81,6 @@ std::string fetchValue(
 		return ( defaultValue );
 	}
 	return ( value );
-}
-
-
-void LoadableFromXML::loadFromXMLFile(
-	const std::string& path
-	, Parser& parser
-	, const std::string& nodePath
-)
-{
-	DocPtr doc = fetchDoc( path, parser );
-	if ( doc.isNull() )
-	{
-		throw Exception( "Can't parse file '{}';"_format( path ) );
-	}
-
-	loadFromXML( fetchXML( doc.get(), nodePath ) );
 }
 
 

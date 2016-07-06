@@ -7,9 +7,6 @@
 
 #include <Poco/Util/Application.h>
 #include <memory>
-#include <CICheck/task/BashScriptRule.hpp>
-#include <CICheck/task/AbstractRule.hpp>
-#include <CICheck/tu/Factory.hpp>
 #include "TaskProvider.hpp"
 
 namespace cic
@@ -38,7 +35,6 @@ private:
 	bool mIsColorsOptionRequested;
 
     TaskProvider mTaskProv;
-    tu::Factory< task::AbstractRule > mRuleFactory;
 };
 
 } // namespace cic

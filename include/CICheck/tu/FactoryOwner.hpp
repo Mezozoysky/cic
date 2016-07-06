@@ -1,13 +1,13 @@
 //
-//  ZarFactory.hpp
+//  FactoryOwner.hpp
 //  CICheck
 //
 //  Created by Stanislav Demyanovich on 02.07.16.
 //
 //
 
-#ifndef CICHECK_TU__ZAR_FACTORY_HPP
-#define CICHECK_TU__ZAR_FACTORY_HPP
+#ifndef CICHECK_TU__FACTORY_OWNER_HPP
+#define CICHECK_TU__FACTORY_OWNER_HPP
 
 #include <CICheck/tu/Factory.hpp>
 #include <tktk/typec/TypeMap.hpp>
@@ -18,18 +18,18 @@ namespace cic
 namespace tu
 {
 
-class ZarFactory
+class FactoryOwner
 {
 public:
-	ZarFactory() noexcept = default;
-	ZarFactory( const ZarFactory& ) = delete;
-	virtual ~ZarFactory() noexcept = default;
-	void operator=( const ZarFactory& ) = delete;
+	FactoryOwner() noexcept = default;
+	FactoryOwner( const FactoryOwner& ) = delete;
+	virtual ~FactoryOwner() noexcept = default;
+	void operator=( const FactoryOwner& ) = delete;
 
 	template< typename AbstractionT >
-	std::shared_ptr< Factory< AbstractionT > > createFactory() noexcept
+	std::shared_ptr< Factory< AbstractionT > > create() noexcept
 	{
-		if ( hasFactory< AbstractionT >() )
+		if ( has< AbstractionT >() )
 		{
 			fmt::print(
 				stderr
@@ -52,9 +52,9 @@ public:
 	}
 
 	template< typename AbstractionT >
-	std::shared_ptr< Factory< AbstractionT > > getFactory() const noexcept
+	std::shared_ptr< Factory< AbstractionT > > get() const noexcept
 	{
-		if ( !hasFactory< AbstractionT >() )
+		if ( !( has< AbstractionT >() ) )
 		{
 			return ( nullptr );
 		}
@@ -63,7 +63,7 @@ public:
 	}
 
 	template< typename AbstractionT >
-	inline bool hasFactory() const noexcept
+	inline bool has() const noexcept
 	{
 		return ( mFactories.count< AbstractionT >() );
 	}

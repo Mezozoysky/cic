@@ -6,7 +6,7 @@
 #include <Poco/Util/HelpFormatter.h>
 #include <sstream>
 #include <fmt/format.h>
-#include <CICheck/tu/ZarFactory.hpp>
+#include <CICheck/tu/FactoryOwner.hpp>
 
 #include <Poco/PatternFormatter.h>
 #include <Poco/FormattingChannel.h>
@@ -103,6 +103,7 @@ void Application::initialize( Poco::Util::Application& self )
 	logger.information( "---------------- Start logging ----------------" );
 	logger.debug( "Initializing application .." );
 
+	mTaskProv.init();
 	mTaskProv.addSource(
 			Poco::Path::forDirectory( config().getString( "cic.dir.etc" ) )
 					.setFileName( "cicheck__tasks.xml" )
@@ -189,12 +190,6 @@ int Application::main( const std::vector< std::string >& args )
 			"requested task: '{0}'; requested tgt: '{1}'"_format( taskName, tgtName )
 	);
 
-//	tu::ZarFactory zarFactory;
-//	zarFactory.createFactory< task::AbstractRule >();
-//	auto ruleFactory( zarFactory.getFactory< task::AbstractRule >() );
-//	ruleFactory->registerId< task::BashScriptRule >( "bashScript" );
-//	task::AbstractRule* rptr = ruleFactory->create< task::BashScriptRule >();
-
 	// Load task
 	auto task( mTaskProv.get( taskName ) );
 	if ( task == nullptr )
@@ -205,41 +200,10 @@ int Application::main( const std::vector< std::string >& args )
 		return ( EXIT_CONFIG );
 	}
 
-	// Test for requested target
-//	if ( ! task->getTargetSet()->count( tgtName ) )
-//	{
-//		fmt::print(
-//				   stderr
-//				   , "[fatal] task '{}' has no requested target '{}';\n"\
-//				   "\tterminating;\n"
-//				   , taskName
-//				   , tgtName
-//				   );
-//		return ( EXIT_USAGE );
-//	}
-
-	task->perform( tgtName );
-
-	//Output sequence for requested target
-//	{
-//		const task::AbstractTargetSet::Sequence seq{
-//			task->getTargetSet()->calcSequenceFor( tgtName )
-//		};
-//		fmt::MemoryWriter mw;
-//		mw.write( "\n" );
-//		for ( const auto t: seq )
-//		{
-//			mw.write( "\t'{}'\n", t );
-//		}
-//		fmt::print(
-//			"Sequence for target '{0}': [{1}];\n"
-//			, tgtName
-//			, mw.str()
-//		);
-//	}
-
-//    mRuleFactory.registerId< task::BashScriptRule >( "bashScript" );
-//    task::AbstractRule* rule{ mRuleFactory.create( "bashScript" ) };
+	if ( !task->check( tgtName ) )
+	{
+		//TODO: some onCheckFail
+	}
 
 	return ( EXIT_OK );
 }

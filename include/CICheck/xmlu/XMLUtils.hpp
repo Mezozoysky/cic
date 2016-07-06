@@ -17,6 +17,7 @@
 #include <Poco/SAX/InputSource.h>
 #include <Poco/XML/XMLException.h>
 #include <Poco/AutoPtr.h>
+#include <CICheck/tu/FactoryOwner.hpp>
 
 namespace cic
 {
@@ -35,7 +36,7 @@ using Input = Poco::XML::InputSource;
 
 DocPtr fetchDoc( const std::string& path, Parser& parser );
 
-const Node* fetchXML(
+Node* fetchNode(
 	const Node* root
 	, const std::string& nodePath
 	, unsigned short requiredType = 0 //Node::ELEMENT_NODE
@@ -47,19 +48,13 @@ std::string fetchValue(
 	, const std::string& defaultValue = ""
 );
 
-class LoadableFromXML
+class ALoadableFromXml
 {
 public:
-	LoadableFromXML() noexcept = default;
-	virtual ~LoadableFromXML() noexcept = default;
+	ALoadableFromXml() noexcept = default;
+	virtual ~ALoadableFromXml() noexcept = default;
 
-	virtual void loadFromXML( const Node* node ) = 0;
-
-	virtual void loadFromXMLFile(
-		const std::string& path
-		, Parser& parser
-		, const std::string& nodePath = "/"
-	);
+	virtual void loadFromXml( const Node* root, tu::FactoryOwner* factories ) = 0;
 };
 
 

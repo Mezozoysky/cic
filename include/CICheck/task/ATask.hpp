@@ -9,51 +9,32 @@
 #ifndef CICHECK_TASK__A_TASK_HPP
 #define CICHECK_TASK__A_TASK_HPP
 
+#include <CICheck/task/TaskUnit.hpp>
+#include <CICheck/task/ATargetSet.hpp>
+#include <CICheck/task/ACheckMap.hpp>
 #include <string>
-#include <memory>
-#include <CICheck/task/AbstractTargetSet.hpp>
 
 namespace cic
 {
 namespace task
 {
 
+
 class ATask
-: public std::enable_shared_from_this< ATask >
+: public TaskUnit
 {
 public:
 	using Ptr = std::shared_ptr< ATask >;
 
-	ATask() noexcept = default;
 	virtual ~ATask() noexcept = default;
-	ATask( const ATask& ) = delete;
-	void operator=( const ATask& ) = delete;
 
-	virtual void perform( const std::string& target ) = 0;
+	virtual bool check( const std::string& target ) = 0;
 
-public:
-	inline const std::string& getName() const noexcept;
-
-protected:
-	inline void setName( const std::string& name ) noexcept;
-
-private:
-	std::string mName;
+	virtual const std::string& name() const = 0;
+	virtual ATargetSet::Ptr getTargetSet() const = 0;
+	virtual ACheckMap::Ptr getCheckMap() const = 0;
 };
 
-//
-// Inliners
-//
-
-inline const std::string& ATask::getName() const noexcept
-{
-	return ( mName );
-}
-
-inline void ATask::setName( const std::string& name ) noexcept
-{
-	mName = name;
-}
 
 } // namespace task
 } // namespace cic

@@ -45,6 +45,21 @@ source_group( "cicheck" FILES ${GROUP_HEADERS} ${GROUP_SOURCES} )
 set( CICHECK_HEADERS ${CICHECK_HEADERS} ${GROUP_HEADERS} )
 set( CICHECK_SOURCES ${CICHECK_SOURCES} ${GROUP_SOURCES} )
 
+# ============================
+# ==== cicheck/task group ====
+# ============================
+set(GROUP_HEADERS
+    ${CMAKE_SOURCE_DIR}/src/cicheck/task/Task.hpp
+    ${CMAKE_SOURCE_DIR}/src/cicheck/task/TargetSet.hpp
+)
+set(GROUP_SOURCES
+    ${CMAKE_SOURCE_DIR}/src/cicheck/task/Task.cpp
+    ${CMAKE_SOURCE_DIR}/src/cicheck/task/TargetSet.cpp
+)
+source_group( "cicheck\\task" FILES ${GROUP_HEADERS} ${GROUP_SOURCES} )
+set( CICHECK_HEADERS ${CICHECK_HEADERS} ${GROUP_HEADERS} )
+set( CICHECK_SOURCES ${CICHECK_SOURCES} ${GROUP_SOURCES} )
+
 add_executable( cicheck WIN32 #MACOSX_BUNDLE
     ${CICHECK_HEADERS}
     ${CICHECK_SOURCES}

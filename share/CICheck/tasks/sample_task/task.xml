@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<task typeId="check">
+<task name="sample_task" typeId="default">
 
 	<!-- Description section -->
 	<description>Task for testing cicheck features. The first task for cicheck.
@@ -7,10 +7,11 @@ This task uses default target set: clean, configure, build, buildtests, runtests
 	</description>
 
 	<!-- TargetSet section -->
-	<targetSet typeId="linear">
+	<targetSet typeId="default" default="build">
 		<target name="clean" />
 		<target name="configure" />
 		<target name="build" />
+		<!--<default value="build" />-->
 	</targetSet>
 	<!-- imaginary typeId="depTree" TargetSet XML declaration -->
 	<!--
