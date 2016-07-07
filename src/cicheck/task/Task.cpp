@@ -18,7 +18,12 @@ namespace cic
 bool Task::check( const std::string &target )
 {
 	fmt::print( "TASK CHECK!\n" );
-	return ( mCheckMap->check( mTargetSet->calcSequenceFor( target ) ) );
+	if ( mTargetSet == nullptr ) throw "NO TARGET SET IN TASK!";
+	if ( mCheckMap == nullptr ) throw "NO CHECK MAP IN TASK!";
+	std::vector< std::string > seq{ mTargetSet->calcSequenceFor( target ) };
+	bool result{ false };
+	result = mCheckMap->check( seq );
+	return ( result );
 }
 
 void Task::loadFromXml( const Node *root, tu::FactoryOwner *factories )
