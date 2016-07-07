@@ -19,7 +19,7 @@ namespace cic
 
 bool CheckMap::check( const std::vector< std::string >& sequence )
 {
-	fmt::print( "CHECK MAP CHECK!\nSEQUENCE: {}", sequence.size() );
+	fmt::print( "CHECK MAP CHECK with SEQUENCE: {}\n", sequence.size() );
 	bool result{ true };
 	for ( auto tgt : sequence )
 	{

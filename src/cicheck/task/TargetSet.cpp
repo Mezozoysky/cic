@@ -16,7 +16,7 @@ namespace cic
 {
 
 
-std::vector< std::string >&& TargetSet::calcSequenceFor( const std::string& targetName ) const
+std::vector< std::string > TargetSet::calcSequenceFor( const std::string& targetName ) const
 {
 	std::vector< std::string > seq;
 
@@ -29,7 +29,7 @@ std::vector< std::string >&& TargetSet::calcSequenceFor( const std::string& targ
 			seq.push_back( mTargets.at( i ) );
 		}
 	}
-	return ( std::move( seq ) );
+	return ( seq );
 }
 
 void TargetSet::loadFromXml( const xmlu::Node* root, tu::FactoryOwner* factories )

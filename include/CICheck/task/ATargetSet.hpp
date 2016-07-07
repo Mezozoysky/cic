@@ -29,7 +29,7 @@ public:
 
 	virtual ~ATargetSet() noexcept = default;
 
-	virtual std::vector< std::string >&& calcSequenceFor( const std::string& targetName ) const = 0;
+	virtual std::vector< std::string > calcSequenceFor( const std::string& targetName ) const = 0;
 
 	virtual std::size_t getSize() const = 0;
 	virtual std::size_t getIndexFor( const std::string& targetName ) const = 0;

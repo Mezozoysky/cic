@@ -30,7 +30,7 @@ public:
 	TargetSet( const TargetSet& other ) = delete;
 	void operator=( const TargetSet& other ) = delete;
 
-	virtual std::vector< std::string >&& calcSequenceFor( const std::string& targetName ) const override;
+	virtual std::vector< std::string > calcSequenceFor( const std::string& targetName ) const override;
 	virtual void loadFromXml( const xmlu::Node* root, tu::FactoryOwner* factories ) override;
 
 	virtual std::size_t getSize() const override;
