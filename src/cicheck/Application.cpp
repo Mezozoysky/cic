@@ -202,7 +202,12 @@ int Application::main( const std::vector< std::string >& args )
 
 	if ( !task->check( tgtName ) )
 	{
+		logger().information( "CHECK FAILED!\n" );
 		//TODO: some onCheckFail
+	}
+	else
+	{
+		logger().information( "CHECK SUCCESSFULL!\n" );
 	}
 
 	return ( EXIT_OK );
