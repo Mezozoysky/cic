@@ -17,5 +17,10 @@ bool FailureRule::check()
 	return ( false );
 }
 
+void FailureRule::loadFromXml( const xmlu::Node* root, tu::FactoryOwner* factories )
+{
+	// Do nothing
+}
+
 
 } // namespace cic
