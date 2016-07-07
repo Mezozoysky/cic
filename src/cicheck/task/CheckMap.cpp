@@ -7,6 +7,7 @@
 //
 
 #include "CheckMap.hpp"
+#include <Poco/String.h>
 
 
 using namespace cic::task;
@@ -18,7 +19,7 @@ namespace cic
 
 bool CheckMap::check( const std::vector< std::string >& sequence )
 {
-	fmt::print( "CHECK MAP CHECK!" );
+	fmt::print( "CHECK MAP CHECK!\nSEQUENCE: {}", sequence.size() );
 	bool result{ true };
 	for ( auto tgt : sequence )
 	{
@@ -35,8 +36,6 @@ void CheckMap::loadFromXml( const Node* root, tu::FactoryOwner* factories )
 {
 	fmt::print( "CHECK MAP LOAD FROM XML!\n" );
 	NodeMap* rootAttrs{ root->attributes() };
-
-//!!!ERROR development stopped here
 
 	// load targets
 	NodeList* list{ root->childNodes() };
@@ -69,19 +68,39 @@ void CheckMap::loadFromXml( const Node* root, tu::FactoryOwner* factories )
 			continue;
 		}
 
-		std::string target{ attr->getNodeValue() };
+		std::string key{ Poco::trim( attr->getNodeValue() ) };
+		RuleSet::Ptr val{ nullptr };
 
 		Node* rsNode{ fetchNode( node, "/ruleSet" ) };
-		if ( !node )
+		if ( !rsNode )
 		{
 			fmt::print( "RULE SET NOT FOUND!\n" );
 		}
 		else
 		{
 			fmt::print( "RULE SET FOUND!\n" );
+			attrs = rsNode->attributes();
+
+			std::string typeId = "default";
+			if ( attrs )
+			{
+				attr = attrs->getNamedItem( "typeId" );
+				std::string typeId;
+				if ( attr )
+				{
+					typeId = attr->getNodeValue();
+				}
+			}
+			fmt::print( "RULE SET TYPEID: '{}'\n", typeId );
+			val = RuleSet::Ptr( factories->get< RuleSet >()->create( typeId ) );
+			val->loadFromXml( rsNode, factories );
+
 		}
 
-		//TODO: get typeId, create and load
+		if ( !key.empty() && val != nullptr && val->getSize() != 0 )
+		{
+			mRulesets.insert( std::pair< std::string, RuleSet::Ptr >( key, val ) );
+		}
 	}
 
 
