@@ -119,18 +119,14 @@ Task::Ptr TaskProvider::load( const std::string &name )
 				//
 				// creating and loading task starts here!
 				//
+				std::string typeId{ "default" };
 				attr = attrs->getNamedItem( "fileRef" );
 				if ( !attr )
 				{
 					attr = attrs->getNamedItem( "typeId" );
-					std::string typeId;
 					if ( attr )
 					{
 						typeId = attr->getNodeValue();
-					}
-					else
-					{
-						typeId = "default";
 					}
 					task = Task::Ptr( mFactories.get< Task >()->create( typeId ) );
 					task->loadFromXml( taskNode, &mFactories );
@@ -161,9 +157,13 @@ Task::Ptr TaskProvider::load( const std::string &name )
 					else
 					{
 						taskNode = fetchNode( taskDoc.get(), "/task" );
+						if ( taskNode )
 						attrs = taskNode->attributes();
 						attr = attrs->getNamedItem( "typeId" );
-						std::string typeId{ attr->getNodeValue() };
+						if ( attr )
+						{
+							typeId = attr->getNodeValue();
+						}
 						task = Task::Ptr( mFactories.get< Task >()->create( typeId ) );
 						task->setName( name );
 						task->loadFromXml( taskNode, &mFactories );
