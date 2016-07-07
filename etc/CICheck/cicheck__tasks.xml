@@ -3,7 +3,7 @@
 	<task name="task_rel" path="rel_path/task_rel" />
 	<task name="task_abs" path="/Users/mezozoy/tmp/task_abs" />
 	<task name="sample_task" fileRef="sample_task/task.xml" />
-	<task name="zzz" fileRef="Users/mezozoy/tmp/zzz/task.xml" />
+	<task name="zzz" fileRef="/Users/mezozoy/tmp/zzz/task.xml" />
 </tasks>
 
 <!--
