@@ -18,7 +18,7 @@ namespace cic
 bool Task::check( const std::string &target )
 {
 	fmt::print( "TASK CHECK!\n" );
-	return ( false );
+	return ( mCheckMap->check( mTargetSet->calcSequenceFor( target ) ) );
 }
 
 void Task::loadFromXml( const Node *root, tu::FactoryOwner *factories )
@@ -76,16 +76,41 @@ void Task::loadFromXml( const Node *root, tu::FactoryOwner *factories )
 			{
 				typeId = attr->getNodeValue();
 			}
-			else
-			{
-				typeId = "default";
-			}
 		}
 		fmt::print( "TARGET SET TYPEID: '{}'\n", typeId );
 		auto ts = TargetSet::Ptr( factories->get< TargetSet >()->create( typeId ) );
 		ts->loadFromXml( node, factories );
 
 		mTargetSet = ts;
+	}
+
+	// checkMap
+	node = fetchNode( root, "/checkMap" );
+	if ( !node )
+	{
+		fmt::print( "CHECK MAP NOT FOUND!\n" );
+		//TODO: throw here?
+	}
+	else
+	{
+		fmt::print( "CHECK MAP FOUND!\n" );
+		attrs = node->attributes();
+
+		std::string typeId = "default";
+		if ( attrs )
+		{
+			attr = attrs->getNamedItem( "typeId" );
+			std::string typeId;
+			if ( attr )
+			{
+				typeId = attr->getNodeValue();
+			}
+		}
+		fmt::print( "CHECK MAP TYPEID: '{}'\n", typeId );
+		auto cm = CheckMap::Ptr( factories->get< CheckMap >()->create( typeId ) );
+		cm->loadFromXml( node, factories );
+
+		mCheckMap = cm;
 	}
 }
 	
@@ -115,7 +140,7 @@ ACheckMap::Ptr Task::getCheckMap() const
 	return ( mCheckMap );
 }
 
-void Task::setCheckMap( const ACheckMap::Ptr& cm )
+void Task::setCheckMap( const CheckMap::Ptr& cm )
 {
 	mCheckMap = cm;
 }

@@ -28,8 +28,8 @@ public:
 
 	virtual bool check() = 0;
 
-	virtual const std::string& name() const noexcept = 0;
-	virtual const std::vector< ARule::Ptr >& rules() const noexcept = 0;
+	virtual const std::string& name() const = 0;
+	virtual const std::vector< ARule::Ptr >& rules() const = 0;
 
 };
 

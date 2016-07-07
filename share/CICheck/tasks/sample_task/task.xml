@@ -45,33 +45,33 @@ This task uses default target set: clean, configure, build, buildtests, runtests
 
 
 	<!--// CheckList section //-->
-	<checkMap typeId="">
+	<checkMap typeId="default">
 		<check target="clean">
-			<ruleset>
+			<ruleSet>
 				<rule name="remove_artefacts" type="bashScript" file="bashScripts/target_clean__remove_artefacts.bash" />
 				<rule name="remove_project" type="bashScript" file="bashScripts/target_clean__remove_project.bash" />
-			</ruleset>
+			</ruleSet>
 		</check>
 		<check target="configure" >
-			<ruleset>
+			<ruleSet>
 				<rule name="update_assets" type="bashScript" file="bashScripts/rule_configure__update_assets.bash" />
 				<rule name="generate_project" type="bashScript" file="bashScripts/rule_configure__generate_project.bash" />
-			</ruleset>
+			</ruleSet>
 		</check>
 		<check target="build">
-			<ruleset>
+			<ruleSet>
 				<rule name="application" type="bashScript" file="bashScripts/rule_build__application.bash" />
-			</ruleset>
+			</ruleSet>
 		</check>
 		<check target="buildtests">
-			<ruleset>
+			<ruleSet>
 				<rule name="app_tests" type="bashScript" file="bashScripts/rule_buildtests__app_tests.bash" />
-			</ruleset>
+			</ruleSet>
 		</check>
 		<check target="runtests">
-			<ruleset>
+			<ruleSet>
 				<rule name="app_tests" type="bashScript" file="bashScripts/rule_runtests__app_tests.bash" />
-			</ruleset>
+			</ruleSet>
 		</check>
 	</checkMap>
 </task>

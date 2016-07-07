@@ -12,6 +12,7 @@
 #include <CICheck/task/ATask.hpp>
 #include <CICheck/xmlu/XMLUtils.hpp>
 #include "TargetSet.hpp"
+#include "CheckMap.hpp"
 #include <string>
 #include <memory>
 
@@ -40,11 +41,12 @@ public:
 	virtual task::ATargetSet::Ptr getTargetSet() const override;
 	virtual void setTargetSet( const TargetSet::Ptr& ts );
 	virtual task::ACheckMap::Ptr getCheckMap() const override;
-	virtual void setCheckMap( const task::ACheckMap::Ptr& cm );
+	virtual void setCheckMap( const CheckMap::Ptr& cm );
+
 protected:
 	std::string mName;
 	TargetSet::Ptr mTargetSet;
-	task::ACheckMap::Ptr mCheckMap;
+	CheckMap::Ptr mCheckMap;
 };
 
 

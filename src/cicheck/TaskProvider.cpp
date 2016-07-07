@@ -11,6 +11,11 @@
 #include <Poco/String.h>
 #include "task/Task.hpp"
 #include "task/TargetSet.hpp"
+#include "task/CheckMap.hpp"
+#include "task/RuleSet.hpp"
+#include "task/RuleBase.hpp"
+#include "task/SuccessRule.hpp"
+#include "task/FailureRule.hpp"
 #include <Poco/Path.h>
 #include <Poco/Util/Application.h>
 
@@ -36,6 +41,16 @@ void TaskProvider::init()
 
 	auto tsFactory( mFactories.create< TargetSet >() );
 	tsFactory->registerId< TargetSet >( "default" );
+
+	auto cmFactory( mFactories.create< CheckMap >() );
+	cmFactory->registerId< CheckMap >( "default" );
+
+	auto rsFactory( mFactories.create< RuleSet >() );
+	rsFactory->registerId< RuleSet >( "default" );
+
+	auto ruleFactory( mFactories.create< RuleBase >() );
+	ruleFactory->registerId< SuccessRule >( "success" );
+	ruleFactory->registerId< FailureRule >( "failure" );
 }
 
 ATask::Ptr TaskProvider::get( const std::string& name )
