@@ -56,6 +56,7 @@ set(GROUP_HEADERS
 	${CMAKE_SOURCE_DIR}/src/cicheck/task/RuleBase.hpp
 	${CMAKE_SOURCE_DIR}/src/cicheck/task/SuccessRule.hpp
 	${CMAKE_SOURCE_DIR}/src/cicheck/task/FailureRule.hpp
+	${CMAKE_SOURCE_DIR}/src/cicheck/task/SystemCmdRule.hpp
 )
 set(GROUP_SOURCES
 	${CMAKE_SOURCE_DIR}/src/cicheck/task/Task.cpp
@@ -65,6 +66,7 @@ set(GROUP_SOURCES
 	${CMAKE_SOURCE_DIR}/src/cicheck/task/RuleBase.cpp
 	${CMAKE_SOURCE_DIR}/src/cicheck/task/SuccessRule.cpp
 	${CMAKE_SOURCE_DIR}/src/cicheck/task/FailureRule.cpp
+	${CMAKE_SOURCE_DIR}/src/cicheck/task/SystemCmdRule.cpp
 )
 source_group( "cicheck\\task" FILES ${GROUP_HEADERS} ${GROUP_SOURCES} )
 set( CICHECK_HEADERS ${CICHECK_HEADERS} ${GROUP_HEADERS} )

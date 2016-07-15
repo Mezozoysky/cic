@@ -16,6 +16,7 @@
 #include "task/RuleBase.hpp"
 #include "task/SuccessRule.hpp"
 #include "task/FailureRule.hpp"
+#include "task/SystemCmdRule.hpp"
 #include <Poco/Path.h>
 #include <Poco/Util/Application.h>
 
@@ -51,6 +52,7 @@ void TaskProvider::init()
 	auto ruleFactory( mFactories.create< RuleBase >() );
 	ruleFactory->registerId< SuccessRule >( "success" );
 	ruleFactory->registerId< FailureRule >( "failure" );
+	ruleFactory->registerId< SystemCmdRule >( "systemCmd" );
 }
 
 ATask::Ptr TaskProvider::get( const std::string& name )
