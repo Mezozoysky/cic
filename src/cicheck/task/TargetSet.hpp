@@ -25,7 +25,7 @@ class TargetSet
 public:
 	using Ptr = std::shared_ptr< TargetSet >;
 
-	TargetSet() noexcept = default;
+	TargetSet() = default;
 	virtual ~TargetSet() noexcept = default;
 	TargetSet( const TargetSet& other ) = delete;
 	void operator=( const TargetSet& other ) = delete;

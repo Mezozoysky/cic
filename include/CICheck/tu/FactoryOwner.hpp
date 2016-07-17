@@ -21,7 +21,7 @@ namespace tu
 class FactoryOwner
 {
 public:
-	FactoryOwner() noexcept = default;
+	FactoryOwner() = default;
 	FactoryOwner( const FactoryOwner& ) = delete;
 	virtual ~FactoryOwner() noexcept = default;
 	void operator=( const FactoryOwner& ) = delete;
@@ -41,7 +41,7 @@ public:
 			return ( nullptr );
 		}
 
-		auto factory{ std::make_shared< Factory< AbstractionT > >() };
+		auto factory( std::make_shared< Factory< AbstractionT > >() );
 
 		if ( factory != nullptr )
 		{

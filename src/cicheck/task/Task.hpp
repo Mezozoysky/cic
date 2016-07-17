@@ -28,7 +28,7 @@ class Task
 public:
 	using Ptr = std::shared_ptr< Task >;
 
-	Task() noexcept = default;
+	Task() = default;
 	virtual ~Task() noexcept = default;
 	Task( const Task& ) = delete;
 	void operator=( const Task& ) = delete;

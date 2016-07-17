@@ -37,7 +37,7 @@ private:
 public:
 	using Id = IdT;
 
-	Factory() noexcept = default;
+	Factory() = default;
 	Factory( const Factory& ) = delete;
 	virtual ~Factory() noexcept = default;
 	void operator=( const Factory& ) = delete;
