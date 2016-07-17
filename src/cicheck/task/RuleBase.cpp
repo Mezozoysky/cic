@@ -11,12 +11,7 @@
 namespace cic
 {
 
-const std::string& RuleBase::name() const
-{
-	return ( mName );
-}
-
-void RuleBase::setName( const std::string& name )
+void RuleBase::setName( const std::string& name ) noexcept
 {
 	mName = name;
 }

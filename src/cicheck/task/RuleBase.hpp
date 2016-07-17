@@ -27,12 +27,7 @@ public:
 	virtual ~RuleBase() noexcept = default;
 
 public:
-
-	virtual const std::string& name() const override;
-	virtual void setName( const std::string& name );
-
-protected:
-	std::string mName;
+	virtual void setName( const std::string& name ) noexcept;
 };
 
 

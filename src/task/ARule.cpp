@@ -13,6 +13,10 @@ namespace cic
 namespace task
 {
 
+const std::string& ARule::name() const noexcept
+{
+	return ( mName );
+}
 
 } // namespace task
 } // namespace cic
