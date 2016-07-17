@@ -15,21 +15,6 @@ using namespace cic::xmlu;
 namespace cic
 {
 
-
-bool RuleSet::check()
-{
-	bool result{ true };
-	for ( const auto& rule: mRules )
-	{
-		if ( !rule->check() )
-		{
-			result = false;
-			break;
-		}
-	}
-	return ( result );
-}
-
 void RuleSet::loadFromXml( const xmlu::Node* root, tu::FactoryOwner* factories )
 {
 	fmt::print( "RULE SET LOAD FROM XML!\n" );
@@ -73,24 +58,9 @@ void RuleSet::loadFromXml( const xmlu::Node* root, tu::FactoryOwner* factories )
 	}
 }
 
-const std::string& RuleSet::name() const
-{
-	return ( mName );
-}
-
 void RuleSet::setName( const std::string& name ) noexcept
 {
 	mName = name;
-}
-
-std::size_t RuleSet::getSize() const
-{
-	return ( mRules.size() );
-}
-
-const std::vector< ARule::Ptr >& RuleSet::rules() const
-{
-	return ( mRules );
 }
 
 

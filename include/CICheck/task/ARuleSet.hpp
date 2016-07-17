@@ -26,12 +26,15 @@ public:
 
 	virtual ~ARuleSet() noexcept = default;
 
-	virtual bool check() = 0;
+	virtual bool check();
 
-	virtual const std::string& name() const = 0;
-	virtual std::size_t getSize() const = 0;
-	virtual const std::vector< ARule::Ptr >& rules() const = 0;
+	virtual const std::string& name() const noexcept;
+	virtual std::size_t getSize() const noexcept;
+	virtual const std::vector< ARule::Ptr >& rules() const noexcept;
 
+protected:
+	std::string mName;
+	std::vector< task::ARule::Ptr > mRules;
 };
 
 

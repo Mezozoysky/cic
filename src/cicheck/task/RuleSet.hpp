@@ -29,13 +29,9 @@ public:
 	virtual ~RuleSet() noexcept = default;
 
 public:
-	virtual bool check() override;
 	virtual void loadFromXml( const xmlu::Node* root, tu::FactoryOwner* factories ) override;
 
-	virtual const std::string& name() const override;
 	virtual void setName( const std::string& name ) noexcept;
-	virtual std::size_t getSize() const override;
-	virtual const std::vector< task::ARule::Ptr >& rules() const override;
 
 protected:
 	std::string mName;
