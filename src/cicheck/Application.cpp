@@ -24,6 +24,7 @@ namespace cic
 Application::Application()
 : Util::Application()
 , mIsHelpOptionRequested{ false }
+, mIsColorsOptionRequested{ false }
 {
 }
 
