@@ -63,24 +63,24 @@ Node* fetchNode(
 	return ( node );
 }
 
-std::string fetchValue(
+std::string fetchText(
 	const Node* root
-	, const std::string& nodePath
-	, const std::string& defaultValue
 )
 {
-	auto node( fetchNode( root, nodePath ) );
-	if ( !node )
-	{
-		return ( defaultValue );
-	}
+	fmt::MemoryWriter text;
 
-	std::string value{ node->getNodeValue() };
-	if ( value.empty() )
+	if ( root )
 	{
-		return ( defaultValue );
+		NodeList* nodes{ root->childNodes() };
+		for ( std::size_t i{ 0 }; i < nodes->length(); ++i )
+		{
+			if ( nodes->item( i )->nodeType() == Node::TEXT_NODE )
+			{
+				text.write( nodes->item( i )->nodeValue() );
+			}
+		}
 	}
-	return ( value );
+	return ( text.str() );
 }
 
 

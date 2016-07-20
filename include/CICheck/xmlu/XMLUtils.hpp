@@ -42,10 +42,8 @@ Node* fetchNode(
 	, unsigned short requiredType = 0 //Node::ELEMENT_NODE
 );
 
-std::string fetchValue(
+std::string fetchText(
 	const Node* root
-	, const std::string& nodePath
-	, const std::string& defaultValue = ""
 );
 
 class ALoadableFromXml
