@@ -8,6 +8,8 @@
 
 #include "RuleSet.hpp"
 #include <Poco/String.h>
+#include <Poco/Exception.h>
+#include <Poco/Util/Application.h>
 
 using namespace cic::task;
 using namespace cic::xmlu;
@@ -45,7 +47,11 @@ void RuleSet::loadFromXml( const xmlu::Node* root, tu::FactoryOwner* factories )
 		Node* attr{ attrs->getNamedItem( "typeId" ) };
 		if ( !attr )
 		{
-			throw ( "'ruleSet' element without 'typeId' attribute;" );
+			throw
+				Poco::SyntaxException{
+					"'rule' element without 'typeId' attribute;"
+					, Poco::Util::Application::EXIT_DATAERR
+				};
 		}
 		else
 		{
