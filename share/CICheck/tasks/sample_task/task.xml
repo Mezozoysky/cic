@@ -2,43 +2,72 @@
 <task name="sample_task" typeId="default">
 
 	<!-- Description section -->
-	<description>Task for testing cicheck features. The first task for cicheck.
+	<description>
+Task for testing cicheck features. The first task for cicheck.
 This task uses default target set: clean, configure, build, buildtests, runtests.
 	</description>
 
 	<!-- TargetSet section -->
-	<targetSet typeId="default" default="build">
+	<!--
+	<targetSet typeId="default" default="help">
 		<target name="clean" />
 		<target name="configure" />
 		<target name="build" />
-		<!--<default value="build" />-->
-	</targetSet>
-	<!-- imaginary typeId="depTree" TargetSet XML declaration -->
-	<!--
-	<targetSet typeId="depTree">
-		<target name="clean" />
-		<target name="configure" />
-			<depends>
-				<value>clean</value>
-			</depends>
-		</target>
-		<target name="build">
-			<depends>
-				<value>configure</value>
-			</depends>
-		</target>
-		<target name="buildtests">
-			<depends>
-				<value>build</value>
-			</depends>
-		</target>
-		<target name="runtests">
-			<depends>
-				<value>buildtests</value>
-			</depends>
-		</target>
 	</targetSet>
 	-->
+	<targetSet typeId="default">
+		<target name="help">
+			<rules>
+				<rule name="print_help" typeId="systemCmd" cmd="echo" options="target_help__print_help" />
+			</rules>
+		</target>
+		<target name="clean">
+			<rules>
+				<rule name="remove_artefacts" typeId="systemCmd" cmd="echo" options="target_clean__remove_artefacts" />
+				<rule name="remove_project" typeId="systemCmd" cmd="echo" options="target_clean__remove_project" />
+			</rules>
+		</target>
+		<target name="conf_a">
+			<dependencies>
+				<value>clean</value>
+			</dependencies>
+		</target>
+		<target name="conf_b">
+			<dependency value="clean" />
+		</target>
+		<target name="conf_c">
+			<dependencies>
+				<value>clean</value>
+			</dependencies>
+		</target>
+		<target name="configure">
+			<dependencies>
+				<value>conf_a</value>
+				<value>conf_b</value>
+				<value>conf_c</value>
+			</dependencies>
+		</target>
+		<target name="build_lib">
+			<dependency value="configure" />
+		</target>
+		<target name="build_app">
+			<dependency value="configure" />
+			<dependency value="build_lib" />
+		</target>
+		<target name="build_all">
+			<dependency value="build_lib" />
+			<dependency value="build_app" />
+		</target>
+		<target name="build_tests">
+			<dependency value="build_lib" />
+		</target>
+		<target name="run_app">
+			<dependency value="build_app" />
+		</target>
+		<target name="run_tests">
+			<dependency value="build_tests" />
+		</target>
+	</targetSet>
 
 	<!-- imaginary typeId="single" TargetSet (with one "default" target) XML declaration -->
 	<!-- <targetSet typeId="single"> -->
@@ -46,12 +75,18 @@ This task uses default target set: clean, configure, build, buildtests, runtests
 
 	<!--// CheckList section //-->
 	<checkMap typeId="default">
-		<check target="clean">
+		<check target="help">
 			<ruleSet>
-				<rule name="remove_artefacts" type="bashScript" file="bashScripts/target_clean__remove_artefacts.bash" />
-				<rule name="remove_project" type="bashScript" file="bashScripts/target_clean__remove_project.bash" />
+				<rule name="print_help" typeId="systemCmd" cmd="echo" options="target_help__print_help" />
 			</ruleSet>
 		</check>
+		<check target="clean">
+			<ruleSet>
+				<rule name="remove_artefacts" typeId="systemCmd" cmd="echo" options="target_clean__remove_artefacts" />
+				<rule name="remove_project" typeId="systemCmd" cmd="echo" options="target_clean__remove_project" />
+			</ruleSet>
+		</check>
+	<!--
 		<check target="configure" >
 			<ruleSet>
 				<rule name="update_assets" type="bashScript" file="bashScripts/rule_configure__update_assets.bash" />
@@ -73,5 +108,6 @@ This task uses default target set: clean, configure, build, buildtests, runtests
 				<rule name="app_tests" type="bashScript" file="bashScripts/rule_runtests__app_tests.bash" />
 			</ruleSet>
 		</check>
+	-->
 	</checkMap>
 </task>

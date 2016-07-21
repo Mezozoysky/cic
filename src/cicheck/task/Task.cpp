@@ -19,10 +19,10 @@ bool Task::check( const std::string &target )
 {
 	fmt::print( "TASK CHECK!\n" );
 	if ( mTargetSet == nullptr ) throw "NO TARGET SET IN TASK!";
-	if ( mCheckMap == nullptr ) throw "NO CHECK MAP IN TASK!";
-	std::vector< std::string > seq{ mTargetSet->calcSequenceFor( target ) };
+// 	if ( mCheckMap == nullptr ) throw "NO CHECK MAP IN TASK!";
+// 	std::vector< std::string > seq{ mTargetSet->calcSequenceFor( target ) };
 	bool result{ false };
-	result = mCheckMap->check( seq );
+	result = mTargetSet->check( target );
 	return ( result );
 }
 
