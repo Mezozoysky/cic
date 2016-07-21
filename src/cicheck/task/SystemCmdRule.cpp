@@ -11,6 +11,7 @@
 #include <Poco/PipeStream.h>
 #include <Poco/StreamCopier.h>
 #include <fstream>
+#include <Poco/Exception.h>
 
 using namespace cic::task;
 using namespace cic::xmlu;
@@ -23,11 +24,8 @@ namespace cic
 
 bool SystemCmdRule::check()
 {
+	fmt::print( "SYSTEM CMD RULE {} CHECKS!\n", mName );
 	std::vector< std::string > opts;
-	if ( mCmd.empty() )
-	{
-		throw ( "[error] systemCmdRule's cmd is empty;" );
-	}
 
 	if ( !mOptions.empty() )
 	{
@@ -42,7 +40,7 @@ bool SystemCmdRule::check()
 			Process::launch(
 					mCmd
 					, opts
-					, "/Users/mezozoy/tmp"
+					, "/home/mezozoy/tmp"
 					, nullptr
 					, &outPipe
 					, &errPipe
