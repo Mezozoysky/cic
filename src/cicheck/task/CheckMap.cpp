@@ -19,10 +19,28 @@ namespace cic
 
 bool CheckMap::check( const std::vector< std::string >& sequence )
 {
-	fmt::print( "CHECK MAP CHECK with SEQUENCE: {}\n", sequence.size() );
+	fmt::MemoryWriter w;
+	w.write( "CHECK MAP CHECK with SEQUENCE[{}]: [", sequence.size() );
+	for ( const auto& tgt : sequence )
+	{
+		w.write( " '{}'", tgt );
+	}
+	w.write( " ];\n" );
+	fmt::print( w.str() );
+
 	bool result{ true };
 	for ( auto tgt : sequence )
 	{
+		if ( !mRulesets.count( tgt ) )
+		{
+			fmt::print(
+					stderr
+					, "[notice] no rules for target '{}';"\
+					  " interpreting as successfull check;\n"
+					, tgt
+			);
+			continue;
+		}
 		if ( !mRulesets.at( tgt )->check() )
 		{
 			result = false;
