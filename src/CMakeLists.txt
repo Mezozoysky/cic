@@ -27,10 +27,14 @@ if( CIC_BUILD_TASK_LIB OR CIC_BUILD_CICHECK )
 	add_subdirectory( task )
 endif()
 
-if( CIC_BUILD_GOAL_LIB OR CIC_BUILD_CICHECK )
+if( CIC_BUILD_GOAL_LIB OR CIC_BUILD_CICHECK OR CIC_BUILD_CHECK )
 	add_subdirectory( goal )
 endif()
 
 if( CIC_BUILD_CICHECK )
 	add_subdirectory( cicheck )
+endif()
+
+if( CIC_BUILD_CHECK )
+	add_subdirectory( check )
 endif()

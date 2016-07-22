@@ -15,6 +15,7 @@ option( CIC_BUILD_XMLU_LIB "Build cic-xmlu library"  ON )
 option( CIC_BUILD_TASK_LIB "Build cic-task library"  ON )
 option( CIC_BUILD_GOAL_LIB "Build cic-goal library"  ON )
 option( CIC_BUILD_CICHECK "Build cicheck tool"  ON )
+option( CIC_BUILD_CHECK "Build cic-check tool"  ON )
 
 set( Poco_DIR "${CMAKE_SOURCE_DIR}/deps/" CACHE PATH "Directory containing Poco libraries and includes" )
 set( FMT_DIR "${CMAKE_SOURCE_DIR}/deps/" CACHE PATH "Deractory containing FMT library and includes" )
