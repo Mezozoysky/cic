@@ -1,42 +1,44 @@
 # goal lib
 
-set( GOAL_LIB_PREFIX ${CMAKE_SOURCE_DIR}/src/goal )
-set( GOAL_LIB_HEADERS_ROOT ${GOAL_LIB_PREFIX}/include/CICheck/goal )
-set( GOAL_LIB_SOURCES_ROOT ${GOAL_LIB_PREFIX}/src )
+set( LIB_NAME "cic-goal" )
 
-include_directories( ${GOAL_LIB_PREFIX}/include )
+set( LIB_SRCTREE_ROOT ${CMAKE_SOURCE_DIR}/src/goal )
+set( LIB_HEADERS_ROOT ${LIB_SRCTREE_ROOT}/include/CICheck/goal )
+set( LIB_SOURCES_ROOT ${LIB_SRCTREE_ROOT}/src )
 
-set( GOAL_LIB_HEADERS "" )
-set( GOAL_LIB_SOURCES "" )
+include_directories( ${LIB_SRCTREE_ROOT}/include )
+
+set( LIB_HEADERS "" )
+set( LIB_SOURCES "" )
 
 # ====================
 # ==== goal group ====
 # ====================
 set(GROUP_HEADERS
-	${GOAL_LIB_HEADERS_ROOT}/Goal.hpp
-	${GOAL_LIB_HEADERS_ROOT}/ARule.hpp
+	${LIB_HEADERS_ROOT}/Goal.hpp
+	${LIB_HEADERS_ROOT}/ARule.hpp
 )
 set(GROUP_SOURCES
-	${GOAL_LIB_SOURCES_ROOT}/Goal.cpp
-	${GOAL_LIB_SOURCES_ROOT}/ARule.cpp
+	${LIB_SOURCES_ROOT}/Goal.cpp
+	${LIB_SOURCES_ROOT}/ARule.cpp
 )
 source_group( "goal" FILES ${GROUP_HEADERS} ${GROUP_SOURCES} )
-set( GOAL_LIB_HEADERS ${GOAL_LIB_HEADERS} ${GROUP_HEADERS} )
-set( GOAL_LIB_SOURCES ${GOAL_LIB_SOURCES} ${GROUP_SOURCES} )
+set( LIB_HEADERS ${LIB_HEADERS} ${GROUP_HEADERS} )
+set( LIB_SOURCES ${LIB_SOURCES} ${GROUP_SOURCES} )
 
-add_library( cic-goal STATIC
-	${GOAL_LIB_HEADERS}
-	${GOAL_LIB_SOURCES}
+add_library( ${LIB_NAME} STATIC
+	${LIB_HEADERS}
+	${LIB_SOURCES}
 )
-set_target_properties( cic-goal PROPERTIES LINKER_LANGUAGE CXX )
+set_target_properties( ${LIB_NAME} PROPERTIES LINKER_LANGUAGE CXX )
 
 if( CIC_BUILD_GOAL_LIB )
 	install(
-		TARGETS cic-goal
+		TARGETS ${LIB_NAME}
 		ARCHIVE DESTINATION lib
 	)
 	install(
-		FILES ${GOAL_LIB_HEADERS}
+		FILES ${LIB_HEADERS}
 		DESTINATION include/CICheck/goal
 	)
 endif()
