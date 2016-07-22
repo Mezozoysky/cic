@@ -14,19 +14,23 @@ endif()
 
 include_directories( ${CMAKE_SOURCE_DIR}/include )
 
-if ( CIC_BUILD_TU_LIB OR CIC_BUILD_TASK_LIB )
+
+if( CIC_BUILD_TU_LIB OR CIC_BUILD_CICHECK )
 	add_subdirectory( tu )
 endif()
 
-if ( CIC_BUILD_XMLU_LIB OR CIC_BUILD_TASK_LIB )
+if( CIC_BUILD_XMLU_LIB OR CIC_BUILD_CICHECK )
 	add_subdirectory( xmlu )
 endif()
 
-if ( CIC_BUILD_TASK_LIB OR CIC_BUILD_CICHECK )
+if( CIC_BUILD_TASK_LIB OR CIC_BUILD_CICHECK )
 	add_subdirectory( task )
 endif()
 
-if ( CIC_BUILD_CICHECK )
-	add_subdirectory( cicheck )
+if( CIC_BUILD_GOAL_LIB OR CIC_BUILD_CICHECK )
+	add_subdirectory( goal )
 endif()
 
+if( CIC_BUILD_CICHECK )
+	add_subdirectory( cicheck )
+endif()
