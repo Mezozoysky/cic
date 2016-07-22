@@ -46,6 +46,23 @@ class CheckApp
 {
 public:
 	using Ptr = Poco::AutoPtr< CheckApp >;
+
+public:
+	CheckApp() noexcept;
+	virtual ~CheckApp() noexcept = default;
+
+	void helpOptionCallback( const std::string& name, const std::string& value );
+
+protected:
+	virtual void initialize( Poco::Util::Application& self ) override;
+	virtual void uninitialize() override;
+	virtual void defineOptions( Poco::Util::OptionSet& options ) override;
+	virtual int main( const std::vector< std::string >& args ) override;
+
+	virtual std::string formatHelpText() const noexcept;
+
+private:
+	bool mIsHelpOptionRequested;
 };
 
 } // namespace check
