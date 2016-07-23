@@ -34,8 +34,10 @@
 #include <fmt/format.h>
 #include <sstream>
 #include <Poco/Util/HelpFormatter.h>
+#include <Poco/Environment.h>
 
 using namespace fmt::literals;
+using namespace cic::xmlu;
 
 namespace cic
 {
@@ -58,30 +60,73 @@ void CheckApp::helpOptionCallback ( const std::string& name, const std::string& 
 void CheckApp::initialize ( Poco::Util::Application& self )
 {
 	// Init default application directories
-	std::string binaryDir{ config().getString( "application.dir" ) };
-	Poco::Path prefixDirPath{ Poco::Path::forDirectory( binaryDir ).parent() };
-	std::string defaultShareDir{
-			Poco::Path::forDirectory( "./share/CICheck" ).makeAbsolute( prefixDirPath ).toString()
-	};
-	std::string defaultEtcDir{
-			Poco::Path::forDirectory( "./etc/CICheck" ).makeAbsolute( prefixDirPath ).toString()
-	};
+	Poco::Path defaultHomePath;
+	if ( Poco::Environment::has( "CIC_HOME" ) )
+	{
+		defaultHomePath = Poco::Path::forDirectory( Poco::Environment::get( "CIC_HOME" ) );
+	}
+	else
+	{
+		defaultHomePath =
+				Poco::Path::forDirectory( config().getString( "application.dir") ).parent();
+	}
 
-	// Load default config
-	loadConfiguration();
+	Poco::Path defaultBinPath{ defaultHomePath };
+	defaultBinPath.pushDirectory( "bin" );
+	Poco::Path defaultSharePath{ defaultHomePath };
+	defaultSharePath.pushDirectory( "share" );
+
+// 	std::string defaultShareDir{
+// 			Poco::Path::forDirectory( "./share/CICheck" ).makeAbsolute( prefixDirPath ).toString()
+// 	};
+
+	// Load custom application config
+	// ( cic-check.properties placed beside the application executable or above its path )
+	bool usingCustomConfig{ loadConfiguration() > 0 };
+
+	if ( !config().hasProperty( "cic.dir.home" ) )
+	{
+		config().setString( "cic.dir.home", defaultHomePath.toString() );
+	}
+
+	if ( !config().hasProperty( "cic.dir.bin" ) )
+	{
+		config().setString( "cic.dir.bin", defaultBinPath.toString() );
+	}
 
 	if ( !config().hasProperty( "cic.dir.share" ) )
 	{
-		config().setString( "cic.dir.share", defaultShareDir );
-	}
-	if ( !config().hasProperty( "cic.dir.etc" ) )
-	{
-		config().setString( "cic.dir.etc", defaultEtcDir );
+		config().setString( "cic.dir.share", defaultSharePath.toString() );
 	}
 
+	if ( !usingCustomConfig )
+	{
+		// Load default configuration
+		std::string defCfg{ defaultSharePath.setFileName( "check.properties" ).toString() };
+		try
+		{
+			loadConfiguration( defCfg );
+		}
+		catch ( Poco::FileNotFoundException& exc )
+		{
+			logger()
+			.warning(
+					"Default cic-check configuration isnt provided: {}"\
+					""_format( exc.displayText() )
+			);
+		}
+	}
+
+	// Application-level properties
+// 	if ( !config().hasProperty( "cic.check.property_name" ) )
+// 	{
+// 		config().setString( "cic.check.property_name", propertyValue );
+// 	}
+	
 	Poco::Util::Application::initialize ( self );
 
 	//TODO: configure logging!
+	logger().setLevel( Poco::Message::PRIO_TRACE );
 
 	//logger.information( "---------------- Start logging ----------------" );
 	//logger.debug( "Initializing CheckApp .." );
@@ -121,13 +166,13 @@ int CheckApp::main( const std::vector< std::string >& args )
 {
 	logger().debug(
 		"Config:\n"
-		"* application.dir: '{}'\n"\
-		"* cic.dir.share:   '{}'\n"\
-		"* cic.dir.etc:     '{}'"\
+		"* cic.dir.home:  '{}'\n"\
+		"* cic.dir.bin:   '{}'\n"\
+		"* cic.dir.share: '{}'"\
 		""_format(
-			config().getString( "application.dir" )
+			config().getString( "cic.dir.home" )
+			, config().getString( "cic.dir.bin" )
 			, config().getString( "cic.dir.share" )
-			, config().getString( "cic.dir.etc" )
 		)
 	);
 
@@ -154,8 +199,31 @@ int CheckApp::main( const std::vector< std::string >& args )
 		"requested goal: '{}'; requested target: '{}'"_format( goalName, tgtName )
 	);
 
-	// TODO: check goal/target
+	// TODO: load and check goal/target
+	try
+	{
+		loadDecls(
+				Poco::Path::forDirectory( config().getString( "cic.dir.share" ) )
+				.pushDirectory( "check" )
+				.setFileName( "declarations.xml" )
+				.toString()
+		);
+	}
+	catch ( Poco::FileNotFoundException& exc )
+	{
+		logger()
+		.error(
+			"Error while loading declarations: {}"\
+			""_format( exc.displayText() )
+		);
+	}
+	
 
+	if ( mGoalDecls.empty() )
+	{
+		logger().fatal( "No declarations provided" );
+		return ( EXIT_CONFIG );
+	}
 	return ( EXIT_OK );
 }
 
@@ -180,6 +248,11 @@ std::string CheckApp::formatHelpText() const noexcept
 	hf.format( ss );
 
 	return ( ss.str() );
+}
+
+void CheckApp::loadDecls ( const std::string& declsPath )
+{
+	DocPtr doc{ fetchDoc( declsPath, mParser) };
 }
 
 

@@ -35,6 +35,9 @@
 
 #include <Poco/Util/Application.h>
 #include <Poco/AutoPtr.h>
+#include <map>
+#include <CICheck/goal/Goal.hpp>
+#include <CICheck/xmlu/XMLUtils.hpp>
 
 namespace cic
 {
@@ -46,6 +49,12 @@ class CheckApp
 {
 public:
 	using Ptr = Poco::AutoPtr< CheckApp >;
+
+	struct GoalDecl
+	{
+		std::string path{ "" };
+		goal::Goal::Ptr goal{ nullptr };
+	};
 
 public:
 	CheckApp() noexcept;
@@ -60,9 +69,13 @@ protected:
 	virtual int main( const std::vector< std::string >& args ) override;
 
 	virtual std::string formatHelpText() const noexcept;
+	virtual void loadDecls( const std::string& declsPath );
 
 private:
 	bool mIsHelpOptionRequested;
+
+	xmlu::Parser mParser;
+	std::map< std::string, GoalDecl > mGoalDecls;
 };
 
 } // namespace check

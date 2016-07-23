@@ -28,7 +28,6 @@ if( CIC_OS_WINDOWS )
 	)
 endif()
 
-
 #
 # Sources
 #
@@ -59,6 +58,7 @@ add_executable( ${APP_NAME} WIN32 #MACOSX_BUNDLE
 
 target_link_libraries( ${APP_NAME}
 	cic-goal
+	cic-xmlu
 )
 
 target_link_libraries( ${APP_NAME}
