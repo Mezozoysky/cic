@@ -17,6 +17,10 @@ if( CIC_BUILD_TU_LIB OR CIC_BUILD_CICHECK )
 	include_directories( ${CMAKE_SOURCE_DIR}/include )
 endif()
 
+if( CIC_BUILD_INDUSTRY_LIB OR CIC_BUILD_CHECK )
+	add_subdirectory( industry )
+endif()
+
 if( CIC_BUILD_XMLU_LIB OR CIC_BUILD_CICHECK )
 	add_subdirectory( xmlu )
 	include_directories( ${CMAKE_SOURCE_DIR}/include )

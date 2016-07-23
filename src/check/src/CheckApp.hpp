@@ -38,6 +38,7 @@
 #include <map>
 #include <CICheck/goal/Goal.hpp>
 #include <CICheck/xmlu/XMLUtils.hpp>
+#include <CICheck/industry/Industry.hpp>
 
 namespace cic
 {
@@ -76,6 +77,7 @@ private:
 
 	xmlu::Parser mParser;
 	std::map< std::string, GoalDecl > mGoalDecls;
+	indu::Industry mIndustry;
 };
 
 } // namespace check

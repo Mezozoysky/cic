@@ -11,6 +11,7 @@ set( CMAKE_VERBOSE_MAKEFILE 1 )
 project( CICheck C CXX )
 
 option( CIC_BUILD_TU_LIB "Build cic-tu library"  ON )
+option( CIC_BUILD_INDUSTRY_LIB "Build cic-industry library"  ON )
 option( CIC_BUILD_XMLU_LIB "Build cic-xmlu library"  ON )
 option( CIC_BUILD_TASK_LIB "Build cic-task library"  ON )
 option( CIC_BUILD_GOAL_LIB "Build cic-goal library"  ON )

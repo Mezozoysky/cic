@@ -59,6 +59,7 @@ add_executable( ${APP_NAME} WIN32 #MACOSX_BUNDLE
 target_link_libraries( ${APP_NAME}
 	cic-goal
 	cic-xmlu
+	cic-industry-fake
 )
 
 target_link_libraries( ${APP_NAME}
