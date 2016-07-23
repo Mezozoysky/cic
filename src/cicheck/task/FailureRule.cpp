@@ -17,7 +17,7 @@ bool FailureRule::check()
 	return ( false );
 }
 
-void FailureRule::loadFromXml( const xmlu::Node* root, tu::FactoryOwner* factories )
+void FailureRule::loadFromXML( const xmlu::Node* root, indu::Industry* industry )
 {
 	// Do nothing
 }

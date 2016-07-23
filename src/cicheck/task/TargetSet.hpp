@@ -10,7 +10,7 @@
 #define CICHECK_CICHECK__TASK_TARGET_SET_HPP
 
 #include <CICheck/task/ATargetSet.hpp>
-#include <CICheck/xmlu/XMLUtils.hpp>
+#include <CICheck/xmlu/LoadableFromXML.hpp>
 #include <vector>
 #include <string>
 
@@ -20,7 +20,7 @@ namespace cic
 
 class TargetSet
 : public task::ATargetSet
-, public xmlu::ALoadableFromXml
+, public xmlu::LoadableFromXML
 {
 public:
 	using Ptr = std::shared_ptr< TargetSet >;
@@ -29,13 +29,13 @@ public:
 	virtual ~TargetSet() noexcept = default;
 
 // 	virtual std::vector< std::string > calcSequenceFor( const std::string& targetName ) const override;
-	virtual void loadFromXml( const xmlu::Node* root, tu::FactoryOwner* factories ) override;
+	virtual void loadFromXML( const xmlu::Node* root, indu::Industry* industry ) override;
 
 // 	virtual const std::vector< std::string >& targets() const override;
 // 	virtual const std::string& defaultTarget() const override;
 
 protected:
-	virtual void loadTargetFromXml( const xmlu::Node* root, tu::FactoryOwner* factories );
+	virtual void loadTargetFromXML( const xmlu::Node* root, indu::Industry* industry );
 };
 
 

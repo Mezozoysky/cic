@@ -40,10 +40,6 @@ target_include_directories( ${LIB_FILE_NAME}
 
 if( CIC_BUILD_INDUSTRY_LIB )
 	install(
-		TARGETS ${LIB_FILE_NAME}
-		ARCHIVE DESTINATION lib
-	)
-	install(
 		FILES ${LIB_HEADERS}
 		DESTINATION include/${CMAKE_PROJECT_NAME}/${LIB_NAME}
 	)

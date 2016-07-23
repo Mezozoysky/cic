@@ -1,34 +1,52 @@
-# xmlu lib
+# industry lib
 
-set( XMLU_LIB_HEADERS "" )
-set( XMLU_LIB_SOURCES "" )
+set( LIB_NAME "xmlu" )
+set( LIB_FILE_NAME "cic-xmlu")
 
-# ====================
-# ==== xmlu group ====
-# ====================
+include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/../industry/include )
+
+set( LIB_HEADERS_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/include )
+set( LIB_SOURCES_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/src )
+
+
+set( LIB_HEADERS "" )
+set( LIB_SOURCES "" )
+
+# ===========================
+# ==== ${LIB_NAME} group ====
+# ===========================
 set(GROUP_HEADERS
-	${CMAKE_SOURCE_DIR}/include/CICheck/xmlu/XMLUtils.hpp
+	${LIB_HEADERS_ROOT}/${CMAKE_PROJECT_NAME}/${LIB_NAME}/XMLUtils.hpp
+	${LIB_HEADERS_ROOT}/${CMAKE_PROJECT_NAME}/${LIB_NAME}/LoadableFromXML.hpp
 )
 set(GROUP_SOURCES
-	${CMAKE_SOURCE_DIR}/src/xmlu/XMLUtils.cpp
+	${LIB_SOURCES_ROOT}/XMLUtils.cpp
 )
-source_group( "xmlu" FILES ${GROUP_HEADERS} ${GROUP_SOURCES} )
-set( XMLU_LIB_HEADERS ${XMLU_LIB_HEADERS} ${GROUP_HEADERS} )
-set( XMLU_LIB_SOURCES ${XMLU_LIB_SOURCES} ${GROUP_SOURCES} )
+source_group( ${LIB_NAME} FILES ${GROUP_HEADERS} ${GROUP_SOURCES} )
+set( LIB_HEADERS ${LIB_HEADERS} ${GROUP_HEADERS} )
+set( LIB_SOURCES ${LIB_SOURCES} ${GROUP_SOURCES} )
 
-add_library( cic-xmlu STATIC
-	${XMLU_LIB_HEADERS}
-	${XMLU_LIB_SOURCES}
+add_library( ${LIB_FILE_NAME} STATIC
+	${LIB_HEADERS}
+	${LIB_SOURCES}
 )
-set_target_properties( cic-xmlu PROPERTIES LINKER_LANGUAGE CXX )
+set_target_properties( ${LIB_FILE_NAME} PROPERTIES LINKER_LANGUAGE CXX )
+target_include_directories( ${LIB_FILE_NAME}
+	PUBLIC
+	$<BUILD_INTERFACE:${LIB_HEADERS_ROOT}>
+	$<INSTALL_INTERFACE:include>
+	PRIVATE
+	${LIB_SOURCES_ROOT}
+)
 
-if( CIC_BUILD_XMLU_LIB )
+
+if( CIC_BUILD_INDUSTRY_LIB )
 	install(
-		TARGETS cic-xmlu
+		TARGETS ${LIB_FILE_NAME}
 		ARCHIVE DESTINATION lib
 	)
 	install(
-		FILES ${XMLU_LIB_HEADERS}
-		DESTINATION include/CICheck/xmlu
+		FILES ${LIB_HEADERS}
+		DESTINATION include/${CMAKE_PROJECT_NAME}/${LIB_NAME}
 	)
 endif()

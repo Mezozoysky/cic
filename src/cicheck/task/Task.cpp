@@ -26,7 +26,7 @@ bool Task::check( const std::string &target )
 	return ( result );
 }
 
-void Task::loadFromXml( const Node *root, tu::FactoryOwner *factories )
+void Task::loadFromXML( const Node *root, indu::Industry* industry )
 {
 	fmt::print( "TASK LOAD FROM XML!\n" );
 	NodeMap* rootAttrs{ root->attributes() };
@@ -83,8 +83,8 @@ void Task::loadFromXml( const Node *root, tu::FactoryOwner *factories )
 			}
 		}
 		fmt::print( "TARGET SET TYPEID: '{}'\n", typeId );
-		auto ts = TargetSet::Ptr( factories->get< TargetSet >()->create( typeId ) );
-		ts->loadFromXml( node, factories );
+		auto ts = TargetSet::Ptr( industry->get< TargetSet >()->create( typeId ) );
+		ts->loadFromXML( node, industry );
 
 		mTargetSet = ts;
 	}
@@ -112,8 +112,8 @@ void Task::loadFromXml( const Node *root, tu::FactoryOwner *factories )
 			}
 		}
 		fmt::print( "CHECK MAP TYPEID: '{}'\n", typeId );
-		auto cm = CheckMap::Ptr( factories->get< CheckMap >()->create( typeId ) );
-		cm->loadFromXml( node, factories );
+		auto cm = CheckMap::Ptr( industry->get< CheckMap >()->create( typeId ) );
+		cm->loadFromXML( node, industry );
 
 		mCheckMap = cm;
 	}

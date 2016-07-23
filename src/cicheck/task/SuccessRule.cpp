@@ -17,7 +17,7 @@ bool SuccessRule::check()
 	return ( true );
 }
 
-void SuccessRule::loadFromXml( const xmlu::Node* root, tu::FactoryOwner* factories )
+void SuccessRule::loadFromXML( const xmlu::Node* root, indu::Industry* industry )
 {
 	// Do nothing
 }

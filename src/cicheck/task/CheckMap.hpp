@@ -10,7 +10,7 @@
 #define CICHECK_CICHECK__TASK_CHECK_MAP_HPP
 
 #include <CICheck/task/ACheckMap.hpp>
-#include <CICheck/xmlu/XMLUtils.hpp>
+#include <CICheck/xmlu/LoadableFromXML.hpp>
 #include "RuleSet.hpp"
 #include <map>
 
@@ -19,7 +19,7 @@ namespace cic
 
 class CheckMap
 : public task::ACheckMap
-, public xmlu::ALoadableFromXml
+, public xmlu::LoadableFromXML
 {
 public:
 	using Ptr = std::shared_ptr< CheckMap >;
@@ -27,7 +27,7 @@ public:
 	virtual ~CheckMap() noexcept = default;
 
 	virtual bool check( const std::vector< std::string >& sequence ) override;
-	virtual void loadFromXml( const xmlu::Node* root, tu::FactoryOwner* factories ) override;
+	virtual void loadFromXML( const xmlu::Node* root, indu::Industry* industry ) override;
 
 	virtual std::size_t getSize() const override;
 	virtual std::vector< std::string >&& getKeys() const override;

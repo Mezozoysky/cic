@@ -14,7 +14,7 @@
 #include <string>
 #include <map>
 #include <CICheck/xmlu/XMLUtils.hpp>
-#include <CICheck/tu/FactoryOwner.hpp>
+#include <CICheck/industry/Industry.hpp>
 #include <Poco/Logger.h>
 
 using namespace cic::task;
@@ -46,7 +46,7 @@ private:
 	std::vector< std::string > mSources;
 	std::map< std::string, task::ATask::Ptr > mLoaded;
 	xmlu::Parser mParser;
-	tu::FactoryOwner mFactories;
+	indu::Industry mIndustry;
 };
 
 // Inliners

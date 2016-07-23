@@ -12,7 +12,7 @@
 #include <CICheck/task/ARuleSet.hpp>
 #include "RuleBase.hpp"
 #include <vector>
-#include <CICheck/xmlu/XMLUtils.hpp>
+#include <CICheck/xmlu/LoadableFromXML.hpp>
 
 
 namespace cic
@@ -21,7 +21,7 @@ namespace cic
 
 class RuleSet
 : public task::ARuleSet
-, public xmlu::ALoadableFromXml
+, public xmlu::LoadableFromXML
 {
 public:
 	using Ptr = std::shared_ptr< RuleSet >;
@@ -29,7 +29,7 @@ public:
 	virtual ~RuleSet() noexcept = default;
 
 public:
-	virtual void loadFromXml( const xmlu::Node* root, tu::FactoryOwner* factories ) override;
+	virtual void loadFromXML( const xmlu::Node* root, indu::Industry* industry ) override;
 
 	virtual void setName( const std::string& name ) noexcept;
 

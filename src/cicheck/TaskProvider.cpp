@@ -37,19 +37,19 @@ void TaskProvider::init()
 	l.setLevel( Poco::Logger::get( "Application" ).getLevel() );
 
 	// fill factories
-	auto taskFactory( mFactories.create< Task >() );
+	auto taskFactory( mIndustry.create< Task >() );
 	taskFactory->registerId< Task >( "default" );
 
-	auto tsFactory( mFactories.create< TargetSet >() );
+	auto tsFactory( mIndustry.create< TargetSet >() );
 	tsFactory->registerId< TargetSet >( "default" );
 
-	auto cmFactory( mFactories.create< CheckMap >() );
+	auto cmFactory( mIndustry.create< CheckMap >() );
 	cmFactory->registerId< CheckMap >( "default" );
 
-	auto rsFactory( mFactories.create< RuleSet >() );
+	auto rsFactory( mIndustry.create< RuleSet >() );
 	rsFactory->registerId< RuleSet >( "default" );
 
-	auto ruleFactory( mFactories.create< RuleBase >() );
+	auto ruleFactory( mIndustry.create< RuleBase >() );
 	ruleFactory->registerId< SuccessRule >( "success" );
 	ruleFactory->registerId< FailureRule >( "failure" );
 	ruleFactory->registerId< SystemCmdRule >( "systemCmd" );
@@ -130,8 +130,8 @@ Task::Ptr TaskProvider::load( const std::string &name )
 					{
 						typeId = attr->getNodeValue();
 					}
-					task = Task::Ptr( mFactories.get< Task >()->create( typeId ) );
-					task->loadFromXml( taskNode, &mFactories );
+					task = Task::Ptr( mIndustry.get< Task >()->create( typeId ) );
+					task->loadFromXML( taskNode, &mIndustry );
 					mLoaded.insert( std::pair< std::string, ATask::Ptr >( name, task ) );
 				}
 				else
@@ -166,9 +166,9 @@ Task::Ptr TaskProvider::load( const std::string &name )
 						{
 							typeId = attr->getNodeValue();
 						}
-						task = Task::Ptr( mFactories.get< Task >()->create( typeId ) );
+						task = Task::Ptr( mIndustry.get< Task >()->create( typeId ) );
 						task->setName( name );
-						task->loadFromXml( taskNode, &mFactories );
+						task->loadFromXML( taskNode, &mIndustry );
 						mLoaded.insert( std::pair< std::string, ATask::Ptr >( name, task ) );
 					}
 				}

@@ -60,7 +60,7 @@ bool SystemCmdRule::check()
 	return ( rc == 0 );
 }
 
-void SystemCmdRule::loadFromXml( const xmlu::Node* root, tu::FactoryOwner* factories )
+void SystemCmdRule::loadFromXML( const xmlu::Node* root, indu::Industry* industry )
 {
 	fmt::print( "SYSTEM CMD RULE LOAD FROM XML!\n" );
 	NodeMap* rootAttrs{ root->attributes() };

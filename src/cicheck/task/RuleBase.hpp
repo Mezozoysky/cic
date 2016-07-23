@@ -11,7 +11,7 @@
 
 #include <CICheck/task/ARule.hpp>
 #include <string>
-#include <CICheck/xmlu/XMLUtils.hpp>
+#include <CICheck/xmlu/LoadableFromXML.hpp>
 
 namespace cic
 {
@@ -19,7 +19,7 @@ namespace cic
 
 class RuleBase
 : public task::ARule
-, public xmlu::ALoadableFromXml
+, public xmlu::LoadableFromXML
 {
 public:
 	using Ptr = std::shared_ptr< RuleBase >;

@@ -10,7 +10,7 @@
 #define CICHECK_CICHECK__TASK_TASK_HPP
 
 #include <CICheck/task/ATask.hpp>
-#include <CICheck/xmlu/XMLUtils.hpp>
+#include <CICheck/xmlu/LoadableFromXML.hpp>
 #include "TargetSet.hpp"
 #include "CheckMap.hpp"
 #include <string>
@@ -23,7 +23,7 @@ namespace cic
 
 class Task
 : public task::ATask
-, public xmlu::ALoadableFromXml
+, public xmlu::LoadableFromXML
 {
 public:
 	using Ptr = std::shared_ptr< Task >;
@@ -34,7 +34,7 @@ public:
 	void operator=( const Task& ) = delete;
 
 	virtual bool check( const std::string& target ) override;
-	virtual void loadFromXml( const xmlu::Node* root, tu::FactoryOwner* factories ) override;
+	virtual void loadFromXML( const xmlu::Node* root, indu::Industry* industry ) override;
 
 	virtual const std::string& name() const override;
 	virtual void setName( const std::string& name );

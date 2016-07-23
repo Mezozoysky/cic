@@ -17,7 +17,7 @@ using namespace cic::xmlu;
 namespace cic
 {
 
-void RuleSet::loadFromXml( const xmlu::Node* root, tu::FactoryOwner* factories )
+	void RuleSet::loadFromXML( const xmlu::Node* root, indu::Industry* industry )
 {
 	fmt::print( "RULE SET LOAD FROM XML!\n" );
 	NodeMap* rootAttrs{ root->attributes() };
@@ -58,8 +58,8 @@ void RuleSet::loadFromXml( const xmlu::Node* root, tu::FactoryOwner* factories )
 			typeId = Poco::trim( attr->getNodeValue() );
 		}
 		fmt::print( "RULE TYPEID: '{}'\n", typeId );
-		auto rule = RuleBase::Ptr( factories->get< RuleBase >()->create( typeId ) );
-		rule->loadFromXml( node, factories );
+		auto rule = RuleBase::Ptr( industry->get< RuleBase >()->create( typeId ) );
+		rule->loadFromXML( node, industry );
 		mRules.push_back( rule );
 	}
 }

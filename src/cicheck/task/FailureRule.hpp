@@ -24,7 +24,7 @@ public:
 	virtual ~FailureRule() noexcept = default;
 
 	virtual bool check() override;
-	virtual void loadFromXml( const xmlu::Node* root, tu::FactoryOwner* factories ) override;
+	virtual void loadFromXML( const xmlu::Node* root, indu::Industry* industry ) override;
 
 };
 

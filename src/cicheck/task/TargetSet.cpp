@@ -35,7 +35,7 @@ namespace cic
 // 	return ( seq );
 // }
 
-void TargetSet::loadFromXml( const xmlu::Node* root, tu::FactoryOwner* factories )
+void TargetSet::loadFromXML( const xmlu::Node* root, indu::Industry* industry )
 {
 	fmt::print( "TARGET SET LOAD FROM XML!\n" );
 	NodeMap* rootAttrs{ root->attributes() };
@@ -59,7 +59,7 @@ void TargetSet::loadFromXml( const xmlu::Node* root, tu::FactoryOwner* factories
 		}
 		if ( node->nodeName() == "target" )
 		{
-			loadTargetFromXml( node, factories );
+			loadTargetFromXML( node, industry );
 		}
 		else
 		{
@@ -74,7 +74,7 @@ void TargetSet::loadFromXml( const xmlu::Node* root, tu::FactoryOwner* factories
 
 }
 
-void TargetSet::loadTargetFromXml ( const Node* root, tu::FactoryOwner* factories )
+void TargetSet::loadTargetFromXML( const Node* root, indu::Industry* industry )
 {
 	NodeMap* attrs{ root->attributes() };
 	Node* attr{ attrs->getNamedItem( "name" ) };
@@ -167,8 +167,8 @@ void TargetSet::loadTargetFromXml ( const Node* root, tu::FactoryOwner* factorie
 						typeId = Poco::trim( ruleAttr->getNodeValue() );
 					}
 					fmt::print( "RULE TYPEID: '{}'\n", typeId );
-					auto rule = RuleBase::Ptr( factories->get< RuleBase >()->create( typeId ) );
-					rule->loadFromXml( tmpNode, factories );
+					auto rule = RuleBase::Ptr( industry->get< RuleBase >()->create( typeId ) );
+					rule->loadFromXML( tmpNode, industry );
 					
 					tgtData.rules.push_back( rule );
 				}

@@ -50,7 +50,7 @@ bool CheckMap::check( const std::vector< std::string >& sequence )
 	return ( result );
 }
 
-void CheckMap::loadFromXml( const Node* root, tu::FactoryOwner* factories )
+void CheckMap::loadFromXML( const Node* root, indu::Industry* industry )
 {
 	fmt::print( "CHECK MAP LOAD FROM XML!\n" );
 	NodeMap* rootAttrs{ root->attributes() };
@@ -110,9 +110,8 @@ void CheckMap::loadFromXml( const Node* root, tu::FactoryOwner* factories )
 				}
 			}
 			fmt::print( "RULE SET TYPEID: '{}'\n", typeId );
-			val = RuleSet::Ptr( factories->get< RuleSet >()->create( typeId ) );
-			val->loadFromXml( rsNode, factories );
-
+			val = RuleSet::Ptr( industry->get< RuleSet >()->create( typeId ) );
+			val->loadFromXML( rsNode, industry );
 		}
 
 		if ( !key.empty() && val != nullptr && val->getSize() != 0 )
