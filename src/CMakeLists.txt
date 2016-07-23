@@ -25,8 +25,12 @@ if( CIC_BUILD_TASK_LIB OR CIC_BUILD_CICHECK )
 	include_directories( ${CMAKE_SOURCE_DIR}/include )
 endif()
 
-if( CIC_BUILD_GOAL_LIB OR CIC_BUILD_CICHECK OR CIC_BUILD_CHECK )
+if( CIC_BUILD_GOAL_LIB OR CIC_BUILD_XGOAL_LOB OR CIC_BUILD_CHECK)
 	add_subdirectory( goal )
+endif()
+
+if( CIC_BUILD_XGOAL_LIB OR CIC_BUILD_CHECK)
+	add_subdirectory( xgoal )
 endif()
 
 if( CIC_BUILD_CICHECK )

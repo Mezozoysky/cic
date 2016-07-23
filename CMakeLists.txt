@@ -14,6 +14,7 @@ option( CIC_BUILD_INDUSTRY_LIB "Build cic-industry library"  ON )
 option( CIC_BUILD_XMLU_LIB "Build cic-xmlu library"  ON )
 option( CIC_BUILD_TASK_LIB "Build cic-task library"  ON )
 option( CIC_BUILD_GOAL_LIB "Build cic-goal library"  ON )
+option( CIC_BUILD_XGOAL_LIB "Build cic-xgoal library"  ON )
 option( CIC_BUILD_CICHECK "Build cicheck tool"  ON )
 option( CIC_BUILD_CHECK "Build cic-check tool"  ON )
 
