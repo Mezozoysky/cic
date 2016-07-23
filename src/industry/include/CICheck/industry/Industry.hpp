@@ -35,6 +35,7 @@
 #include <CICheck/industry/Factory.hpp>
 #include <tktk/typec/TypeMap.hpp>
 #include <stdexcept>
+#include <memory>
 
 namespace cic
 {
