@@ -1,5 +1,7 @@
 # task lib
 
+include_directories( ${CMAKE_SOURCE_DIR}/include )
+
 set( TASK_LIB_HEADERS "" )
 set( TASK_LIB_SOURCES "" )
 

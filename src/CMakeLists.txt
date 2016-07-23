@@ -12,11 +12,6 @@ else()
 	message( FATAL_ERROR "-- ${CMAKE_PROJECT_NAME} -- No FMT library found!" )
 endif()
 
-if( CIC_BUILD_TU_LIB OR CIC_BUILD_CICHECK )
-	add_subdirectory( tu )
-	include_directories( ${CMAKE_SOURCE_DIR}/include )
-endif()
-
 if( CIC_BUILD_INDUSTRY_LIB OR CIC_BUILD_CHECK OR CIC_BUILD_CICHECK )
 	add_subdirectory( industry )
 endif()

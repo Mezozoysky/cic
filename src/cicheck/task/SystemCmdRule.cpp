@@ -12,6 +12,7 @@
 #include <Poco/StreamCopier.h>
 #include <fstream>
 #include <Poco/Exception.h>
+#include <fmt/format.h>
 
 using namespace cic::task;
 using namespace cic::xmlu;

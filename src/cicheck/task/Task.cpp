@@ -7,6 +7,7 @@
 //
 
 #include "Task.hpp"
+#include <fmt/format.h>
 
 using namespace cic::task;
 using namespace cic::xmlu;

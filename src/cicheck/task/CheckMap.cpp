@@ -8,6 +8,7 @@
 
 #include "CheckMap.hpp"
 #include <Poco/String.h>
+#include <fmt/format.h>
 
 
 using namespace cic::task;

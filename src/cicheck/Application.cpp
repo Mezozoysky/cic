@@ -6,7 +6,6 @@
 #include <Poco/Util/HelpFormatter.h>
 #include <sstream>
 #include <fmt/format.h>
-#include <CICheck/tu/FactoryOwner.hpp>
 
 #include <Poco/PatternFormatter.h>
 #include <Poco/FormattingChannel.h>

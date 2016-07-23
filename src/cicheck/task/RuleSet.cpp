@@ -10,6 +10,7 @@
 #include <Poco/String.h>
 #include <Poco/Exception.h>
 #include <Poco/Util/Application.h>
+#include <fmt/format.h>
 
 using namespace cic::task;
 using namespace cic::xmlu;

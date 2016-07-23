@@ -40,7 +40,6 @@
 #include <Poco/SAX/InputSource.h>
 #include <Poco/XML/XMLException.h>
 #include <Poco/AutoPtr.h>
-#include <CICheck/tu/FactoryOwner.hpp>
 
 namespace cic
 {
