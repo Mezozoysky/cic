@@ -2,11 +2,9 @@
 
 set( LIB_NAME "cic-goal" )
 
-set( LIB_SRCTREE_ROOT ${CMAKE_SOURCE_DIR}/src/goal )
-set( LIB_HEADERS_ROOT ${LIB_SRCTREE_ROOT}/include/CICheck/goal )
-set( LIB_SOURCES_ROOT ${LIB_SRCTREE_ROOT}/src )
+set( LIB_HEADERS_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/include )
+set( LIB_SOURCES_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/src )
 
-include_directories( ${LIB_SRCTREE_ROOT}/include )
 
 set( LIB_HEADERS "" )
 set( LIB_SOURCES "" )
@@ -15,8 +13,8 @@ set( LIB_SOURCES "" )
 # ==== goal group ====
 # ====================
 set(GROUP_HEADERS
-	${LIB_HEADERS_ROOT}/Goal.hpp
-	${LIB_HEADERS_ROOT}/ARule.hpp
+	${LIB_HEADERS_ROOT}/CICheck/goal/Goal.hpp
+	${LIB_HEADERS_ROOT}/CICheck/goal/ARule.hpp
 )
 set(GROUP_SOURCES
 	${LIB_SOURCES_ROOT}/Goal.cpp
@@ -31,6 +29,14 @@ add_library( ${LIB_NAME} STATIC
 	${LIB_SOURCES}
 )
 set_target_properties( ${LIB_NAME} PROPERTIES LINKER_LANGUAGE CXX )
+target_include_directories( ${LIB_NAME}
+	PUBLIC
+	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+	$<INSTALL_INTERFACE:include>
+	PRIVATE
+	${CMAKE_CURRENT_SOURCE_DIR}/src
+)
+
 
 if( CIC_BUILD_GOAL_LIB )
 	install(
