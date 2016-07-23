@@ -1,4 +1,4 @@
-# industry lib
+# xmlu lib
 
 set( LIB_NAME "xmlu" )
 set( LIB_FILE_NAME "cic-xmlu")
