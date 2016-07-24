@@ -34,7 +34,6 @@
 
 #include <CICheck/xmlu/XMLUtils.hpp>
 #include <CICheck/xgoal/Goal.hpp>
-#include <CICheck/xgoal/GoalDecl.hpp>
 #include <vector>
 #include <CICheck/industry/Industry.hpp>
 
@@ -53,42 +52,25 @@ public:
 		goal::Goal::Ptr goal{ nullptr };
 	};
 
+public:
+	Provider() = default;
+	virtual ~Provider() noexcept = default;
+
+	virtual void loadDecls( const std::string& declsPath );
+	virtual void loadDecl( const xmlu::Node* root );
+
+	inline bool empty() const noexcept;
+
 private:
 	std::map< std::string, GoalDecl > mDecls;
 	indu::Industry mIndustry;
 	xmlu::Parser mParser;
+};
+
+inline bool Provider::empty() const noexcept
+{
+	return ( mDecls.empty() );
 }
-
-//Loading GoalDecl
-/*
-
-	NodeMap* rootAttrs{ root->attributes() };
-
-	Node* node{ rootAttrs->getNamedItem( "name" ) };
-	if ( !node )
-	{
-		throw ( Poco::DataException( "No 'name' attribute found", 8 ) );
-	}
-	auto name( Poco::trim( node->getNodeValue() ) );
-	if ( name.empty() )
-	{
-		throw ( Poco::DataException( "'name' attribute is empty", 8 ) );
-	}
-	mGoalName = name;
-
-	node = rootAttrs->getNamedItem( "path" );
-	if ( !node )
-	{
-		throw ( Poco::DataException( "No 'path' attribute found", 8 ) );
-	}
-	auto path( Poco::trim( node->getNodeValue() ) );
-	if ( path.empty() )
-	{
-		throw ( Poco::DataException( "'path' attribute is empty", 8 ) );
-	}
-	mGoalPath = path;
-
-*/
 
 } // namespace xgoal
 } // namespace cic
