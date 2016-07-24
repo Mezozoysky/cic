@@ -32,6 +32,7 @@
 #include <CICheck/xgoal/Provider.hpp>
 #include <Poco/Exception.h>
 #include <Poco/String.h>
+#include <Poco/Path.h>
 
 using namespace cic::xmlu;
 
@@ -60,7 +61,7 @@ void Provider::loadDecls( const std::string& declsPath )
 		if ( decl->nodeName() == "decl-goal" )
 		{
 			// Goal declaration found
-			loadDecl( decl );
+			loadDecl( decl, declsPath );
 		}
 		else
 		{
@@ -69,7 +70,7 @@ void Provider::loadDecls( const std::string& declsPath )
 	}
 }
 
-void Provider::loadDecl( const Node* root )
+void Provider::loadDecl( const Node* root, const std::string& declsPath )
 {
 	NodeMap* rootAttrs{ root->attributes() };
 
@@ -94,11 +95,94 @@ void Provider::loadDecl( const Node* root )
 	{
 		throw ( Poco::DataException( "'path' attribute is empty", 8 ) );
 	}
+	Poco::Path p{ Poco::Path::forDirectory( path ) };
+	if ( p.isRelative() )
+	{
+		p.makeAbsolute( Poco::Path( declsPath ).parent() );
+		path = p.toString();
+	}
 
 	GoalDecl decl;
 	decl.path = path;
 	mDecls.insert( { name, decl } );
 }
+
+void Provider::dropDecls() noexcept
+{
+	mDecls.clear();
+}
+
+goal::Goal::Ptr Provider::get ( const std::string& goalName )
+{
+	if ( !isDeclared( goalName ))
+	{
+		throw ( Poco::InvalidArgumentException( "Requested goal isnt declared", 8 ) );
+	}
+	if ( mDecls.at( goalName ).goal == nullptr )
+	{
+		return ( reload( goalName ) );
+	}
+
+	return ( mDecls.at( goalName ).goal );
+}
+
+goal::Goal::Ptr Provider::reload ( const std::string& goalName )
+{
+	if ( !isDeclared( goalName ))
+	{
+		throw ( Poco::InvalidArgumentException( "Requested goal isnt declared", 8 ) );
+	}
+
+	GoalDecl& decl{ mDecls.at( goalName ) };
+	std::string src{ Poco::Path::forDirectory( decl.path ).setFileName( "goal.xml" ).toString() };
+	DocPtr doc{ fetchDoc( src, mParser ) };
+
+	const Node* root = fetchNode( doc, "goal", Node::ELEMENT_NODE );
+	if ( root == nullptr )
+	{
+		throw ( Poco::DataException( "Element 'goal' not found;\n", 8 ) );
+	}
+
+	NodeMap* attrs{ root->attributes() };
+	Node* attr{ attrs->getNamedItem( "name" ) };
+	if ( attr == nullptr )
+	{
+		throw ( Poco::DataException( "Attribute 'name' for element 'goal' isnt found", 8 ) );
+	}
+	auto name{ Poco::trim( attr->getNodeValue() ) };
+
+	std::string typeId{ "default" };
+	attr = attrs->getNamedItem( "typeId" );
+	if ( attr )
+	{
+		typeId = Poco::trim( attr->getNodeValue() );
+	}
+
+/*
+	auto goal( xgoal::Goal::Ptr( mIndustry.get< Goal >()->create( typeId ) ) );
+	goal->loadFromXML( root, &mIndustry );
+	decl.goal = goal;
+*/
+}
+
+void Provider::drop( const std::string& goalName )
+{
+	if ( !isDeclared( goalName ) )
+	{
+		throw ( Poco::InvalidArgumentException( "Goal isnt declared" ) );
+	}
+	mDecls.at( goalName ).goal = nullptr;
+}
+
+void Provider::dropAll() noexcept
+{
+	for ( auto& decl : mDecls )
+	{
+		decl.second.goal = nullptr;
+	}
+}
+
+
 
 } // namespace xgoal
 } // namespace cic

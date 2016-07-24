@@ -57,9 +57,17 @@ public:
 	virtual ~Provider() noexcept = default;
 
 	virtual void loadDecls( const std::string& declsPath );
-	virtual void loadDecl( const xmlu::Node* root );
+	virtual void loadDecl( const xmlu::Node* root, const std::string& declsPath );
+	virtual void dropDecls() noexcept;
 
-	inline bool empty() const noexcept;
+	virtual goal::Goal::Ptr get( const std::string& goalName );
+	virtual goal::Goal::Ptr reload( const std::string& goalName );
+	virtual void drop( const std::string& goalName );
+	virtual void dropAll() noexcept;
+
+	inline bool isDeclsEmpty() const noexcept;
+	inline bool isDeclared( const std::string& goalName ) const noexcept;
+	inline bool isLoaded( const std::string& goalName ) const noexcept;
 
 private:
 	std::map< std::string, GoalDecl > mDecls;
@@ -67,9 +75,17 @@ private:
 	xmlu::Parser mParser;
 };
 
-inline bool Provider::empty() const noexcept
+inline bool Provider::isDeclsEmpty() const noexcept
 {
 	return ( mDecls.empty() );
+}
+inline bool Provider::isDeclared( const std::string& goalName ) const noexcept
+{
+	return ( mDecls.count( goalName ) > 0 );
+}
+inline bool Provider::isLoaded( const std::string& goalName ) const noexcept
+{
+	return ( isDeclared( goalName ) && mDecls.at( goalName ).goal != nullptr );
 }
 
 } // namespace xgoal

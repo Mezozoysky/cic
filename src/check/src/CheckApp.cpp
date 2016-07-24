@@ -223,11 +223,31 @@ int CheckApp::main( const std::vector< std::string >& args )
 	}
 	
 
-	if ( mGoalProvider.empty() )
+	if ( mGoalProvider.isDeclsEmpty() )
 	{
-		logger().fatal( "No declarations provided" );
-		return ( EXIT_CONFIG );
+		logger().critical( "No declarations provided" );
+		return ( EXIT_DATAERR );
 	}
+
+	if ( !mGoalProvider.isDeclared( goalName ) )
+	{
+		logger().critical( "Goal '{}' isnt declared;"_format( goalName ) );
+		return( EXIT_DATAERR );
+	}
+
+	goal::Goal::Ptr goal;
+	try
+	{
+		goal = mGoalProvider.get( goalName );
+	}
+	catch ( Poco::Exception& exc )
+	{
+		logger().critical( "Error loading goal '{}': {}"_format( goalName, exc.displayText() ) );
+		return ( exc.code() );
+	}
+
+// 	goal->check( tgtName );
+
 	return ( EXIT_OK );
 }
 
