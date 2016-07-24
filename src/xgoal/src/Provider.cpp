@@ -158,12 +158,20 @@ goal::Goal::Ptr Provider::reload ( const std::string& goalName )
 	}
 
 	NodeMap* attrs{ root->attributes() };
+	std::string name;
 	Node* attr{ attrs->getNamedItem( "name" ) };
-	if ( attr == nullptr )
+	if ( attr )
 	{
-		throw ( Poco::DataException( "Attribute 'name' for element 'goal' isnt found", 8 ) );
+		name = Poco::trim( attr->getNodeValue() );
 	}
-	std::string name{ Poco::trim( attr->getNodeValue() ) };
+	if ( name.empty() )
+	{
+		name = goalName;
+	}
+	if ( name != goalName )
+	{
+		throw ( Poco::DataException{ "Declared name and internal goal name are different" } );
+	}
 
 	std::string typeId{ "default" };
 	attr = attrs->getNamedItem( "typeId" );
@@ -179,6 +187,9 @@ goal::Goal::Ptr Provider::reload ( const std::string& goalName )
 	}
 	Goal::Ptr goal{ factory->create( typeId ) };
 	poco_check_ptr( goal );
+
+	goal->name() = name;
+
 	goal->loadFromXML( root, &mIndustry );
 	decl.goal = goal;
 

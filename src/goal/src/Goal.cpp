@@ -61,16 +61,16 @@ bool Goal::check( const std::string& tgtName )
 
 	for ( const auto& tgt : seq )
 	{
-		RuleList& rules{ mTargets.at( tgtName ).rules };
+		RuleList& rules{ mTargets.at( tgt ).rules };
 		if ( rules.empty() )
 		{
-			fmt::print(
-				stderr
-				, "[notice] no rules for target '{}';"\
-				  " interpreting as successfull check;\n"
-				, tgtName
-			);
-			continue;
+// 			fmt::print(
+// 				stderr
+// 				, "[notice] no rules for target '{}';"\
+// 				  " interpreting as successfull check;\n"
+// 				, tgt
+// 			);
+			continue; // interpreting check as successfull since no rules to check
 		}
 
 		for ( auto rule : rules )

@@ -57,6 +57,7 @@ public:
 		std::vector< std::string > deps{};
 		RuleList rules{};
 	};
+	using TgtMap = std::map< std::string, TgtData >;
 
 public:
 	Goal() = default;
@@ -70,18 +71,16 @@ public:
 
 public:
 	inline const std::string& name() const noexcept;
+	inline const std::string& defaultTarget() const noexcept;
+	inline const TgtMap& targets() const noexcept;
 protected:
 	inline std::string& name() noexcept;
-
-public:
-	inline const std::string& defaultTarget() const noexcept;
-protected:
 	inline std::string& defaultTarget() noexcept;
-
+	inline TgtMap& targets() noexcept;
 private:
 	std::string mName;
 	std::string mDefaultTgt;
-	std::map< std::string, TgtData > mTargets;
+	TgtMap mTargets;
 };
 
 
@@ -101,6 +100,15 @@ inline const std::string& Goal::defaultTarget() const noexcept
 inline std::string& Goal::defaultTarget() noexcept
 {
 	return ( mDefaultTgt );
+}
+
+inline const Goal::TgtMap& Goal::targets() const noexcept
+{
+	return ( mTargets );
+}
+inline Goal::TgtMap& Goal::targets() noexcept
+{
+	return ( mTargets );
 }
 
 } // namespace goal

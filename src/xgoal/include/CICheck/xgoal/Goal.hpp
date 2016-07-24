@@ -41,10 +41,15 @@ namespace cic
 namespace xgoal
 {
 
+class Provider;
+
 class Goal
 : public goal::Goal
 , public xmlu::LoadableFromXML
 {
+
+friend class Provider;
+
 public:
 	using Ptr = std::shared_ptr< Goal >;
 
@@ -52,6 +57,8 @@ public:
 	virtual ~Goal() noexcept = default;
 
 	virtual void loadFromXML( const xmlu::Node* root, indu::Industry* industry ) override;
+	virtual void loadTargetsFromXML( const xmlu::Node* root, indu::Industry* industry );
+	virtual void loadTargetFromXML( const xmlu::Node* root, indu::Industry* industry );
 };
 
 } // namespace xgoal
