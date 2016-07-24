@@ -73,5 +73,5 @@ Test0, the goal for cic-check testing purpose
 
 	</targets>
 
-	<default-target value="run_tests">
+	<default-target value="run_tests" />
 </goal>
