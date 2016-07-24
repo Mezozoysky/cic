@@ -42,7 +42,7 @@ namespace goal
 {
 
 
-bool Goal::check ( const std::string& tgtName )
+bool Goal::check( const std::string& tgtName )
 {
 	bool result{ true };
 
