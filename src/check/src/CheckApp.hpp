@@ -38,7 +38,7 @@
 #include <map>
 #include <CICheck/goal/Goal.hpp>
 #include <CICheck/xmlu/XMLUtils.hpp>
-#include <CICheck/industry/Industry.hpp>
+#include <CICheck/xgoal/Provider.hpp>
 
 namespace cic
 {
@@ -70,14 +70,12 @@ protected:
 	virtual int main( const std::vector< std::string >& args ) override;
 
 	virtual std::string formatHelpText() const noexcept;
-	virtual void loadDecls( const std::string& declsPath );
 
 private:
 	bool mIsHelpOptionRequested;
 
 	xmlu::Parser mParser;
-	std::map< std::string, GoalDecl > mGoalDecls;
-	indu::Industry mIndustry;
+	xgoal::Provider mGoalProvider;
 };
 
 } // namespace check

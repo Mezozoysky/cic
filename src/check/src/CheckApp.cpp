@@ -196,13 +196,17 @@ int CheckApp::main( const std::vector< std::string >& args )
 	}
 
 	logger().information(
-		"requested goal: '{}'; requested target: '{}'"_format( goalName, tgtName )
+			"Requested goal: '{}';{}"\
+			""_format(
+					goalName
+					, tgtName.empty() ? "" : " Requested target: '{}';"_format( tgtName )
+			)
 	);
 
 	// TODO: load and check goal/target
 	try
 	{
-		loadDecls(
+		mGoalProvider.loadDecls(
 				Poco::Path::forDirectory( config().getString( "cic.dir.share" ) )
 				.pushDirectory( "check" )
 				.setFileName( "declarations.xml" )
@@ -219,7 +223,7 @@ int CheckApp::main( const std::vector< std::string >& args )
 	}
 	
 
-	if ( mGoalDecls.empty() )
+	if ( mGoalProvider.empty() )
 	{
 		logger().fatal( "No declarations provided" );
 		return ( EXIT_CONFIG );
@@ -248,11 +252,6 @@ std::string CheckApp::formatHelpText() const noexcept
 	hf.format( ss );
 
 	return ( ss.str() );
-}
-
-void CheckApp::loadDecls ( const std::string& declsPath )
-{
-	DocPtr doc{ fetchDoc( declsPath, mParser) };
 }
 
 
