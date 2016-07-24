@@ -30,6 +30,8 @@
 /// \copyright CICheck is released under the terms of zlib/png license
 
 #include <CICheck/xgoal/Provider.hpp>
+#include <CICheck/xgoal/Goal.hpp>
+#include <CICheck/xgoal/ARule.hpp>
 #include <Poco/Exception.h>
 #include <Poco/String.h>
 #include <Poco/Path.h>
@@ -40,6 +42,18 @@ namespace cic
 {
 namespace xgoal
 {
+
+void Provider::init()
+{
+	// fill factories
+	auto goalFactory( mIndustry.create< Goal >() );
+	goalFactory->registerId< cic::xgoal::Goal >( "default" );
+
+	auto ruleFactory( mIndustry.create< ARule >() );
+// 	ruleFactory->registerId< SuccessRule >( "success" );
+// 	ruleFactory->registerId< FailureRule >( "failure" );
+// 	ruleFactory->registerId< SystemCmdRule >( "systemCmd" );
+}
 
 void Provider::loadDecls( const std::string& declsPath )
 {
@@ -149,7 +163,7 @@ goal::Goal::Ptr Provider::reload ( const std::string& goalName )
 	{
 		throw ( Poco::DataException( "Attribute 'name' for element 'goal' isnt found", 8 ) );
 	}
-	auto name{ Poco::trim( attr->getNodeValue() ) };
+	std::string name{ Poco::trim( attr->getNodeValue() ) };
 
 	std::string typeId{ "default" };
 	attr = attrs->getNamedItem( "typeId" );
@@ -158,11 +172,17 @@ goal::Goal::Ptr Provider::reload ( const std::string& goalName )
 		typeId = Poco::trim( attr->getNodeValue() );
 	}
 
-/*
-	auto goal( xgoal::Goal::Ptr( mIndustry.get< Goal >()->create( typeId ) ) );
+	auto factory( mIndustry.get< Goal >() );
+	if ( factory == nullptr )
+	{
+		throw ( Poco::NotFoundException{ "No factory registered for given abstraction type" } );
+	}
+	Goal::Ptr goal{ factory->create( typeId ) };
+	poco_check_ptr( goal );
 	goal->loadFromXML( root, &mIndustry );
 	decl.goal = goal;
-*/
+
+	return ( goal );
 }
 
 void Provider::drop( const std::string& goalName )

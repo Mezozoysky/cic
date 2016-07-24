@@ -56,6 +56,8 @@ public:
 	Provider() = default;
 	virtual ~Provider() noexcept = default;
 
+	virtual void init();
+
 	virtual void loadDecls( const std::string& declsPath );
 	virtual void loadDecl( const xmlu::Node* root, const std::string& declsPath );
 	virtual void dropDecls() noexcept;

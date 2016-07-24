@@ -42,6 +42,7 @@ namespace xgoal
 
 void Goal::loadFromXML( const Node *root, indu::Industry* industry )
 {
+
 }
 
 
