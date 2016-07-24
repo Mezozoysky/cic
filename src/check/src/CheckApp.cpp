@@ -265,7 +265,12 @@ int CheckApp::main( const std::vector< std::string >& args )
 
 	if ( !result )
 	{
-		// Failure analysis / reporting
+		logger().information( "CHECK FAILED" );
+		//TODO: Failure analysis / reporting
+	}
+	else
+	{
+		logger().information( "CHECK SUCCESSFULL" );
 	}
 
 	return ( EXIT_OK );
