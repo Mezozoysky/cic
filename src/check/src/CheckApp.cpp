@@ -130,7 +130,10 @@ void CheckApp::initialize ( Poco::Util::Application& self )
 
 	//logger.information( "---------------- Start logging ----------------" );
 	//logger.debug( "Initializing CheckApp .." );
+
 	// TODO: initialize stuff here
+	mGoalProvider.init();
+
 	//logger.debug( ".. Done initializing CheckApp" );
 
 }
@@ -246,7 +249,24 @@ int CheckApp::main( const std::vector< std::string >& args )
 		return ( exc.code() );
 	}
 
-// 	goal->check( tgtName );
+	bool result{ false };
+	try
+	{
+		result = goal->check( tgtName );
+	}
+	catch ( Poco::Exception& exc )
+	{
+		logger().critical(
+				"Error checking goal '{}' for target '{}': {}"\
+				""_format( goalName, tgtName, exc.displayText() )
+		);
+		return ( exc.code() );
+	}
+
+	if ( !result )
+	{
+		// Failure analysis / reporting
+	}
 
 	return ( EXIT_OK );
 }

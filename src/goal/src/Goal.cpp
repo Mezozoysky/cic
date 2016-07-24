@@ -44,6 +44,16 @@ namespace goal
 
 bool Goal::check( const std::string& tgtName )
 {
+	if ( mTargets.count( tgtName ) == 0 )
+	{
+		throw (
+			Poco::NotFoundException{
+				"Requested target isnt found"
+				, 8
+			}
+		);
+	}
+
 	bool result{ true };
 
 	Sequence seq;
@@ -85,9 +95,9 @@ void Goal::buildSequence ( const std::string& tgtName, Sequence& seq ) const
 	if ( mTargets.count( tgtName ) == 0 )
 	{
 		throw (
-				Poco::DataException{
-					"Target '{}' isnt found with TargetSet"_format( tgtName )
-					, 8
+				Poco::NotFoundException{
+						"Requested target isnt found"
+						, 8
 				}
 		);
 	}
@@ -99,8 +109,8 @@ void Goal::buildSequence ( const std::string& tgtName, Sequence& seq ) const
 		{
 			throw (
 					Poco::DataException{
-						"Target '{}' cyclic dependency!"_format( tgtName )
-						, 8
+							"Target '{}' cyclic dependency!"_format( tgtName )
+							, 8
 					}
 			);
 		}
