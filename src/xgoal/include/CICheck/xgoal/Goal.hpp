@@ -48,7 +48,7 @@ class Goal
 public:
 	using Ptr = std::shared_ptr< Goal >;
 
-	Goal() noexcept = default;
+	Goal() = default;
 	virtual ~Goal() noexcept = default;
 
 	virtual void loadFromXML( const xmlu::Node* root, indu::Industry* industry ) override;

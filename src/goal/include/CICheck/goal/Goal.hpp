@@ -59,7 +59,7 @@ public:
 	};
 
 public:
-	Goal() noexcept = default;
+	Goal() = default;
 	Goal( const Goal& other ) = delete;
 	void operator=( const Goal& other ) = delete;
 	virtual ~Goal() noexcept = default;
