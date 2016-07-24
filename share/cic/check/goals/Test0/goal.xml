@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<goal name="Test0" typeId="default">
+
+	<description>
+Test0, the goal for cic-check testing purpose
+	</description>
+
+	<targets>
+
+		<target name="help">
+			<rules>
+				<rule name="print_help" typeId="systemCmd" cmd="echo" options="target_help__print_help" />
+			</rules>
+		</target>
+
+		<target name="clean">
+			<rules>
+				<rule name="remove_artefacts" typeId="systemCmd" cmd="echo" options="target_clean__remove_artefacts" />
+				<rule name="remove_project" typeId="systemCmd" cmd="echo" options="target_clean__remove_project" />
+			</rules>
+		</target>
+
+		<target name="conf_a">
+			<dependencies>
+				<value>clean</value>
+			</dependencies>
+		</target>
+
+		<target name="conf_b">
+			<dependency value="clean" />
+		</target>
+
+		<target name="conf_c">
+			<dependencies>
+				<value>clean</value>
+			</dependencies>
+		</target>
+
+		<target name="configure">
+			<dependencies>
+				<value>conf_a</value>
+				<value>conf_b</value>
+				<value>conf_c</value>
+			</dependencies>
+		</target>
+
+		<target name="build_lib">
+			<dependency value="configure" />
+		</target>
+
+		<target name="build_app">
+			<dependency value="configure" />
+			<dependency value="build_lib" />
+		</target>
+
+		<target name="build_all">
+			<dependency value="build_lib" />
+			<dependency value="build_app" />
+		</target>
+
+		<target name="build_tests">
+			<dependency value="build_lib" />
+		</target>
+
+		<target name="run_app">
+			<dependency value="build_app" />
+		</target>
+
+		<target name="run_tests">
+			<dependency value="build_tests" />
+		</target>
+
+	</targets>
+
+	<default-target value="run_tests">
+</goal>
