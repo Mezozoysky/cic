@@ -4,6 +4,7 @@ set( LIB_NAME "xgoal" )
 set( LIB_FILE_NAME "cic-xgoal" )
 
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/../goal/include )
+include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/../goal/include )
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/../xmlu/include )
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/../industry/include )
 
@@ -24,12 +25,14 @@ set(GROUP_HEADERS
 	${LIB_HEADERS_ROOT}/${CMAKE_PROJECT_NAME}/${LIB_NAME}/Provider.hpp
 	${LIB_HEADERS_ROOT}/${CMAKE_PROJECT_NAME}/${LIB_NAME}/SuccessRule.hpp
 	${LIB_HEADERS_ROOT}/${CMAKE_PROJECT_NAME}/${LIB_NAME}/FailureRule.hpp
+	${LIB_HEADERS_ROOT}/${CMAKE_PROJECT_NAME}/${LIB_NAME}/SystemCmdRule.hpp
 )
 set(GROUP_SOURCES
 	${LIB_SOURCES_ROOT}/Goal.cpp
 	${LIB_SOURCES_ROOT}/Provider.cpp
 	${LIB_SOURCES_ROOT}/SuccessRule.cpp
 	${LIB_SOURCES_ROOT}/FailureRule.cpp
+	${LIB_SOURCES_ROOT}/SystemCmdRule.cpp
 )
 source_group( ${LIB_NAME} FILES ${GROUP_HEADERS} ${GROUP_SOURCES} )
 set( LIB_HEADERS ${LIB_HEADERS} ${GROUP_HEADERS} )
