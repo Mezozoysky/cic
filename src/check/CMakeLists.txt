@@ -85,6 +85,6 @@ install(
 	RUNTIME DESTINATION bin
 )
 install(
-	DIRECTORY ${CMAKE_SOURCE_DIR}/share/cic/${APP_NAME}
+	DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/share/cic/${APP_NAME}
 	DESTINATION share/cic
 )
