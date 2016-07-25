@@ -33,6 +33,7 @@
 #define CIC_XGOAL__FAILURE_RULE_HPP
 
 #include <CICheck/xgoal/ARule.hpp>
+
 namespace cic
 {
 namespace xgoal
