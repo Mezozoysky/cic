@@ -181,11 +181,11 @@ void Goal::loadTargetFromXML( const xmlu::Node* root, indu::Industry* industry )
 								}
 						);
 					}
-// 					ARule::Ptr rule{ ruleFactory->create( typeId ) };
-// 					poco_check_ptr( rule );
-// 					rule->loadFromXML( tmpNode, industry );
-// 
-// 					tgtData.rules.push_back( rule );
+					ARule::Ptr rule{ ruleFactory->create( typeId ) };
+					poco_check_ptr( rule );
+					rule->loadFromXML( tmpNode, industry );
+
+					tgtData.rules.push_back( rule );
 				}
 				else
 				{

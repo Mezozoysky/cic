@@ -32,6 +32,9 @@
 #include <CICheck/xgoal/Provider.hpp>
 #include <CICheck/xgoal/Goal.hpp>
 #include <CICheck/xgoal/ARule.hpp>
+#include <CICheck/xgoal/SuccessRule.hpp>
+#include <CICheck/xgoal/FailureRule.hpp>
+#include <CICheck/xgoal/SystemCmdRule.hpp>
 #include <Poco/Exception.h>
 #include <Poco/String.h>
 #include <Poco/Path.h>
@@ -47,12 +50,12 @@ void Provider::init()
 {
 	// fill factories
 	auto goalFactory( mIndustry.create< Goal >() );
-	goalFactory->registerId< cic::xgoal::Goal >( "default" );
+	goalFactory->registerId< Goal >( "default" );
 
 	auto ruleFactory( mIndustry.create< ARule >() );
-// 	ruleFactory->registerId< SuccessRule >( "success" );
-// 	ruleFactory->registerId< FailureRule >( "failure" );
-// 	ruleFactory->registerId< SystemCmdRule >( "systemCmd" );
+	ruleFactory->registerId< SuccessRule >( "success" );
+	ruleFactory->registerId< FailureRule >( "failure" );
+	ruleFactory->registerId< SystemCmdRule >( "systemCmd" );
 }
 
 void Provider::loadDecls( const std::string& declsPath )
