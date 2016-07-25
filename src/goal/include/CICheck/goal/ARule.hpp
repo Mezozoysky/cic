@@ -58,7 +58,7 @@ public:
 protected:
 	inline std::string& name() noexcept;
 private:
-	std::string mName{ "" };
+	std::string mName;
 };
 
 inline const std::string& ARule::name() const noexcept
