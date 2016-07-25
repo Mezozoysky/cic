@@ -74,7 +74,7 @@ void CheckApp::initialize ( Poco::Util::Application& self )
 	Poco::Path defaultBinPath{ defaultHomePath };
 	defaultBinPath.pushDirectory( "bin" );
 	Poco::Path defaultSharePath{ defaultHomePath };
-	defaultSharePath.pushDirectory( "share" );
+	defaultSharePath.pushDirectory( "share" ).pushDirectory( "CICheck" );
 
 // 	std::string defaultShareDir{
 // 			Poco::Path::forDirectory( "./share/CICheck" ).makeAbsolute( prefixDirPath ).toString()
