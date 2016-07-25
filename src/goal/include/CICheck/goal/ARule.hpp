@@ -46,7 +46,7 @@ class ARule
 public:
 	using Ptr = std::shared_ptr< ARule >;
 
-	ARule() noexcept = default;
+	ARule() = default;
 	ARule( const ARule& other ) = delete;
 	void operator=( const ARule& other ) = delete;
 	virtual ~ARule() noexcept = default;

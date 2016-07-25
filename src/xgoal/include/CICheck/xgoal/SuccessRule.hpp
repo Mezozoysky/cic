@@ -46,7 +46,7 @@ class SuccessRule
 public:
 	using Ptr = std::shared_ptr< SuccessRule >;
 
-	SuccessRule() noexcept = default;
+	SuccessRule() = default;
 	virtual ~SuccessRule() noexcept = default;
 
 	virtual bool check() override;
