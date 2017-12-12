@@ -31,9 +31,14 @@
 # KDevelop
 *.kdev4
 
-# Sublime Text
-*.sublime-*
+# gtags
+GTAGS
+GRTAGS
+GSYMS
+GPATH
 
 # misc
+.projectile
 build
-cicheck.properties
+check.properties
+*.swp

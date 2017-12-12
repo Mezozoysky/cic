@@ -1,25 +1,43 @@
-cmake_minimum_required( VERSION 3.0 )
+cmake_minimum_required( VERSION 3.1.0 )
 
 set( CMAKE_BUILD_TYPE "Debug" CACHE STRING "Project build type" )
 set( CMAKE_INSTALL_PREFIX "/usr/local" CACHE PATH "Install prefix" )
 set( CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake_modules" ${CMAKE_MODULE_PATH} )
 set( EXECUTABLE_OUTPUT_PATH "${CMAKE_BINARY_DIR}/bin" )
 set( LIBRARY_OUTPUT_PATH "${CMAKE_BINARY_DIR}/lib" )
-set( CMAKE_MACOSX_RPATH 1 )
-set( CMAKE_VERBOSE_MAKEFILE 1 )
+set( CMAKE_VERBOSE_MAKEFILE TRUE )
 
-project( CICheck C CXX )
+set_property( GLOBAL PROPERTY USE_FOLDERS ON )
+set_property( GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER "cmake" )
+list( APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules" )
 
-option( CIC_BUILD_INDUSTRY_LIB "Build cic-industry library"  ON )
-option( CIC_BUILD_XMLU_LIB "Build cic-xmlu library"  ON )
-option( CIC_BUILD_TASK_LIB "Build cic-task library"  ON )
-option( CIC_BUILD_GOAL_LIB "Build cic-goal library"  ON )
-option( CIC_BUILD_XGOAL_LIB "Build cic-xgoal library"  ON )
-option( CIC_BUILD_CICHECK "Build cicheck tool"  ON )
-option( CIC_BUILD_CHECK "Build cic-check tool"  ON )
+if( "$ENV{CATCH_HOME}" STREQUAL "" )
+    set( ENV{CATCH_HOME} "${CMAKE_SOURCE_DIR}/deps/Catch/" )
+endif()
+set( Catch_HOME $ENV{CATCH_HOME} CACHE PATH "Path to Catch" )
 
-set( Poco_DIR "${CMAKE_SOURCE_DIR}/deps/" CACHE PATH "Directory containing Poco libraries and includes" )
-set( FMT_DIR "${CMAKE_SOURCE_DIR}/deps/" CACHE PATH "Deractory containing FMT library and includes" )
+if( "$ENV{POCO_HOME}" STREQUAL "" )
+	set( ENV{POCO_HOME} "${CMAKE_SOURCE_DIR}/deps/Poco/" )
+endif()
+set( POCO_HOME $ENV{POCO_HOME} CACHE PATH "Top directory containing Poco library and includes" )
+list( APPEND CMAKE_PREFIX_PATH "${POCO_HOME}" )
+
+if( "$ENV{FMT_HOME}" STREQUAL "" )
+    set( ENV{FMT_HOME} "${CMAKE_SOURCE_DIR}/deps/fmt" )
+endif()
+set( FMT_HOME $ENV{FMT_HOME} CACHE PATH "Top directory containing fmt library and includes" )
+list( APPEND CMAKE_PREFIX_PATH "${FMT_HOME}" )
+
+if( "$ENV{ANGELSCRIPT_SDK}" STREQUAL "" )
+    set( ENV{ANGELSCRIPT_SDK} "${CMAKE_SOURCE_DIR}/deps/angelscript" )
+endif()
+set( AngelScript_SDK $ENV{ANGELSCRIPT_SDK} CACHE PATH "Angelscript sdk directory" )
+
+
+project( cic C CXX )
+
+set( CMAKE_CXX_STANDARD 11 )
+set( CMAKE_CXX_STANDARD_REQURED TRUE )
 
 #
 # OS definitions
@@ -44,18 +62,25 @@ message( "-- ${CMAKE_PROJECT_NAME} -- Compiler name: ${CMAKE_CXX_COMPILER_ID}" )
 message( "-- ${CMAKE_PROJECT_NAME} -- Compiler version: ${CMAKE_CXX_COMPILER_VERSION}" )
 
 if( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" )
-    set( CMAKE_CXX_FLAGS "-std=c++11" )
+    set( CIC_COMPILER_GCC TRUE )
 elseif( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang" )
-    set( CMAKE_CXX_FLAGS "-std=c++11 -stdlib=libc++" )
+    set( CIC_COMPILER_CLANG TRUE )
 else()
     #TODO: investigate what to do on windows
 endif()
 
 #
-# Enable project folders
+# Global dependencies
 #
-set_property( GLOBAL PROPERTY USE_FOLDERS ON )
-set_property( GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER "CMake" )
+set( Catch_USE_SINGLE_INCLUDE TRUE )
+find_package( Catch REQUIRED )
+find_package( Poco 1.7.8 CONFIG REQUIRED Util XML JSON Foundation )
+find_package( fmt 4.0.0 CONFIG REQUIRED )
+find_package( AngelScript REQUIRED )
+find_package( Threads REQUIRED )
 
+
+option( CIC_BUILD_CHECK_APP "Build cic-check tool"  ON )
+option( CIC_BUILD_CHECK_LIB "Build cic-check library"  ON )
 
 add_subdirectory( src )

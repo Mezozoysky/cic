@@ -24,53 +24,41 @@
 
 
 /// \file
-/// \brief Provides CheckApp, the application class for cic-check tool
+/// \brief Provides wrapped Poco::XML::* types and couple of XML utility functions
 /// \author Stanislav Demyanovich <mezozoysky@gmail.com>
 /// \date 2016
 /// \copyright cic is released under the terms of zlib/png license
 
+#ifndef CIC_CHECK__XML_UTILS_HPP
+#define CIC_CHECK__XML_UTILS_HPP
 
-#ifndef CIC_CHECK__CHECK_APP_HPP
-#define CIC_CHECK__CHECK_APP_HPP
-
-#include <Poco/Util/Application.h>
-#include <Poco/AutoPtr.h>
+#include <Poco/DOM/Node.h>
+#include <Poco/DOM/NodeList.h>
+#include <Poco/DOM/NamedNodeMap.h>
 #include <Poco/DOM/DOMParser.h>
-#include <cic/check/Industry.hpp>
-#include <map>
+#include <Poco/DOM/Document.h>
+#include <Poco/SAX/InputSource.h>
+#include <Poco/XML/XMLException.h>
+#include <Poco/AutoPtr.h>
+
 
 namespace cic
 {
 namespace check
 {
 
-class CheckApp : public Poco::Util::Application
-{
-public:
-    using Ptr = Poco::AutoPtr< CheckApp >;
 
-public:
-    CheckApp() noexcept;
-    virtual ~CheckApp() noexcept = default;
+Poco::AutoPtr<Poco::XML::Document> fetchDoc( const std::string& path, Poco::XML::DOMParser& parser );
 
-    void helpOptionCallback( const std::string& name, const std::string& value );
+Poco::XML::Node* fetchNode( const Poco::XML::Node* root,
+                 const std::string& nodePath,
+                 unsigned short requiredType = 0 );
 
-protected:
-    virtual void initialize( Poco::Util::Application& self ) override;
-    virtual void uninitialize() override;
-    virtual void defineOptions( Poco::Util::OptionSet& options ) override;
-    virtual int main( const std::vector< std::string >& args ) override;
+std::string fetchText( const Poco::XML::Node* root );
 
-    virtual std::string formatHelpText() const noexcept;
-
-private:
-    bool mIsHelpOptionRequested;
-
-    Poco::XML::DOMParser mParser;
-    Industry mIndustry;
-};
 
 } // namespace check
 } // namespace cic
 
-#endif // CIC_CHECK__CHECK_APP_HPP
+
+#endif /* CIC_CHECK__XML_UTILS_HPP */

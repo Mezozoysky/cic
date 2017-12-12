@@ -24,53 +24,57 @@
 
 
 /// \file
-/// \brief Provides CheckApp, the application class for cic-check tool
+/// \brief Rule - basic rule abstraction
 /// \author Stanislav Demyanovich <mezozoysky@gmail.com>
 /// \date 2016
 /// \copyright cic is released under the terms of zlib/png license
 
 
-#ifndef CIC_CHECK__CHECK_APP_HPP
-#define CIC_CHECK__CHECK_APP_HPP
+#ifndef CIC_CHECK__RULE_HPP
+#define CIC_CHECK__RULE_HPP
 
-#include <Poco/Util/Application.h>
-#include <Poco/AutoPtr.h>
-#include <Poco/DOM/DOMParser.h>
-#include <cic/check/Industry.hpp>
-#include <map>
+#include "Serializable.hpp"
+#include <memory>
+#include <string>
 
 namespace cic
 {
 namespace check
 {
 
-class CheckApp : public Poco::Util::Application
+class Rule : public Serializable
 {
 public:
-    using Ptr = Poco::AutoPtr< CheckApp >;
+    using Ptr = std::shared_ptr< Rule >;
+
+    Rule() = default;
+    Rule( const Rule& other ) = delete;
+    Rule& operator=( const Rule& other ) = delete;
+    virtual ~Rule() noexcept = default;
+
+    virtual bool check() = 0;
 
 public:
-    CheckApp() noexcept;
-    virtual ~CheckApp() noexcept = default;
-
-    void helpOptionCallback( const std::string& name, const std::string& value );
+    inline const std::string& name() const noexcept;
 
 protected:
-    virtual void initialize( Poco::Util::Application& self ) override;
-    virtual void uninitialize() override;
-    virtual void defineOptions( Poco::Util::OptionSet& options ) override;
-    virtual int main( const std::vector< std::string >& args ) override;
-
-    virtual std::string formatHelpText() const noexcept;
+    inline std::string& name() noexcept;
 
 private:
-    bool mIsHelpOptionRequested;
-
-    Poco::XML::DOMParser mParser;
-    Industry mIndustry;
+    std::string mName;
 };
+
+inline const std::string& Rule::name() const noexcept
+{
+    return ( mName );
+}
+
+inline std::string& Rule::name() noexcept
+{
+    return ( mName );
+}
 
 } // namespace check
 } // namespace cic
 
-#endif // CIC_CHECK__CHECK_APP_HPP
+#endif // CIC_CHECK__RULE_HPP

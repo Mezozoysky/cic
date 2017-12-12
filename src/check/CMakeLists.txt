@@ -1,90 +1,69 @@
 # check app
 
-set( APP_NAME "check" )
-set( APP_FILE_NAME "cic-check" )
+set( MODULE_NAME "check" )
+set( MODULE_NSPATH "cic/check" )
+set( MODULE_TGT "check" )
+set( MODULE_ROOT ${CMAKE_CURRENT_SOURCE_DIR} )
 
-set( APP_HEADERS_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/src )
-set( APP_SOURCES_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/src )
+set( MODULE_HEADERS "" )
+set( MODULE_SOURCES "" )
 
-#
-# OS-specific libs
-#
-set( APP_OS_SPECIFIC_LIBS "" )
-
-if( CIC_OS_LINUX )
-	find_library( PTHREAD_LIBRARY NAMES pthread )
-	set( APP_OS_SPECIFIC_LIBS ${APP_OS_SPECIFIC_LIBS}
-		${PTHREAD_LIBRARY}
-	)
-endif()
-
-if( CIC_OS_OSX )
-	set( APP_OS_SPECIFIC_LIBS ${APP_OS_SPECIFIC_LIBS}
-	)
-endif()
-
-if( CIC_OS_WINDOWS )
-	set( APP_OS_SPECIFIC_LIBS ${APP_OS_SPECIFIC_LIBS}
-	)
-endif()
-
-#
-# Sources
-#
-set( APP_HEADERS "" )
-set( APP_SOURCES "" )
-
-# ===========================
-# ==== ${APP_NAME} group ====
-# ===========================
+# ===============================================
+# ==== ${MODULE_ROOT}/${MODULE_NSPATH} group ====
+# ===============================================
 set(GROUP_HEADERS
-	${APP_HEADERS_ROOT}/CheckApp.hpp
+	${MODULE_ROOT}/src/CheckApp.hpp
 )
 set(GROUP_SOURCES
-	${APP_SOURCES_ROOT}/main.cpp
-	${APP_SOURCES_ROOT}/CheckApp.cpp
+	${MODULE_ROOT}/src/main.cpp
+	${MODULE_ROOT}/src/CheckApp.cpp
 )
-source_group( ${APP_NAME} FILES ${GROUP_HEADERS} ${GROUP_SOURCES} )
-set( APP_HEADERS ${APP_HEADERS} ${GROUP_HEADERS} )
-set( APP_SOURCES ${APP_SOURCES} ${GROUP_SOURCES} )
+source_group( "${MODULE_NAME}\\${MODULE_NSPATH}"
+    FILES ${GROUP_HEADERS} ${GROUP_SOURCES}
+    )
+set( MODULE_HEADERS ${MODULE_HEADERS} ${GROUP_HEADERS} )
+set( MODULE_SOURCES ${MODULE_SOURCES} ${GROUP_SOURCES} )
 
 #
 # Build
 #
-add_executable( ${APP_FILE_NAME} WIN32 #MACOSX_BUNDLE
-	${APP_HEADERS}
-	${APP_SOURCES}
+
+include_directories(
+    ${MODULE_ROOT}/src
+    $<TARGET_PROPERTY:cic-check,INTERFACE_INCLUDE_DIRECTORIES>
+    # $<TARGET_PROPERTY:Poco::Util,INTERFACE_INCLUDE_DIRECTORIES>
+    # $<TARGET_PROPERTY:Poco::XML,INTERFACE_INCLUDE_DIRECTORIES>
+    # $<TARGET_PROPERTY:Poco::JSON,INTERFACE_INCLUDE_DIRECTORIES>
+    $<TARGET_PROPERTY:Poco::Foundation,INTERFACE_INCLUDE_DIRECTORIES>
+    # $<TARGET_PROPERTY:fmt::fmt,INTERFACE_INCLUDE_DIRECTORIES>
+    # ${AngelScript_INCLUDE_DIR}
+    Threads::Threads
+    )
+set( TARGET_PROPERTIES LINKER_LANGUAGE CXX )
+add_executable( ${MODULE_TGT} WIN32 #MACOSX_BUNDLE
+	${MODULE_HEADERS}
+	${MODULE_SOURCES}
 )
 
-target_link_libraries( ${APP_FILE_NAME}
-	cic-xgoal
-	cic-goal
-	cic-xmlu
-	cic-industry-fake
+target_link_libraries( ${MODULE_TGT}
+    cic-check
+    Poco::Util
+    Poco::XML
+    Poco::JSON
+    Poco::Foundation
+    fmt::fmt
 )
-
-target_link_libraries( ${APP_FILE_NAME}
-	${FMT_LIBRARY}
-)
-
-target_link_libraries( ${APP_FILE_NAME}
-	${Poco_Util_LIBRARY}
-	${Poco_XML_LIBRARY}
-	${Poco_JSON_LIBRARY}
-	${Poco_Foundation_LIBRARY}
-)
-
-target_link_libraries( ${APP_FILE_NAME} ${APP_OS_SPECIFIC_LIBS} )
 
 #
 # Install
 #
+
 install(
-	TARGETS ${APP_FILE_NAME}
+	TARGETS ${MODULE_TGT}
 	BUNDLE DESTINATION bin
 	RUNTIME DESTINATION bin
 )
 install(
-	DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/share/cic/${APP_NAME}
+	DIRECTORY ${MODULE_ROOT}/share/cic/${MODULE_NAME}
 	DESTINATION share/cic
 )

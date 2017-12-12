@@ -24,53 +24,67 @@
 
 
 /// \file
-/// \brief Provides CheckApp, the application class for cic-check tool
+/// \brief Provides SystemCmdRule class
 /// \author Stanislav Demyanovich <mezozoysky@gmail.com>
 /// \date 2016
 /// \copyright cic is released under the terms of zlib/png license
+///
+/// \details SystemCmdRule class presents the rule which checks system command for exit
+/// code == 0
 
+#ifndef CIC_CHECK__SYSTEM_CMD_RULE_HPP
+#define CIC_CHECK__SYSTEM_CMD_RULE_HPP
 
-#ifndef CIC_CHECK__CHECK_APP_HPP
-#define CIC_CHECK__CHECK_APP_HPP
-
-#include <Poco/Util/Application.h>
-#include <Poco/AutoPtr.h>
-#include <Poco/DOM/DOMParser.h>
-#include <cic/check/Industry.hpp>
-#include <map>
+#include "Rule.hpp"
 
 namespace cic
 {
 namespace check
 {
 
-class CheckApp : public Poco::Util::Application
+class SystemCmdRule : public Rule
 {
 public:
-    using Ptr = Poco::AutoPtr< CheckApp >;
+    using Ptr = std::shared_ptr< SystemCmdRule >;
+
+    virtual ~SystemCmdRule() noexcept = default;
+
+    virtual bool check() override;
+    virtual void loadFromXML( Poco::XML::Node* xml, Industry* industry ) override;
+    virtual void saveToXML( Poco::XML::Node* xml ) const override;
 
 public:
-    CheckApp() noexcept;
-    virtual ~CheckApp() noexcept = default;
-
-    void helpOptionCallback( const std::string& name, const std::string& value );
+    inline const std::string& cmd() const noexcept;
+    inline const std::string& options() const noexcept;
 
 protected:
-    virtual void initialize( Poco::Util::Application& self ) override;
-    virtual void uninitialize() override;
-    virtual void defineOptions( Poco::Util::OptionSet& options ) override;
-    virtual int main( const std::vector< std::string >& args ) override;
-
-    virtual std::string formatHelpText() const noexcept;
+    inline std::string& cmd() noexcept;
+    inline std::string& options() noexcept;
 
 private:
-    bool mIsHelpOptionRequested;
-
-    Poco::XML::DOMParser mParser;
-    Industry mIndustry;
+    std::string mCmd;
+    std::string mOptions;
 };
+
+inline const std::string& SystemCmdRule::cmd() const noexcept
+{
+    return ( mCmd );
+}
+inline std::string& SystemCmdRule::cmd() noexcept
+{
+    return ( mCmd );
+}
+inline const std::string& SystemCmdRule::options() const noexcept
+{
+    return ( mOptions );
+}
+inline std::string& SystemCmdRule::options() noexcept
+{
+    return ( mOptions );
+}
+
 
 } // namespace check
 } // namespace cic
 
-#endif // CIC_CHECK__CHECK_APP_HPP
+#endif /* CIC_CHECK__SYSTEM_CMD_RULE_HPP */

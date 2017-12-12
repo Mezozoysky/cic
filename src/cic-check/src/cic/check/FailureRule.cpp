@@ -24,53 +24,33 @@
 
 
 /// \file
-/// \brief Provides CheckApp, the application class for cic-check tool
+/// \brief FailureRule realisation
 /// \author Stanislav Demyanovich <mezozoysky@gmail.com>
 /// \date 2016
 /// \copyright cic is released under the terms of zlib/png license
 
+#include <cic/check/FailureRule.hpp>
+#include <Poco/DOM/Node.h>
 
-#ifndef CIC_CHECK__CHECK_APP_HPP
-#define CIC_CHECK__CHECK_APP_HPP
-
-#include <Poco/Util/Application.h>
-#include <Poco/AutoPtr.h>
-#include <Poco/DOM/DOMParser.h>
-#include <cic/check/Industry.hpp>
-#include <map>
+using Poco::XML::Node;
 
 namespace cic
 {
 namespace check
 {
 
-class CheckApp : public Poco::Util::Application
+
+bool FailureRule::check()
 {
-public:
-    using Ptr = Poco::AutoPtr< CheckApp >;
+    return ( false );
+}
 
-public:
-    CheckApp() noexcept;
-    virtual ~CheckApp() noexcept = default;
+void FailureRule::loadFromXML( Node* root, Industry* industry )
+{
+    // Do nothing
+}
 
-    void helpOptionCallback( const std::string& name, const std::string& value );
-
-protected:
-    virtual void initialize( Poco::Util::Application& self ) override;
-    virtual void uninitialize() override;
-    virtual void defineOptions( Poco::Util::OptionSet& options ) override;
-    virtual int main( const std::vector< std::string >& args ) override;
-
-    virtual std::string formatHelpText() const noexcept;
-
-private:
-    bool mIsHelpOptionRequested;
-
-    Poco::XML::DOMParser mParser;
-    Industry mIndustry;
-};
+void FailureRule::saveToXML( Node* root ) const {}
 
 } // namespace check
 } // namespace cic
-
-#endif // CIC_CHECK__CHECK_APP_HPP

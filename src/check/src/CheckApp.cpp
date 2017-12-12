@@ -1,6 +1,6 @@
-//  CICheck
+//  cic
 //
-//  CICheck - Copyright (C) 2016 Stanislav Demyanovich <mezozoysky@gmail.com>
+//  cic - Copyright (C) 2016 Stanislav Demyanovich <mezozoysky@gmail.com>
 //
 //  This software is provided 'as-is', without any express or
 //  implied warranty. In no event will the authors be held
@@ -27,17 +27,23 @@
 /// \brief CheckApp definition
 /// \author Stanislav Demyanovich <mezozoysky@gmail.com>
 /// \date 2016
-/// \copyright CICheck is released under the terms of zlib/png license
+/// \copyright cic is released under the terms of zlib/png license
 
 
 #include "CheckApp.hpp"
+#include <cic/check/Plan.hpp>
+#include <cic/check/XMLUtils.hpp>
 #include <fmt/format.h>
 #include <sstream>
 #include <Poco/Util/HelpFormatter.h>
 #include <Poco/Environment.h>
+#include <Poco/String.h>
 
+using Poco::XML::Document;
+using Poco::XML::Node;
+using Poco::XML::NamedNodeMap;
+using DocumentPtr = Poco::AutoPtr< Document >;
 using namespace fmt::literals;
-using namespace cic::xmlu;
 
 namespace cic
 {
@@ -50,253 +56,252 @@ CheckApp::CheckApp() noexcept
 {
 }
 
-void CheckApp::helpOptionCallback ( const std::string& name, const std::string& value )
+void CheckApp::helpOptionCallback( const std::string& name, const std::string& value )
 {
-	mIsHelpOptionRequested = true;
-	fmt::print( "{}\n", formatHelpText() );
-	stopOptionsProcessing();
+    mIsHelpOptionRequested = true;
+    fmt::print( "{}\n", formatHelpText() );
+    stopOptionsProcessing();
 }
 
-void CheckApp::initialize ( Poco::Util::Application& self )
+void CheckApp::initialize( Poco::Util::Application& self )
 {
-	// Init default application directories
-	Poco::Path defaultHomePath;
-	if ( Poco::Environment::has( "CIC_HOME" ) )
-	{
-		defaultHomePath = Poco::Path::forDirectory( Poco::Environment::get( "CIC_HOME" ) );
-	}
-	else
-	{
-		defaultHomePath =
-				Poco::Path::forDirectory( config().getString( "application.dir") ).parent();
-	}
+    // Init default application directories
+    Poco::Path defaultHomePath;
+    if ( Poco::Environment::has( "CIC_HOME" ) )
+    {
+        defaultHomePath = Poco::Path::forDirectory( Poco::Environment::get( "CIC_HOME" ) );
+    }
+    else
+    {
+        defaultHomePath = Poco::Path::forDirectory( config().getString( "application.dir" ) ).parent();
+    }
 
-	Poco::Path defaultBinPath{ defaultHomePath };
-	defaultBinPath.pushDirectory( "bin" );
-	Poco::Path defaultSharePath{ defaultHomePath };
-	defaultSharePath.pushDirectory( "share" ).pushDirectory( "CICheck" );
+    Poco::Path defaultBinPath{ defaultHomePath };
+    defaultBinPath.pushDirectory( "bin" );
+    Poco::Path defaultSharePath{ defaultHomePath };
+    defaultSharePath.pushDirectory( "share" ).pushDirectory( "cic" ).pushDirectory( "check" );
 
-// 	std::string defaultShareDir{
-// 			Poco::Path::forDirectory( "./share/CICheck" ).makeAbsolute( prefixDirPath ).toString()
-// 	};
+    // 	std::string defaultShareDir{
+    // 			Poco::Path::forDirectory( "./share/cic" ).makeAbsolute( prefixDirPath ).toString()
+    // 	};
 
-	// Load custom application config
-	// ( cic-check.properties placed beside the application executable or above its path )
-	bool usingCustomConfig{ loadConfiguration() > 0 };
+    // Load custom application config
+    // ( cic-check.properties placed beside the application executable or above its path )
+    bool usingCustomConfig{ loadConfiguration() > 0 };
 
-	if ( !config().hasProperty( "cic.dir.home" ) )
-	{
-		config().setString( "cic.dir.home", defaultHomePath.toString() );
-	}
+    if ( !config().hasProperty( "cic.dir.home" ) )
+    {
+        config().setString( "cic.dir.home", defaultHomePath.toString() );
+    }
 
-	if ( !config().hasProperty( "cic.dir.bin" ) )
-	{
-		config().setString( "cic.dir.bin", defaultBinPath.toString() );
-	}
+    if ( !config().hasProperty( "cic.dir.bin" ) )
+    {
+        config().setString( "cic.dir.bin", defaultBinPath.toString() );
+    }
 
-	if ( !config().hasProperty( "cic.dir.share" ) )
-	{
-		config().setString( "cic.dir.share", defaultSharePath.toString() );
-	}
+    if ( !config().hasProperty( "cic.dir.share" ) )
+    {
+        config().setString( "cic.dir.share", defaultSharePath.toString() );
+    }
 
-	if ( !usingCustomConfig )
-	{
-		// Load default configuration
-		std::string defCfg{ defaultSharePath.setFileName( "check.properties" ).toString() };
-		try
-		{
-			loadConfiguration( defCfg );
-		}
-		catch ( Poco::FileNotFoundException& exc )
-		{
-			logger()
-			.warning(
-					"Default cic-check configuration isnt provided: {}"\
-					""_format( exc.displayText() )
-			);
-		}
-	}
+    if ( !usingCustomConfig )
+    {
+        // Load default configuration
+        std::string defCfg{ defaultSharePath.setFileName( "check.properties" ).toString() };
+        try
+        {
+            loadConfiguration( defCfg );
+        }
+        catch ( Poco::FileNotFoundException& exc )
+        {
+            logger().warning(
+                "Default cic-check configuration isnt provided: {}"
+                ""_format( exc.displayText() ) );
+        }
+    }
 
-	// Application-level properties
-// 	if ( !config().hasProperty( "cic.check.property_name" ) )
-// 	{
-// 		config().setString( "cic.check.property_name", propertyValue );
-// 	}
-	
-	Poco::Util::Application::initialize ( self );
+    // Application-level properties
+    // 	if ( !config().hasProperty( "cic.check.property_name" ) )
+    // 	{
+    // 		config().setString( "cic.check.property_name", propertyValue );
+    // 	}
 
-	//TODO: configure logging!
-	logger().setLevel( Poco::Message::PRIO_TRACE );
+    Poco::Util::Application::initialize( self );
 
-	//logger.information( "---------------- Start logging ----------------" );
-	//logger.debug( "Initializing CheckApp .." );
+    // TODO: configure logging!
+    logger().setLevel( Poco::Message::PRIO_TRACE );
 
-	// TODO: initialize stuff here
-	mGoalProvider.init();
+    // logger.information( "---------------- Start logging ----------------" );
+    // logger.debug( "Initializing CheckApp .." );
 
-	//logger.debug( ".. Done initializing CheckApp" );
-
+    // TODO: initialize stuff here
+    {
+        auto planFactory = mIndustry.create< Plan >();
+        planFactory->registerId< Plan >( "default" );
+        auto phaseFactory = mIndustry.create< Phase >();
+        phaseFactory->registerId< Phase >( "default" );
+        auto ruleFactory = mIndustry.create< Rule >();
+        ruleFactory->registerId< SuccessRule >( "success" );
+        ruleFactory->registerId< FailureRule >( "failure" );
+        ruleFactory->registerId< SystemCmdRule >( "systemCmd" );
+    }
+    // logger.debug( ".. Done initializing CheckApp" );
 }
 
 void CheckApp::uninitialize()
 {
-	//logger().debug( "Uninitializing CheckApp .." );
-	// TODO: uninitialize stuff here
-	//logger().debug( ".. Done uninitializing CheckApp" );
+    // logger().debug( "Uninitializing CheckApp .." );
+    // TODO: uninitialize stuff here
+    // logger().debug( ".. Done uninitializing CheckApp" );
 
-	Poco::Util::Application::uninitialize();
+    Poco::Util::Application::uninitialize();
 }
 
 void CheckApp::defineOptions( Poco::Util::OptionSet& options )
 {
-    Poco::Util::Application::defineOptions ( options );
+    Poco::Util::Application::defineOptions( options );
 
-	options.addOption(
-		Poco::Util::Option( "help", "h", "print the help screen" )
-		.required( false )
-		.repeatable( false )
-		.callback(
-			Poco::Util::OptionCallback< CheckApp >(
-				this
-				, &CheckApp::helpOptionCallback
-			)
-		)
-	);
-
+    options.addOption(
+        Poco::Util::Option( "help", "h", "print the help screen" )
+            .required( false )
+            .repeatable( false )
+            .callback( Poco::Util::OptionCallback< CheckApp >( this, &CheckApp::helpOptionCallback ) ) );
 }
 
 int CheckApp::main( const std::vector< std::string >& args )
 {
-	logger().debug(
-		"Config:\n"
-		"* cic.dir.home:  '{}'\n"\
-		"* cic.dir.bin:   '{}'\n"\
-		"* cic.dir.share: '{}'"\
-		""_format(
-			config().getString( "cic.dir.home" )
-			, config().getString( "cic.dir.bin" )
-			, config().getString( "cic.dir.share" )
-		)
-	);
+    logger().debug(
+        "Config:\n"
+        "* cic.dir.home:  '{}'\n"
+        "* cic.dir.bin:   '{}'\n"
+        "* cic.dir.share: '{}'"
+        ""_format( config().getString( "cic.dir.home" ),
+                   config().getString( "cic.dir.bin" ),
+                   config().getString( "cic.dir.share" ) ) );
 
-	if ( mIsHelpOptionRequested )
-	{
-		return ( EXIT_OK );
-	}
-	if ( args.empty() )
-	{
-		logger().debug( "No arguments given!" );
-		fmt::print( "{}\n", formatHelpText() );
-		return ( EXIT_USAGE );
-	}
+    if ( mIsHelpOptionRequested )
+    {
+        return ( EXIT_OK );
+    }
+    if ( args.empty() )
+    {
+        logger().debug( "No arguments given!" );
+        fmt::print( "{}\n", formatHelpText() );
+        return ( EXIT_USAGE );
+    }
 
-	std::string goalName{ args[ 0 ] };
-	std::string tgtName;
+    std::string planName{ args[ 0 ] };
+    std::string phaseName;
 
-	if ( args.size() > 1 )
-	{
-		tgtName = args[ 1 ];
-	}
+    if ( args.size() > 1 )
+    {
+        phaseName = args[ 1 ];
+    }
 
-	logger().information(
-			"Requested goal: '{}';{}"\
-			""_format(
-					goalName
-					, tgtName.empty() ? "" : " Requested target: '{}';"_format( tgtName )
-			)
-	);
+    logger().information(
+        "Requested plan: '{}';{}"
+        ""_format( planName, phaseName.empty() ? "" : " Requested phase: '{}';"_format( phaseName ) ) );
 
-	// TODO: load and check goal/target
-	try
-	{
-		mGoalProvider.loadDecls(
-				Poco::Path::forDirectory( config().getString( "cic.dir.share" ) )
-				.pushDirectory( "check" )
-				.setFileName( "declarations.xml" )
-				.toString()
-		);
-	}
-	catch ( Poco::FileNotFoundException& exc )
-	{
-		logger()
-		.error(
-			"Error while loading declarations: {}"\
-			""_format( exc.displayText() )
-		);
-	}
-	
+    // TODO: load and check plan/phase
+    // try
+    // {
+    //     mPlanProvider.loadDecls( Poco::Path::forDirectory( config().getString( "cic.dir.share" ) )
+    //                                  .pushDirectory( "check" )
+    //                                  .setFileName( "declarations.xml" )
+    //                                  .toString() );
+    // }
+    // catch ( Poco::FileNotFoundException& exc )
+    // {
+    //     logger().error(
+    //         "Error while loading declarations: {}"
+    //         ""_format( exc.displayText() ) );
+    // }
 
-	if ( mGoalProvider.isDeclsEmpty() )
-	{
-		logger().critical( "No declarations provided" );
-		return ( EXIT_DATAERR );
-	}
 
-	if ( !mGoalProvider.isDeclared( goalName ) )
-	{
-		logger().critical( "Goal '{}' isnt declared;"_format( goalName ) );
-		return( EXIT_DATAERR );
-	}
+    // if ( mPlanProvider.isDeclsEmpty() )
+    // {
+    //     logger().critical( "No declarations provided" );
+    //     return ( EXIT_DATAERR );
+    // }
 
-	goal::Goal::Ptr goal;
-	try
-	{
-		goal = mGoalProvider.get( goalName );
-	}
-	catch ( Poco::Exception& exc )
-	{
-		logger().critical( "Error loading goal '{}': {}"_format( goalName, exc.displayText() ) );
-		return ( exc.code() );
-	}
+    // if ( !mPlanProvider.isDeclared( planName ) )
+    // {
+    //     logger().critical( "Plan '{}' isnt declared;"_format( planName ) );
+    //     return ( EXIT_DATAERR );
+    // }
 
-	bool result{ false };
-	try
-	{
-		result = goal->check( tgtName );
-	}
-	catch ( Poco::Exception& exc )
-	{
-		logger().critical(
-				"Error checking goal '{}' for target '{}': {}"\
-				""_format( goalName, tgtName, exc.displayText() )
-		);
-		return ( exc.code() );
-	}
+    Poco::Path planPath{ config().getString( "cic.dir.share" ) };
+    planPath.pushDirectory( "plans" ).setBaseName( planName ).setExtension( "xml" );
+    DocumentPtr doc{ fetchDoc( planPath.toString(), mParser ) };
+    Node* planRoot{ fetchNode( doc, "/plan", Node::ELEMENT_NODE ) };
+    std::string typeId{ "default" };
+    NamedNodeMap* attrs{ planRoot->attributes() };
+    Node* attr{ attrs->getNamedItem( "typeId" ) };
+    if ( attr )
+    {
+        typeId = Poco::trim( attr->getNodeValue() );
+    }
+    auto factory = mIndustry.get< Plan >();
+    assert( factory != nullptr );
+    Plan::Ptr plan{ factory->create( typeId ) };
+    plan->loadFromXML( planRoot, &mIndustry );
 
-	if ( !result )
-	{
-		logger().information( "CHECK FAILED" );
-		//TODO: Failure analysis / reporting
-	}
-	else
-	{
-		logger().information( "CHECK SUCCESSFULL" );
-	}
+    // try
+    // {
+    //     plan = mPlanProvider.get( planName );
+    // }
+    // catch ( Poco::Exception& exc )
+    // {
+    //     logger().critical( "Error loading plan '{}': {}"_format( planName, exc.displayText() ) );
+    //     return ( exc.code() );
+    // }
 
-	return ( EXIT_OK );
+    bool result{ false };
+    try
+    {
+        result = plan->check( phaseName );
+    }
+    catch ( Poco::Exception& exc )
+    {
+        logger().critical(
+            "Error checking plan '{}' for phase '{}': {}"
+            ""_format( planName, phaseName, exc.displayText() ) );
+        return ( exc.code() );
+    }
+
+    if ( !result )
+    {
+        logger().information( "CHECK FAILED" );
+        // TODO: Failure analysis / reporting
+    }
+    else
+    {
+        logger().information( "CHECK SUCCESSFULL" );
+    }
+
+    return ( EXIT_OK );
 }
 
 std::string CheckApp::formatHelpText() const noexcept
 {
-	std::ostringstream ss;
+    std::ostringstream ss;
 
-	Poco::Util::HelpFormatter hf( options() );
-	hf.setCommand( commandName() );
-	hf.setUsage( "[options] [<goal> [target]]" );
-	hf.setHeader(
-		R"(where:
-		goal        goal name to check;
-		target      specific target to check; goal's default target used if no specified;
+    Poco::Util::HelpFormatter hf( options() );
+    hf.setCommand( commandName() );
+    hf.setUsage( "[options] [<plan> [phase]]" );
+    hf.setHeader(
+        R"(where:
+		plan        plan name to check;
+		phase      specific phase to check; plan's default phase used if no specified;
 
-		!Note: goal should but not must to provide default target
+		!Note: plan should but not must to provide default phase
 
-		options are listed below:)"
-	);
-	hf.setFooter( "MEMENTO MORI!" );
-	hf.setWidth( 80 );
-	hf.format( ss );
+		options are listed below:)" );
+    hf.setFooter( "MEMENTO MORI!" );
+    hf.setWidth( 80 );
+    hf.format( ss );
 
-	return ( ss.str() );
+    return ( ss.str() );
 }
 
 
