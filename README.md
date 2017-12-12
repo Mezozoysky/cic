@@ -1,6 +1,6 @@
 <!-- MarkdownTOC depth=0 -->
 
-- CICheck
+- cic
 	- Dependencies
 	- Build / install
 		- OS X
@@ -10,8 +10,8 @@
 
 <!-- /MarkdownTOC -->
 
-# CICheck
-"CI" is for Continuous Intergation and "Check" for checking!
+# cic
+"ci" is for Continuous Intergation and the last "c" for checking!
 
 ## Dependencies
 
@@ -21,7 +21,7 @@ Download from http://pocoproject.org/download/index.html
 or ``` git clone git@github.com:pocoproject/poco.git ```
 
 We need _PocoFoundation_, _PocoXML_, _PocoJSON_, _PocoUtil_ libraries
-in order to build __cicheck__ command line tool.
+in order to build __check__ command line tool.
 
 * fmt formatting library 3.0.0+
 
@@ -36,11 +36,11 @@ or ``` git clone git@github.com:fmtlib/fmt.git ```
 
 Create project for XCode
 ```bash
-cd /path/to/CICheck
+cd /path/to/cic
 mkdir build
 cd build
 # add -DCMAKE_INSTALL_PREFIX=/my/install/prefix into the line below for custom install location
-cmake -GXcode -DPoco_DIR=/path/to/poco/dir -DFMT_DIR=/path/to/fmt/dir ..
+cmake -GXcode ..
 ```
 Build XCode project from command line
 ```bash
@@ -55,18 +55,18 @@ xcodebuild -target install
 
 #### Build with Make
 
-Build
+Generate Makefile and build
 ```bash
-cd /path/to/CICheck
+cd /path/to/cic
 mkdir build
 cd build
 # add -DCMAKE_INSTALL_PREFIX=/my/install/prefix into the line below for custom install location
-cmake -G"Unix Makefiles" -DPoco_DIR=/path/to/poco/dir -DFMT_DIR=/path/to/fmt/dir ..
+cmake -G"Unix Makefiles" ..
 make
 ```
 Install (default prefix path is /usr/local)
 ```bash
-# assuming we still in /path/to/CICheck/build
+# assuming we still in /path/to/cic/build
 make install
 ```
 
@@ -75,15 +75,15 @@ make install
 
 Build
 ```bash
-cd /path/to/CICheck
+cd /path/to/cic
 mkdir build
 cd build
 # add -DCMAKE_INSTALL_PREFIX=/my/install/prefix into the line below for custom install location
-cmake -DPoco_DIR=/path/to/poco/dir -DFMT_DIR=/path/to/fmt/dir ..
+cmake ..
 make
 ```
 Install (default prefix path is /usr/local)
 ```bash
-# assuming we still in /path/to/CICheck/build
+# assuming we are still within /path/to/cic/build directory
 make install
 ```
