@@ -31,20 +31,29 @@
 
 
 #include "CheckApp.hpp"
-#include <cic/check/Plan.hpp>
-#include <cic/check/XMLUtils.hpp>
+#include <cic/plan/Plan.hpp>
+#include <cic/plan/XMLUtils.hpp>
 #include <fmt/format.h>
 #include <sstream>
 #include <Poco/Util/HelpFormatter.h>
 #include <Poco/Environment.h>
 #include <Poco/String.h>
 #include <cic/scripting/Scripting.hpp>
+#include <cic/plan/ActionFailure.hpp>
+#include <cic/plan/ActionSuccess.hpp>
+#include <cic/plan/ActionSystemCmd.hpp>
 
 using Poco::XML::Document;
 using Poco::XML::Node;
 using Poco::XML::NamedNodeMap;
 using DocumentPtr = Poco::AutoPtr< Document >;
 using namespace fmt::literals;
+using cic::plan::Plan;
+using cic::plan::Phase;
+using cic::plan::Action;
+using cic::plan::ActionFailure;
+using cic::plan::ActionSuccess;
+using cic::plan::ActionSystemCmd;
 
 namespace cic
 {
@@ -141,10 +150,10 @@ void CheckApp::initialize( Poco::Util::Application& self )
         planFactory->registerId< Plan >( "default" );
         auto phaseFactory = mIndustry.create< Phase >();
         phaseFactory->registerId< Phase >( "default" );
-        auto ruleFactory = mIndustry.create< Rule >();
-        ruleFactory->registerId< SuccessRule >( "success" );
-        ruleFactory->registerId< FailureRule >( "failure" );
-        ruleFactory->registerId< SystemCmdRule >( "systemCmd" );
+        auto actionFactory = mIndustry.create< Action >();
+        actionFactory->registerId< ActionSuccess >( "success" );
+        actionFactory->registerId< ActionFailure >( "failure" );
+        actionFactory->registerId< ActionSystemCmd >( "systemCmd" );
     }
     // logger.debug( ".. Done initializing CheckApp" );
 }
@@ -233,8 +242,8 @@ int CheckApp::main( const std::vector< std::string >& args )
 
     Poco::Path planPath{ config().getString( "cic.dir.share" ) };
     planPath.pushDirectory( "plans" ).setBaseName( planName ).setExtension( "xml" );
-    DocumentPtr doc{ fetchDoc( planPath.toString(), mParser ) };
-    Node* planRoot{ fetchNode( doc, "/plan", Node::ELEMENT_NODE ) };
+    DocumentPtr doc{ plan::fetchDoc( planPath.toString(), mParser ) };
+    Node* planRoot{ plan::fetchNode( doc, "/plan", Node::ELEMENT_NODE ) };
     std::string typeId{ "default" };
     NamedNodeMap* attrs{ planRoot->attributes() };
     Node* attr{ attrs->getNamedItem( "typeId" ) };
@@ -260,24 +269,24 @@ int CheckApp::main( const std::vector< std::string >& args )
     bool result{ false };
     try
     {
-        result = plan->check( phaseName );
+        result = plan->execute( phaseName );
     }
     catch ( Poco::Exception& exc )
     {
         logger().critical(
-            "Error checking plan '{}' for phase '{}': {}"
+            "Fail to execute plan '{}' for phase '{}': {}"
             ""_format( planName, phaseName, exc.displayText() ) );
         return ( exc.code() );
     }
 
     if ( !result )
     {
-        logger().information( "CHECK FAILED" );
+        logger().information( "PLAN EXECUTION FAILURE" );
         // TODO: Failure analysis / reporting
     }
     else
     {
-        logger().information( "CHECK SUCCESSFULL" );
+        logger().information( "PLAN EXECUTION SUCCESS" );
     }
 
     scripting::foo();

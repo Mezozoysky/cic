@@ -24,32 +24,32 @@
 
 
 /// \file
-/// \brief Provides SystemCmdRule class
+/// \brief Provides ActionSystemCmd class
 /// \author Stanislav Demyanovich <mezozoysky@gmail.com>
 /// \date 2016
 /// \copyright cic is released under the terms of zlib/png license
 ///
-/// \details SystemCmdRule class presents the rule which checks system command for exit
+/// \details ActionSystemCmd class presents the action which plans system command for exit
 /// code == 0
 
-#ifndef CIC_CHECK__SYSTEM_CMD_RULE_HPP
-#define CIC_CHECK__SYSTEM_CMD_RULE_HPP
+#ifndef CIC_PLAN__ACTION_SYSTEM_CMD_HPP
+#define CIC_PLAN__ACTION_SYSTEM_CMD_HPP
 
-#include "Rule.hpp"
+#include "Action.hpp"
 
 namespace cic
 {
-namespace check
+namespace plan
 {
 
-class SystemCmdRule : public Rule
+class ActionSystemCmd : public Action
 {
 public:
-    using Ptr = std::shared_ptr< SystemCmdRule >;
+    using Ptr = std::shared_ptr< ActionSystemCmd >;
 
-    virtual ~SystemCmdRule() noexcept = default;
+    virtual ~ActionSystemCmd() noexcept = default;
 
-    virtual bool check() override;
+    virtual bool execute() override;
     virtual void loadFromXML( Poco::XML::Node* xml, Industry* industry ) override;
     virtual void saveToXML( Poco::XML::Node* xml ) const override;
 
@@ -66,25 +66,25 @@ private:
     std::string mOptions;
 };
 
-inline const std::string& SystemCmdRule::cmd() const noexcept
+inline const std::string& ActionSystemCmd::cmd() const noexcept
 {
     return ( mCmd );
 }
-inline std::string& SystemCmdRule::cmd() noexcept
+inline std::string& ActionSystemCmd::cmd() noexcept
 {
     return ( mCmd );
 }
-inline const std::string& SystemCmdRule::options() const noexcept
+inline const std::string& ActionSystemCmd::options() const noexcept
 {
     return ( mOptions );
 }
-inline std::string& SystemCmdRule::options() noexcept
+inline std::string& ActionSystemCmd::options() noexcept
 {
     return ( mOptions );
 }
 
 
-} // namespace check
+} // namespace plan
 } // namespace cic
 
-#endif /* CIC_CHECK__SYSTEM_CMD_RULE_HPP */
+#endif /* CIC_PLAN__ACTION_SYSTEM_CMD_HPP */

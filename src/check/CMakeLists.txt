@@ -30,7 +30,7 @@ set( MODULE_SOURCES ${MODULE_SOURCES} ${GROUP_SOURCES} )
 
 include_directories(
     ${MODULE_ROOT}/src
-    $<TARGET_PROPERTY:cic-check,INTERFACE_INCLUDE_DIRECTORIES>
+    $<TARGET_PROPERTY:cic-plan,INTERFACE_INCLUDE_DIRECTORIES>
     $<TARGET_PROPERTY:cic-scripting,INTERFACE_INCLUDE_DIRECTORIES>
     Threads::Threads
     )
@@ -41,7 +41,7 @@ add_executable( ${MODULE_TGT} WIN32 #MACOSX_BUNDLE
 )
 
 target_link_libraries( ${MODULE_TGT}
-    cic-check
+    cic-plan
     cic-scripting
     Poco::Util
     Poco::XML

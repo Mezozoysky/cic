@@ -24,28 +24,24 @@
 
 
 /// \file
-/// \brief Provides Plan class, the basic cic check abstraction
+/// \brief Provides Plan class, the basic cic plan abstraction
 /// \author Stanislav Demyanovich <mezozoysky@gmail.com>
 /// \date 2016
 /// \copyright cic is released under the terms of zlib/png license
 
 
-#ifndef CIC_CHECK__PLAN_HPP
-#define CIC_CHECK__PLAN_HPP
+#ifndef CIC_PLAN__PLAN_HPP
+#define CIC_PLAN__PLAN_HPP
 
 #include "Serializable.hpp"
 #include "Phase.hpp"
-#include "Rule.hpp"
-#include "FailureRule.hpp"
-#include "SuccessRule.hpp"
-#include "SystemCmdRule.hpp"
 #include <string>
 // #include <vector>
 #include <map>
 
 namespace cic
 {
-namespace check
+namespace plan
 {
 
 class Plan : Serializable
@@ -62,7 +58,7 @@ public:
     Plan& operator=( const Plan& other ) = delete;
     virtual ~Plan() noexcept = default;
 
-    virtual bool check( const std::string& phaseName );
+    virtual bool execute( const std::string& phaseName );
     virtual void buildSequence( const std::string& phaseName, Sequence& seq ) const;
     virtual bool isADependsOnB( const std::string& tgtA, const std::string& tgtB ) const;
 
@@ -71,12 +67,12 @@ public:
 
 public:
     inline const std::string& name() const noexcept;
-    inline const std::string& defaultTarget() const noexcept;
+    inline const std::string& defaultPhase() const noexcept;
     inline const PhaseMap& targets() const noexcept;
 
 protected:
     inline std::string& name() noexcept;
-    inline std::string& defaultTarget() noexcept;
+    inline std::string& defaultPhase() noexcept;
     inline PhaseMap& targets() noexcept;
 
 private:
@@ -95,11 +91,11 @@ inline std::string& Plan::name() noexcept
     return ( mName );
 }
 
-inline const std::string& Plan::defaultTarget() const noexcept
+inline const std::string& Plan::defaultPhase() const noexcept
 {
     return ( mDefaultPhase );
 }
-inline std::string& Plan::defaultTarget() noexcept
+inline std::string& Plan::defaultPhase() noexcept
 {
     return ( mDefaultPhase );
 }
@@ -113,7 +109,7 @@ inline Plan::PhaseMap& Plan::targets() noexcept
     return ( mPhases );
 }
 
-} // namespace check
+} // namespace plan
 } // namespace cic
 
-#endif // CIC_CHECK__PLAN_HPP
+#endif // CIC_PLAN__PLAN_HPP

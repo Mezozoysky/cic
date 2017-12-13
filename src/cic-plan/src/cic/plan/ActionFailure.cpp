@@ -24,48 +24,33 @@
 
 
 /// \file
-/// \brief Provides FailureRule class - the rule which always checks failed
+/// \brief ActionFailure realisation
 /// \author Stanislav Demyanovich <mezozoysky@gmail.com>
 /// \date 2016
 /// \copyright cic is released under the terms of zlib/png license
 
-#ifndef CIC_CHECK__FAILURE_RULE_HPP
-#define CIC_CHECK__FAILURE_RULE_HPP
+#include <cic/plan/ActionFailure.hpp>
+#include <Poco/DOM/Node.h>
 
-#include "Rule.hpp"
-
-namespace Poco
-{
-namespace XML
-{
-class Node;
-}
-}
-
+using Poco::XML::Node;
 
 namespace cic
 {
-namespace check
+namespace plan
 {
 
-class Industry;
 
-class FailureRule : public Rule
+bool ActionFailure::execute()
 {
-public:
-    using Ptr = std::shared_ptr< FailureRule >;
+    return ( false );
+}
 
-    FailureRule() = default;
-    virtual ~FailureRule() noexcept = default;
+void ActionFailure::loadFromXML( Node* root, Industry* industry )
+{
+    // Do nothing
+}
 
-    virtual bool check() override;
+void ActionFailure::saveToXML( Node* root ) const {}
 
-    virtual void loadFromXML( Poco::XML::Node* xml, Industry* industry ) override;
-    virtual void saveToXML( Poco::XML::Node* xml ) const override;
-};
-
-
-} // namespace check
+} // namespace plan
 } // namespace cic
-
-#endif /* CIC_CHECK__FAILURE_RULE_HPP */

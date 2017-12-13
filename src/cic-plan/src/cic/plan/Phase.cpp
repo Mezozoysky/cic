@@ -24,15 +24,15 @@
 
 
 /// \file
-/// \brief check::Phase class implementation
+/// \brief plan::Phase class implementation
 /// \author Stanislav Demyanovich <mezozoysky@gmail.com>
 /// \date 2016
 /// \copyright cic is released under the terms of zlib/png license
 
 
-#include <cic/check/Phase.hpp>
-#include <cic/check/Rule.hpp>
-#include <cic/check/XMLUtils.hpp>
+#include <cic/plan/Phase.hpp>
+#include <cic/plan/Action.hpp>
+#include <cic/plan/XMLUtils.hpp>
 #include <Poco/Exception.h>
 #include <Poco/String.h>
 #include <Poco/DOM/Node.h>
@@ -43,10 +43,10 @@ using Poco::XML::Node;
 
 namespace cic
 {
-namespace check
+namespace plan
 {
 
-bool Phase::check() {
+bool Phase::execute() {
 return ( false );
 };
 
@@ -72,7 +72,7 @@ void Phase::loadFromXML( Node* xml, Industry* industry )
 
 void Phase::saveToXML( Node* xml ) const {}
 
-// void Phase::loadRulesFromXML( xmlu::Node* xml, indu::Industry* industry )
+// void Phase::loadActionsFromXML( xmlu::Node* xml, indu::Industry* industry )
 // {
 // NodeList* list{ xml->childNodes() };
 // Node* node{ nullptr };
@@ -146,7 +146,7 @@ void Phase::saveToXML( Node* xml ) const {}
 //                 }
 //             }
 //         }
-//         else if ( node->nodeName() == "rules" )
+//         else if ( node->nodeName() == "actions" )
 //         {
 //             list = node->childNodes();
 //             for ( std::size_t j{ 0 }; j < list->length(); ++j )
@@ -156,31 +156,31 @@ void Phase::saveToXML( Node* xml ) const {}
 //                 {
 //                     continue;
 //                 }
-//                 if ( tmpNode->nodeName() == "rule" )
+//                 if ( tmpNode->nodeName() == "action" )
 //                 {
 //                     std::string typeId;
 //                     attr = tmpNode->attributes()->getNamedItem( "typeId" );
 //                     if ( attr == nullptr )
 //                     {
 //                         throw( Poco::SyntaxException{
-//                             "Mandatory attribute 'typeId' isnt found in 'rule' element", 8 } );
+//                             "Mandatory attribute 'typeId' isnt found in 'action' element", 8 } );
 //                     }
 //                     typeId = Poco::trim( attr->getNodeValue() );
 //                     if ( typeId.empty() )
 //                     {
 //                         throw( Poco::DataException{ "Mandatory attribute 'typeId' is empty", 8 } );
 //                     }
-//                     auto ruleFactory( industry->get< Rule >() );
-//                     if ( ruleFactory == nullptr )
+//                     auto actionFactory( industry->get< Action >() );
+//                     if ( actionFactory == nullptr )
 //                     {
 //                         throw( Poco::NotFoundException{ "No factory registered for given abstraction type",
 //                                                         8 } );
 //                     }
-//                     Rule::Ptr rule{ ruleFactory->create( typeId ) };
-//                     poco_check_ptr( rule );
-//                     rule->loadFromXML( tmpNode, industry );
+//                     Action::Ptr action{ actionFactory->create( typeId ) };
+//                     poco_plan_ptr( action );
+//                     action->loadFromXML( tmpNode, industry );
 
-//                     tgtData.rules.push_back( rule );
+//                     tgtData.actions.push_back( action );
 //                 }
 //                 else
 //                 {

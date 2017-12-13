@@ -29,7 +29,7 @@
 /// \date 2016
 /// \copyright cic is released under the terms of zlib/png license
 
-#include <cic/check/XMLUtils.hpp>
+#include <cic/plan/XMLUtils.hpp>
 #include <Poco/FileStream.h>
 #include <cassert>
 #include <fmt/format.h>
@@ -47,7 +47,7 @@ using namespace fmt::literals;
 
 namespace cic
 {
-namespace check
+namespace plan
 {
 
 DocumentPtr fetchDoc( const std::string& path, DOMParser& parser )
@@ -111,5 +111,5 @@ std::string fetchText( const Node* root )
 }
 
 
-} // namespace check
+} // namespace plan
 } // namespace cic

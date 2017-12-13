@@ -24,38 +24,57 @@
 
 
 /// \file
-/// \brief Provides SuccessRule class - the rule which always checks successfully
+/// \brief Action - basic rule abstraction
 /// \author Stanislav Demyanovich <mezozoysky@gmail.com>
 /// \date 2016
 /// \copyright cic is released under the terms of zlib/png license
 
-#ifndef CIC_CHECK__SUCCESS_RULE_HPP
-#define CIC_CHECK__SUCCESS_RULE_HPP
 
-#include "Rule.hpp"
+#ifndef CIC_PLAN__ACTION_HPP
+#define CIC_PLAN__ACTION_HPP
+
+#include "Serializable.hpp"
+#include <memory>
+#include <string>
 
 namespace cic
 {
-namespace check
+namespace plan
 {
 
-
-class SuccessRule : public Rule
+class Action : public Serializable
 {
 public:
-    using Ptr = std::shared_ptr< SuccessRule >;
+    using Ptr = std::shared_ptr< Action >;
 
-    SuccessRule() = default;
-    virtual ~SuccessRule() noexcept = default;
+    Action() = default;
+    Action( const Action& other ) = delete;
+    Action& operator=( const Action& other ) = delete;
+    virtual ~Action() noexcept = default;
 
-    virtual bool check() override;
+    virtual bool execute() = 0;
 
-    virtual void loadFromXML( Poco::XML::Node* xml, Industry* industry ) override;
-    virtual void saveToXML( Poco::XML::Node* xml ) const override;
+public:
+    inline const std::string& name() const noexcept;
+
+protected:
+    inline std::string& name() noexcept;
+
+private:
+    std::string mName;
 };
 
+inline const std::string& Action::name() const noexcept
+{
+    return ( mName );
+}
 
-} // namespace check
+inline std::string& Action::name() noexcept
+{
+    return ( mName );
+}
+
+} // namespace plan
 } // namespace cic
 
-#endif /* CIC_CHECK__SUCCESS_RULE_HPP */
+#endif // CIC_PLAN__ACTION_HPP

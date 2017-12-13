@@ -24,57 +24,33 @@
 
 
 /// \file
-/// \brief Rule - basic rule abstraction
+/// \brief ActionSuccess realisation
 /// \author Stanislav Demyanovich <mezozoysky@gmail.com>
 /// \date 2016
 /// \copyright cic is released under the terms of zlib/png license
 
+#include <cic/plan/ActionSuccess.hpp>
+#include <Poco/DOM/Node.h>
 
-#ifndef CIC_CHECK__RULE_HPP
-#define CIC_CHECK__RULE_HPP
-
-#include "Serializable.hpp"
-#include <memory>
-#include <string>
+using Poco::XML::Node;
 
 namespace cic
 {
-namespace check
+namespace plan
 {
 
-class Rule : public Serializable
+
+bool ActionSuccess::execute()
 {
-public:
-    using Ptr = std::shared_ptr< Rule >;
-
-    Rule() = default;
-    Rule( const Rule& other ) = delete;
-    Rule& operator=( const Rule& other ) = delete;
-    virtual ~Rule() noexcept = default;
-
-    virtual bool check() = 0;
-
-public:
-    inline const std::string& name() const noexcept;
-
-protected:
-    inline std::string& name() noexcept;
-
-private:
-    std::string mName;
-};
-
-inline const std::string& Rule::name() const noexcept
-{
-    return ( mName );
+    return ( true );
 }
 
-inline std::string& Rule::name() noexcept
+void ActionSuccess::loadFromXML( Poco::XML::Node* xml, Industry* industry )
 {
-    return ( mName );
+    // Do nothing
 }
 
-} // namespace check
+void ActionSuccess::saveToXML( Node* root ) const {}
+
+} // namespace plan
 } // namespace cic
-
-#endif // CIC_CHECK__RULE_HPP

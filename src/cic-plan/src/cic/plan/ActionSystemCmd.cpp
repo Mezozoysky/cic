@@ -24,12 +24,12 @@
 
 
 /// \file
-/// \brief SystemCmdRule realisation
+/// \brief ActionSystemCmd realisation
 /// \author Stanislav Demyanovich <mezozoysky@gmail.com>
 /// \date 2016
 /// \copyright cic is released under the terms of zlib/png license
 
-#include <cic/check/SystemCmdRule.hpp>
+#include <cic/plan/ActionSystemCmd.hpp>
 #include <Poco/Process.h>
 #include <Poco/PipeStream.h>
 #include <Poco/StreamCopier.h>
@@ -47,10 +47,10 @@ using namespace fmt::literals;
 
 namespace cic
 {
-namespace check
+namespace plan
 {
 
-bool SystemCmdRule::check()
+bool ActionSystemCmd::execute()
 {
     std::vector< std::string > opts;
 
@@ -78,7 +78,7 @@ bool SystemCmdRule::check()
     return ( rc == 0 );
 }
 
-void SystemCmdRule::loadFromXML( Node* root, Industry* industry )
+void ActionSystemCmd::loadFromXML( Node* root, Industry* industry )
 {
     NamedNodeMap* rootAttrs{ root->attributes() };
 
@@ -116,7 +116,7 @@ void SystemCmdRule::loadFromXML( Node* root, Industry* industry )
     }
 }
 
-void SystemCmdRule::saveToXML( Node* xml ) const {}
+void ActionSystemCmd::saveToXML( Node* xml ) const {}
 
-} // namespace check
+} // namespace plan
 } // namespace cic

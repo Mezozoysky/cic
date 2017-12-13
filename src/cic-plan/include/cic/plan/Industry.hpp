@@ -29,8 +29,8 @@
 /// \date 2016
 /// \copyright cic is released under the terms of zlib/png license
 
-#ifndef CIC_CHECK__INDUSTRY_HPP
-#define CIC_CHECK__INDUSTRY_HPP
+#ifndef CIC_PLAN__INDUSTRY_HPP
+#define CIC_PLAN__INDUSTRY_HPP
 
 #include "Factory.hpp"
 #include <unordered_map>
@@ -40,7 +40,7 @@
 
 namespace cic
 {
-namespace check
+namespace plan
 {
 
 class Industry
@@ -96,7 +96,7 @@ private:
 };
 
 
-} // namespace check
+} // namespace plan
 } // namespace cic
 
-#endif /* CIC_CHECK__INDUSTRY_HPP */
+#endif /* CIC_PLAN__INDUSTRY_HPP */

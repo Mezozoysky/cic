@@ -30,25 +30,30 @@
 /// \copyright cic is released under the terms of zlib/png license
 
 
-#include <cic/check/Plan.hpp>
+#include <cic/plan/Plan.hpp>
 #include <fmt/format.h>
 #include <Poco/Exception.h>
 #include <Poco/DOM/Node.h>
+#include <cic/plan/Action.hpp>
 
 using Poco::XML::Node;
 using namespace fmt::literals;
 
 namespace cic
 {
-namespace check
+namespace plan
 {
 
 
-bool Plan::check( const std::string& phaseName )
+bool Plan::execute( const std::string& phaseName )
 {
+    if ( phaseName.empty() )
+    {
+        throw( Poco::InvalidArgumentException{ "Requested phase name is empty" } );
+    }
     if ( mPhases.count( phaseName ) == 0 )
     {
-        throw( Poco::NotFoundException{ "Requested target isnt found", 8 } );
+        throw( Poco::NotFoundException{ "Requested phase name isnt found: {}"_format( phaseName ), 8 } );
     }
 
     bool result{ true };
@@ -58,21 +63,21 @@ bool Plan::check( const std::string& phaseName )
 
     for ( const auto& phName : seq )
     {
-        const auto& rules( mPhases.at( phName )->rules() );
-        if ( rules.empty() )
+        const auto& actions( mPhases.at( phName )->actions() );
+        if ( actions.empty() )
         {
             // 			fmt::print(
             // 				stderr
-            // 				, "[notice] no rules for target '{}';"\
-// 				  " interpreting as successfull check;\n"
+            // 				, "[notice] no actions for target '{}';"\
+// 				  " interpreting as successfull plan;\n"
             // 				, tgt
             // 			);
-            continue; // interpreting check as successfull since no rules to check
+            continue; // interpreting plan as successfull since no actions to check
         }
 
-        for ( auto rule : rules )
+        for ( auto action : actions )
         {
-            if ( !rule->check() )
+            if ( !action->execute() )
             {
                 result = false;
                 break;
@@ -99,7 +104,7 @@ void Plan::buildSequence( const std::string& phaseName, Sequence& seq ) const
     {
         if ( dep == phaseName || isADependsOnB( dep, phaseName ) )
         {
-            throw( Poco::DataException{ "Target '{}' cyclic dependency!"_format( phaseName ), 8 } );
+            throw( Poco::DataException{ "Phase '{}' cyclic dependency!"_format( phaseName ), 8 } );
         }
 
         bool needSkip{ false };
@@ -168,5 +173,5 @@ bool Plan::isADependsOnB( const std::string& phaseA, const std::string& phaseB )
 void Plan::loadFromXML( Node* root, Industry* industry ) {}
 void Plan::saveToXML( Node* root ) const {}
 
-} // namespace check
+} // namespace plan
 } // namespace cic

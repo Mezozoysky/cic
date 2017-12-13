@@ -29,8 +29,8 @@
 /// \date 2016
 /// \copyright cic is released under the terms of zlib/png license
 
-#ifndef CIC_CHECK__FACTORY_HPP
-#define CIC_CHECK__FACTORY_HPP
+#ifndef CIC_PLAN__FACTORY_HPP
+#define CIC_PLAN__FACTORY_HPP
 
 #include <functional>
 #include <unordered_map>
@@ -38,7 +38,7 @@
 
 namespace cic
 {
-namespace check
+namespace plan
 {
 
 class FactoryMarker
@@ -108,7 +108,7 @@ private:
 };
 
 
-} // namespace check
+} // namespace plan
 } // namespace cic
 
-#endif /* CIC_CHECK__FACTORY_HPP */
+#endif /* CIC_PLAN__FACTORY_HPP */

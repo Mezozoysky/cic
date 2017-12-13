@@ -24,33 +24,18 @@
 
 
 /// \file
-/// \brief SuccessRule realisation
+/// \brief AAction implementation
 /// \author Stanislav Demyanovich <mezozoysky@gmail.com>
 /// \date 2016
 /// \copyright cic is released under the terms of zlib/png license
 
-#include <cic/check/SuccessRule.hpp>
-#include <Poco/DOM/Node.h>
 
-using Poco::XML::Node;
+#include <cic/plan/Action.hpp>
 
 namespace cic
 {
-namespace check
+namespace plan
 {
 
-
-bool SuccessRule::check()
-{
-    return ( true );
-}
-
-void SuccessRule::loadFromXML( Poco::XML::Node* xml, Industry* industry )
-{
-    // Do nothing
-}
-
-void SuccessRule::saveToXML( Node* root ) const {}
-
-} // namespace check
+} // namespace plan
 } // namespace cic

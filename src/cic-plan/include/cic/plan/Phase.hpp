@@ -30,11 +30,11 @@
 /// \copyright cic is released under the terms of zlib/png license
 
 
-#ifndef CIC_CHECK__PHASE_HPP
-#define CIC_CHECK__PHASE_HPP
+#ifndef CIC_PLAN__PHASE_HPP
+#define CIC_PLAN__PHASE_HPP
 
 #include "Serializable.hpp"
-#include "Rule.hpp"
+#include "Action.hpp"
 #include <memory>
 #include <vector>
 
@@ -48,7 +48,7 @@ class Node;
 
 namespace cic
 {
-namespace check
+namespace plan
 {
 
 // class Industry;
@@ -58,7 +58,7 @@ class Phase : public Serializable
 public:
     using Ptr = std::shared_ptr< Phase >;
 
-    using RuleList = std::vector< Rule::Ptr >;
+    using ActionList = std::vector< Action::Ptr >;
     using StrList = std::vector< std::string >;
 
     Phase() = default;
@@ -66,30 +66,30 @@ public:
     Phase& operator=( const Phase& other ) = delete;
     virtual ~Phase() noexcept = default;
 
-    virtual bool check();
+    virtual bool execute();
 
-    inline RuleList& rules() noexcept;
-    inline const RuleList& rules() const noexcept;
+    inline ActionList& actions() noexcept;
+    inline const ActionList& actions() const noexcept;
     inline StrList& deps() noexcept;
     inline const StrList& deps() const noexcept;
 
     virtual void loadFromXML( Poco::XML::Node* root, Industry* industry ) override;
     virtual void saveToXML( Poco::XML::Node* xml ) const override;
 
-    RuleList mRules;
+    ActionList mActions;
     StrList mDeps;
     std::string mSuccessTrigger;
     std::string mFailureTrigger;
 };
 
-inline Phase::RuleList& Phase::rules() noexcept
+inline Phase::ActionList& Phase::actions() noexcept
 {
-    return ( mRules );
+    return ( mActions );
 }
 
-inline const Phase::RuleList& Phase::rules() const noexcept
+inline const Phase::ActionList& Phase::actions() const noexcept
 {
-    return ( mRules );
+    return ( mActions );
 }
 
 inline Phase::StrList& Phase::deps() noexcept
@@ -102,7 +102,7 @@ inline const Phase::StrList& Phase::deps() const noexcept
     return ( mDeps );
 }
 
-} // namespace check
+} // namespace plan
 } // namespace cic
 
-#endif // CIC_CHECK__PHASE_HPP
+#endif // CIC_PLAN__PHASE_HPP

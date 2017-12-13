@@ -24,18 +24,48 @@
 
 
 /// \file
-/// \brief ARule implementation
+/// \brief Provides ActionFailure class - the action which always plans failed
 /// \author Stanislav Demyanovich <mezozoysky@gmail.com>
 /// \date 2016
 /// \copyright cic is released under the terms of zlib/png license
 
+#ifndef CIC_PLAN__ACTION_FAILURE_HPP
+#define CIC_PLAN__ACTION_FAILURE_HPP
 
-#include <cic/check/Rule.hpp>
+#include "Action.hpp"
+
+namespace Poco
+{
+namespace XML
+{
+class Node;
+}
+}
+
 
 namespace cic
 {
-namespace check
+namespace plan
 {
 
-} // namespace check
+class Industry;
+
+class ActionFailure : public Action
+{
+public:
+    using Ptr = std::shared_ptr< ActionFailure >;
+
+    ActionFailure() = default;
+    virtual ~ActionFailure() noexcept = default;
+
+    virtual bool execute() override;
+
+    virtual void loadFromXML( Poco::XML::Node* xml, Industry* industry ) override;
+    virtual void saveToXML( Poco::XML::Node* xml ) const override;
+};
+
+
+} // namespace plan
 } // namespace cic
+
+#endif /* CIC_PLAN__ACTION_FAILURE_HPP */

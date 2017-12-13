@@ -29,8 +29,8 @@
 /// \date 2016
 /// \copyright cic is released under the terms of zlib/png license
 
-#ifndef CIC_CHECK__XML_UTILS_HPP
-#define CIC_CHECK__XML_UTILS_HPP
+#ifndef CIC_PLAN__XML_UTILS_HPP
+#define CIC_PLAN__XML_UTILS_HPP
 
 #include <Poco/DOM/Node.h>
 #include <Poco/DOM/NodeList.h>
@@ -44,7 +44,7 @@
 
 namespace cic
 {
-namespace check
+namespace plan
 {
 
 
@@ -57,8 +57,8 @@ Poco::XML::Node* fetchNode( const Poco::XML::Node* root,
 std::string fetchText( const Poco::XML::Node* root );
 
 
-} // namespace check
+} // namespace plan
 } // namespace cic
 
 
-#endif /* CIC_CHECK__XML_UTILS_HPP */
+#endif /* CIC_PLAN__XML_UTILS_HPP */

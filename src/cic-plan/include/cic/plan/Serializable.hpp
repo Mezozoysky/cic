@@ -30,8 +30,8 @@
 /// \copyright cic is released under the terms of zlib/png license
 
 
-#ifndef CIC_CHECK__SERIALIZABLE_HPP
-#define CIC_CHECK__SERIALIZABLE_HPP
+#ifndef CIC_PLAN__SERIALIZABLE_HPP
+#define CIC_PLAN__SERIALIZABLE_HPP
 
 namespace Poco
 {
@@ -43,7 +43,7 @@ class Node;
 
 namespace cic
 {
-namespace check
+namespace plan
 {
 
 class Industry;
@@ -58,7 +58,7 @@ public:
     virtual void saveToXML( Poco::XML::Node* xml ) const = 0;
 };
 
-} // namespace check
+} // namespace plan
 } // namespace cic
 
-#endif // CIC_CHECK__SERIALIZABLE_HPP
+#endif // CIC_PLAN__SERIALIZABLE_HPP

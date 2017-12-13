@@ -77,8 +77,8 @@ find_package( Threads REQUIRED )
 # Modules' build options
 #
 option( CIC_BUILD_CHECK_APP "Build cic-check tool"  ON )
-option( CIC_BUILD_CHECK_LIB "Build cic-check library"  ON )
-option( CIC_BUILD_SCRIPTING_LIB "Build cic-check library"  ON )
+option( CIC_BUILD_PLAN_LIB "Build cic-plan library"  ON )
+option( CIC_BUILD_SCRIPTING_LIB "Build cic-scripting library"  ON )
 
 #
 # Modules

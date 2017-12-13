@@ -4,8 +4,8 @@ if( CIC_BUILD_SCRIPTING_LIB OR CIC_BUILD_CHECK_APP )
     add_subdirectory( cic-scripting )
 endif()
 
-if( CIC_BUILD_CHECK_LIB OR CIC_BUILD_CHECK_APP)
-	add_subdirectory( cic-check )
+if( CIC_BUILD_PLAN_LIB OR CIC_BUILD_CHECK_APP )
+	add_subdirectory( cic-plan )
 endif()
 
 if( CIC_BUILD_CHECK_APP )

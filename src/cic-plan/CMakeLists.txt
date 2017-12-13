@@ -1,8 +1,8 @@
-# cic-check lib
+# cic-plan lib
 
-set( MODULE_NAME "cic-check" )
-set( MODULE_NSPATH "cic/check" )
-set( MODULE_TGT "cic-check")
+set( MODULE_NAME "cic-plan" )
+set( MODULE_NSPATH "cic/plan" )
+set( MODULE_TGT "cic-plan")
 set( MODULE_ROOT "${CMAKE_CURRENT_SOURCE_DIR}" )
 
 set( MODULE_HEADERS "" )
@@ -14,10 +14,10 @@ set( MODULE_SOURCES "" )
 set(GROUP_HEADERS
     "${MODULE_ROOT}/include/${MODULE_NSPATH}/Plan.hpp"
     "${MODULE_ROOT}/include/${MODULE_NSPATH}/Phase.hpp"
-    "${MODULE_ROOT}/include/${MODULE_NSPATH}/Rule.hpp"
-    "${MODULE_ROOT}/include/${MODULE_NSPATH}/FailureRule.hpp"
-    "${MODULE_ROOT}/include/${MODULE_NSPATH}/SuccessRule.hpp"
-    "${MODULE_ROOT}/include/${MODULE_NSPATH}/SystemCmdRule.hpp"
+    "${MODULE_ROOT}/include/${MODULE_NSPATH}/Action.hpp"
+    "${MODULE_ROOT}/include/${MODULE_NSPATH}/ActionFailure.hpp"
+    "${MODULE_ROOT}/include/${MODULE_NSPATH}/ActionSuccess.hpp"
+    "${MODULE_ROOT}/include/${MODULE_NSPATH}/ActionSystemCmd.hpp"
     "${MODULE_ROOT}/include/${MODULE_NSPATH}/Factory.hpp"
     "${MODULE_ROOT}/include/${MODULE_NSPATH}/Industry.hpp"
     "${MODULE_ROOT}/include/${MODULE_NSPATH}/XMLUtils.hpp"
@@ -25,10 +25,10 @@ set(GROUP_HEADERS
 set(GROUP_SOURCES
     "${MODULE_ROOT}/src/${MODULE_NSPATH}/Plan.cpp"
     "${MODULE_ROOT}/src/${MODULE_NSPATH}/Phase.cpp"
-    "${MODULE_ROOT}/src/${MODULE_NSPATH}/Rule.cpp"
-    "${MODULE_ROOT}/src/${MODULE_NSPATH}/FailureRule.cpp"
-    "${MODULE_ROOT}/src/${MODULE_NSPATH}/SuccessRule.cpp"
-    "${MODULE_ROOT}/src/${MODULE_NSPATH}/SystemCmdRule.cpp"
+    "${MODULE_ROOT}/src/${MODULE_NSPATH}/Action.cpp"
+    "${MODULE_ROOT}/src/${MODULE_NSPATH}/ActionFailure.cpp"
+    "${MODULE_ROOT}/src/${MODULE_NSPATH}/ActionSuccess.cpp"
+    "${MODULE_ROOT}/src/${MODULE_NSPATH}/ActionSystemCmd.cpp"
     "${MODULE_ROOT}/src/${MODULE_NSPATH}/XMLUtils.cpp"
     )
 source_group( ${MODULE_NAME} FILES ${GROUP_HEADERS} ${GROUP_SOURCES} )
@@ -71,7 +71,7 @@ target_include_directories( ${MODULE_TGT}
 #
 # Install
 #
-if ( CIC_BUILD_CHECK_LIB )
+if ( CIC_BUILD_PLAN_LIB )
     install(
         TARGETS ${MODULE_TGT}
         ARCHIVE DESTINATION lib

@@ -24,33 +24,38 @@
 
 
 /// \file
-/// \brief FailureRule realisation
+/// \brief Provides ActionSuccess class - the action which always plans successfully
 /// \author Stanislav Demyanovich <mezozoysky@gmail.com>
 /// \date 2016
 /// \copyright cic is released under the terms of zlib/png license
 
-#include <cic/check/FailureRule.hpp>
-#include <Poco/DOM/Node.h>
+#ifndef CIC_PLAN__ACTION_SUCCESS_HPP
+#define CIC_PLAN__ACTION_SUCCESS_HPP
 
-using Poco::XML::Node;
+#include "Action.hpp"
 
 namespace cic
 {
-namespace check
+namespace plan
 {
 
 
-bool FailureRule::check()
+class ActionSuccess : public Action
 {
-    return ( false );
-}
+public:
+    using Ptr = std::shared_ptr< ActionSuccess >;
 
-void FailureRule::loadFromXML( Node* root, Industry* industry )
-{
-    // Do nothing
-}
+    ActionSuccess() = default;
+    virtual ~ActionSuccess() noexcept = default;
 
-void FailureRule::saveToXML( Node* root ) const {}
+    virtual bool execute() override;
 
-} // namespace check
+    virtual void loadFromXML( Poco::XML::Node* xml, Industry* industry ) override;
+    virtual void saveToXML( Poco::XML::Node* xml ) const override;
+};
+
+
+} // namespace plan
 } // namespace cic
+
+#endif /* CIC_PLAN__ACTION_SUCCESS_HPP */
