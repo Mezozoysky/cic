@@ -15,7 +15,7 @@
 
 ## Dependencies
 
-* POCO C++ Libraries 1.7.3+
+* POCO C++ Libraries 1.7.8+
 
 Download from http://pocoproject.org/download/index.html
 or ``` git clone git@github.com:pocoproject/poco.git ```
