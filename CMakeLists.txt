@@ -28,11 +28,6 @@ endif()
 set( FMT_HOME $ENV{FMT_HOME} CACHE PATH "Top directory containing fmt library and includes" )
 list( APPEND CMAKE_PREFIX_PATH "${FMT_HOME}" )
 
-if( "$ENV{ANGELSCRIPT_SDK}" STREQUAL "" )
-    set( ENV{ANGELSCRIPT_SDK} "${CMAKE_SOURCE_DIR}/deps/angelscript" )
-endif()
-set( AngelScript_SDK $ENV{ANGELSCRIPT_SDK} CACHE PATH "Angelscript sdk directory" )
-
 
 project( cic C CXX )
 
@@ -76,11 +71,20 @@ set( Catch_USE_SINGLE_INCLUDE TRUE )
 find_package( Catch REQUIRED )
 find_package( Poco 1.7.8 CONFIG REQUIRED Util XML JSON Foundation )
 find_package( fmt 4.0.0 CONFIG REQUIRED )
-find_package( AngelScript REQUIRED )
 find_package( Threads REQUIRED )
 
-
+#
+# Modules' build options
+#
 option( CIC_BUILD_CHECK_APP "Build cic-check tool"  ON )
 option( CIC_BUILD_CHECK_LIB "Build cic-check library"  ON )
+option( CIC_BUILD_SCRIPTING_LIB "Build cic-check library"  ON )
+
+#
+# Modules
+#
+if ( CIC_BUILD_SCRIPTING_LIB OR CIC_BUILD_CHECK_APP )
+    add_subdirectory( deps/angelscript )
+endif()
 
 add_subdirectory( src )

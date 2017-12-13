@@ -38,6 +38,7 @@
 #include <Poco/Util/HelpFormatter.h>
 #include <Poco/Environment.h>
 #include <Poco/String.h>
+#include <cic/scripting/Scripting.hpp>
 
 using Poco::XML::Document;
 using Poco::XML::Node;
@@ -279,6 +280,7 @@ int CheckApp::main( const std::vector< std::string >& args )
         logger().information( "CHECK SUCCESSFULL" );
     }
 
+    scripting::foo();
     return ( EXIT_OK );
 }
 
