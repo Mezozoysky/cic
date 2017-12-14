@@ -44,16 +44,16 @@
 #include <cic/plan/ActionSystemCmd.hpp>
 
 using Poco::XML::Document;
-using Poco::XML::Node;
 using Poco::XML::NamedNodeMap;
+using Poco::XML::Node;
 using DocumentPtr = Poco::AutoPtr< Document >;
 using namespace fmt::literals;
-using cic::plan::Plan;
-using cic::plan::Phase;
 using cic::plan::Action;
 using cic::plan::ActionFailure;
 using cic::plan::ActionSuccess;
 using cic::plan::ActionSystemCmd;
+using cic::plan::Phase;
+using cic::plan::Plan;
 
 namespace cic
 {
@@ -176,6 +176,11 @@ void CheckApp::defineOptions( Poco::Util::OptionSet& options )
             .required( false )
             .repeatable( false )
             .callback( Poco::Util::OptionCallback< CheckApp >( this, &CheckApp::helpOptionCallback ) ) );
+    options.addOption(
+        Poco::Util::Option( "only", "1", "execute specified phase only, skip any dependencies" )
+            .required( false )
+            .repeatable( false )
+            .binding( "application.options.only", &config() ) );
 }
 
 int CheckApp::main( const std::vector< std::string >& args )
@@ -267,9 +272,10 @@ int CheckApp::main( const std::vector< std::string >& args )
     // }
 
     bool result{ false };
+    bool only{ config().getBool( "application.options.only", false ) };
     try
     {
-        result = plan->execute( phaseName );
+        result = plan->execute( phaseName, only );
     }
     catch ( Poco::Exception& exc )
     {

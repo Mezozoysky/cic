@@ -58,7 +58,7 @@ public:
     Plan& operator=( const Plan& other ) = delete;
     virtual ~Plan() noexcept = default;
 
-    virtual bool execute( const std::string& phaseName );
+    virtual bool execute( const std::string& phaseName, bool skipDependencies = false );
     virtual void buildSequence( const std::string& phaseName, Sequence& seq ) const;
     virtual bool isADependsOnB( const std::string& tgtA, const std::string& tgtB ) const;
 
@@ -68,12 +68,12 @@ public:
 public:
     inline const std::string& name() const noexcept;
     inline const std::string& defaultPhase() const noexcept;
-    inline const PhaseMap& targets() const noexcept;
+    inline const PhaseMap& phases() const noexcept;
 
 protected:
     inline std::string& name() noexcept;
     inline std::string& defaultPhase() noexcept;
-    inline PhaseMap& targets() noexcept;
+    inline PhaseMap& phases() noexcept;
 
 private:
     std::string mName;
@@ -100,11 +100,11 @@ inline std::string& Plan::defaultPhase() noexcept
     return ( mDefaultPhase );
 }
 
-inline const Plan::PhaseMap& Plan::targets() const noexcept
+inline const Plan::PhaseMap& Plan::phases() const noexcept
 {
     return ( mPhases );
 }
-inline Plan::PhaseMap& Plan::targets() noexcept
+inline Plan::PhaseMap& Plan::phases() noexcept
 {
     return ( mPhases );
 }

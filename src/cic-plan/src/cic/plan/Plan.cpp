@@ -45,7 +45,7 @@ namespace plan
 {
 
 
-bool Plan::execute( const std::string& phaseName )
+bool Plan::execute( const std::string& phaseName, bool skipDependencies )
 {
     if ( phaseName.empty() )
     {
@@ -59,7 +59,14 @@ bool Plan::execute( const std::string& phaseName )
     bool result{ true };
 
     Sequence seq;
-    buildSequence( phaseName, seq );
+    if ( skipDependencies )
+    {
+        seq.push_back( phaseName );
+    }
+    else
+    {
+        buildSequence( phaseName, seq );
+    }
 
     for ( const auto& phName : seq )
     {
@@ -68,7 +75,7 @@ bool Plan::execute( const std::string& phaseName )
         {
             // 			fmt::print(
             // 				stderr
-            // 				, "[notice] no actions for target '{}';"\
+            // 				, "[notice] no actions for phase '{}';"\
 // 				  " interpreting as successfull plan;\n"
             // 				, tgt
             // 			);
@@ -96,7 +103,7 @@ void Plan::buildSequence( const std::string& phaseName, Sequence& seq ) const
 {
     if ( mPhases.count( phaseName ) == 0 )
     {
-        throw( Poco::NotFoundException{ "Requested target isnt found", 8 } );
+        throw( Poco::NotFoundException{ "Requested phase isnt found", 8 } );
     }
 
     const auto& deps( mPhases.at( phaseName )->deps() );
