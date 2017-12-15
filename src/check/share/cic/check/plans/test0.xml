@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<plan name="Test0" typeId="default">
+
+	<description>
+test0, the plan for check testing purpose
+	</description>
+
+	<phases>
+
+		<phase name="help">
+			<actions>
+				<action typeId="systemCmd" cmd="echo" args="phase_help__print_help" />
+			</actions>
+		</phase>
+
+		<phase name="clean">
+			<actions>
+				<action name="remove_artefacts" typeId="systemCmd" cmd="echo" args="phase_clean__remove_artefacts" />
+				<action name="remove_project" typeId="systemCmd" cmd="echo" args="phase_clean__remove_project" />
+			</actions>
+		</phase>
+
+		<phase name="configure">
+			<dependencies>
+                <dependency>clean</dependency>
+			</dependencies>
+            <actions>
+                <action typeId="systemCmd" cmd="echo" args="phase_configure__generate_project" />
+            </actions>
+		</phase>
+
+		<phase name="build">
+            <dependencies>
+                <dependency>configure</dependency>
+            </dependencies>
+            <actions>
+                <action typeId="systemCmd" cmd="echo" args="phase_build__build_project" />
+            </actions>
+		</phase>
+
+	</phases>
+
+	<default-phase value="build" />
+
+</plan>

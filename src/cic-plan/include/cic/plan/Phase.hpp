@@ -44,7 +44,7 @@ namespace XML
 {
 class Node;
 }
-}
+} // namespace Poco
 
 namespace cic
 {
@@ -74,8 +74,13 @@ public:
     inline const StrList& deps() const noexcept;
 
     virtual void loadFromXML( Poco::XML::Node* root, Industry* industry ) override;
-    virtual void saveToXML( Poco::XML::Node* xml ) const override;
+    virtual void saveToXML( Poco::XML::Node* root ) const override;
 
+protected:
+    virtual void loadActionsFromXML( Poco::XML::Node* root, Industry* industry );
+    virtual void loadActionFromXML( Poco::XML::Node* root, Industry* industry );
+
+private:
     ActionList mActions;
     StrList mDeps;
     std::string mSuccessTrigger;

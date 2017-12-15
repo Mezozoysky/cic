@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<declarations>
-	<decl-goal name="Test0" path="goals/Test0" /> <!-- relative path will be calculated relative to current file -->
-	<decl-goal name="TestAbs" path="/tmp/cic-check/goals/TestAbs" />
-</declarations>

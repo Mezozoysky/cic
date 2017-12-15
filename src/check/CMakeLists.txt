@@ -51,6 +51,25 @@ target_link_libraries( ${MODULE_TGT}
 )
 
 #
+# Post-build
+#
+
+add_custom_command(
+    TARGET ${MODULE_TGT}
+    POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+            "${MODULE_ROOT}/share"
+            "${CMAKE_BINARY_DIR}/share"
+)
+add_custom_command(
+        TARGET ${MODULE_TGT}
+        POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+                "${MODULE_ROOT}/etc"
+                "${CMAKE_BINARY_DIR}/etc"
+)
+
+#
 # Install
 #
 

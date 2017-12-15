@@ -39,6 +39,14 @@
 // #include <vector>
 #include <map>
 
+namespace Poco
+{
+namespace XML
+{
+class Node;
+}
+} // namespace Poco
+
 namespace cic
 {
 namespace plan
@@ -62,8 +70,8 @@ public:
     virtual void buildSequence( const std::string& phaseName, Sequence& seq ) const;
     virtual bool isADependsOnB( const std::string& tgtA, const std::string& tgtB ) const;
 
-    virtual void loadFromXML( Poco::XML::Node* xml, Industry* industry ) override;
-    virtual void saveToXML( Poco::XML::Node* xml ) const override;
+    virtual void loadFromXML( Poco::XML::Node* root, Industry* industry ) override;
+    virtual void saveToXML( Poco::XML::Node* root ) const override;
 
 public:
     inline const std::string& name() const noexcept;
@@ -74,6 +82,10 @@ protected:
     inline std::string& name() noexcept;
     inline std::string& defaultPhase() noexcept;
     inline PhaseMap& phases() noexcept;
+
+protected:
+    virtual void loadPhasesFromXML( Poco::XML::Node* root, Industry* industry );
+    virtual void loadPhaseFromXML( Poco::XML::Node* root, Industry* industry );
 
 private:
     std::string mName;

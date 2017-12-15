@@ -48,12 +48,14 @@ using Poco::XML::NamedNodeMap;
 using Poco::XML::Node;
 using DocumentPtr = Poco::AutoPtr< Document >;
 using namespace fmt::literals;
+using Poco::Util::AbstractConfiguration;
 using cic::plan::Action;
 using cic::plan::ActionFailure;
 using cic::plan::ActionSuccess;
 using cic::plan::ActionSystemCmd;
 using cic::plan::Phase;
 using cic::plan::Plan;
+using fmt::print;
 
 namespace cic
 {
@@ -62,73 +64,144 @@ namespace check
 
 CheckApp::CheckApp() noexcept
 : Poco::Util::Application()
-, mIsHelpOptionRequested{ false }
+, mIsStopRequestedByOption{ false }
 {
 }
 
-void CheckApp::helpOptionCallback( const std::string& name, const std::string& value )
+void CheckApp::optionCallback( const std::string& name, const std::string& value )
 {
-    mIsHelpOptionRequested = true;
-    fmt::print( "{}\n", formatHelpText() );
-    stopOptionsProcessing();
+    if ( name == "help" )
+    {
+        mIsStopRequestedByOption = true;
+        print( "{}\n", formatHelpText() );
+        stopOptionsProcessing();
+    }
+    else if ( name == "version" )
+    {
+        mIsStopRequestedByOption = true;
+        print( "cic check v.0.0.1\n" );
+        stopOptionsProcessing();
+    }
+    else if ( name == "verbose" )
+    {
+        config().setBool( "cic.check.options.verbose", true );
+    }
+    else if ( name == "only" )
+    {
+        config().setBool( "cic.check.options.only", true );
+    }
+    else
+    {
+        assert( false );
+    }
 }
 
 void CheckApp::initialize( Poco::Util::Application& self )
 {
-    // Init default application directories
-    Poco::Path defaultHomePath;
+    // Define initial cic home path
+    Poco::Path homePath;
     if ( Poco::Environment::has( "CIC_HOME" ) )
     {
-        defaultHomePath = Poco::Path::forDirectory( Poco::Environment::get( "CIC_HOME" ) );
+        homePath = Poco::Path::forDirectory( Poco::Environment::get( "CIC_HOME" ) );
     }
     else
     {
-        defaultHomePath = Poco::Path::forDirectory( config().getString( "application.dir" ) ).parent();
+        homePath = Poco::Path::forDirectory( config().getString( "application.dir" ) ).parent();
     }
 
-    Poco::Path defaultBinPath{ defaultHomePath };
-    defaultBinPath.pushDirectory( "bin" );
-    Poco::Path defaultSharePath{ defaultHomePath };
-    defaultSharePath.pushDirectory( "share" ).pushDirectory( "cic" ).pushDirectory( "check" );
-
-    // 	std::string defaultShareDir{
-    // 			Poco::Path::forDirectory( "./share/cic" ).makeAbsolute( prefixDirPath ).toString()
-    // 	};
-
-    // Load custom application config
-    // ( cic-check.properties placed beside the application executable or above its path )
+    // try load custom config
     bool usingCustomConfig{ loadConfiguration() > 0 };
 
-    if ( !config().hasProperty( "cic.dir.home" ) )
+    if ( !config().hasProperty( "cic.homeDir" ) )
     {
-        config().setString( "cic.dir.home", defaultHomePath.toString() );
+        config().setString( "cic.homeDir", homePath.toString() );
+    }
+    else
+    {
+        homePath = Poco::Path::forDirectory( config().getString( "cic.homeDir" ) );
     }
 
-    if ( !config().hasProperty( "cic.dir.bin" ) )
+    // define cic bin path
+    Poco::Path binPath{ homePath };
+    binPath.pushDirectory( "bin" );
+
+    if ( !config().hasProperty( "cic.binDir" ) )
     {
-        config().setString( "cic.dir.bin", defaultBinPath.toString() );
+        config().setString( "cic.binDir", binPath.toString() );
+    }
+    else
+    {
+        binPath = Poco::Path::forDirectory( config().getString( "cic.binDir" ) );
     }
 
-    if ( !config().hasProperty( "cic.dir.share" ) )
+    // define cic share path
+    Poco::Path sharePath{ homePath };
+    sharePath.pushDirectory( "share" ).pushDirectory( "cic" );
+
+    if ( !config().hasProperty( "cic.shareDir" ) )
     {
-        config().setString( "cic.dir.share", defaultSharePath.toString() );
+        config().setString( "cic.shareDir", sharePath.toString() );
+    }
+    else
+    {
+        sharePath = Poco::Path::forDirectory( config().getString( "cic.shareDir" ) );
     }
 
-    if ( !usingCustomConfig )
+    // define app share path
+    Poco::Path appSharePath{ sharePath };
+    appSharePath.pushDirectory( "check" );
+
+    if ( !config().hasProperty( "cic.check.shareDir" ) )
     {
-        // Load default configuration
-        std::string defCfg{ defaultSharePath.setFileName( "check.properties" ).toString() };
-        try
-        {
-            loadConfiguration( defCfg );
-        }
-        catch ( Poco::FileNotFoundException& exc )
-        {
-            logger().warning(
-                "Default cic-check configuration isnt provided: {}"
-                ""_format( exc.displayText() ) );
-        }
+        config().setString( "cic.check.shareDir", appSharePath.toString() );
     }
+    else
+    {
+        appSharePath = Poco::Path::forDirectory( config().getString( "cic.check.shareDir" ) );
+    }
+
+    // define cic etc path
+    Poco::Path etcPath{ homePath };
+    etcPath.pushDirectory( "etc" ).pushDirectory( "cic" );
+
+    if ( !config().hasProperty( "cic.etcDir" ) )
+    {
+        config().setString( "cic.etcDir", etcPath.toString() );
+    }
+    else
+    {
+        etcPath = Poco::Path::forDirectory( config().getString( "cic.etcDir" ) );
+    }
+
+    // define app etc path
+    Poco::Path appETCPath{ etcPath };
+    appETCPath.pushDirectory( "check" );
+
+    if ( !config().hasProperty( "cic.check.etcDir" ) )
+    {
+        config().setString( "cic.check.etcDir", appETCPath.toString() );
+    }
+    else
+    {
+        appETCPath = Poco::Path::forDirectory( config().getString( "cic.check.etcDir" ) );
+    }
+
+
+    // if ( !usingCustomConfig )
+    //{
+    // Load default configuration
+    std::string defCfg{ appETCPath.setFileName( "check.properties" ).toString() };
+    try
+    {
+        loadConfiguration( defCfg );
+    }
+    catch ( Poco::FileNotFoundException& exc )
+    {
+        logger().warning(
+            "Default check configuration isnt provided: {}"
+            ""_format( exc.displayText() ) );
+    }
+    //}
 
     // Application-level properties
     // 	if ( !config().hasProperty( "cic.check.property_name" ) )
@@ -139,7 +212,7 @@ void CheckApp::initialize( Poco::Util::Application& self )
     Poco::Util::Application::initialize( self );
 
     // TODO: configure logging!
-    logger().setLevel( Poco::Message::PRIO_TRACE );
+    logger().setLevel( Poco::Message::PRIO_INFORMATION );
 
     // logger.information( "---------------- Start logging ----------------" );
     // logger.debug( "Initializing CheckApp .." );
@@ -172,35 +245,72 @@ void CheckApp::defineOptions( Poco::Util::OptionSet& options )
     Poco::Util::Application::defineOptions( options );
 
     options.addOption(
-        Poco::Util::Option( "help", "h", "print the help screen" )
+        Poco::Util::Option( "help", "h", "print help and exit" )
             .required( false )
             .repeatable( false )
-            .callback( Poco::Util::OptionCallback< CheckApp >( this, &CheckApp::helpOptionCallback ) ) );
+            .callback( Poco::Util::OptionCallback< CheckApp >( this, &CheckApp::optionCallback ) ) );
+
+    options.addOption(
+        Poco::Util::Option( "version", "v", "print version/copyright info and exit" )
+            .required( false )
+            .repeatable( false )
+            .callback( Poco::Util::OptionCallback< CheckApp >( this, &CheckApp::optionCallback ) ) );
+
+    options.addOption(
+        Poco::Util::Option( "verbose", "V", "be verbose" )
+            .required( false )
+            .repeatable( false )
+            .callback( Poco::Util::OptionCallback< CheckApp >( this, &CheckApp::optionCallback ) ) );
+
     options.addOption(
         Poco::Util::Option( "only", "1", "execute specified phase only, skip any dependencies" )
             .required( false )
             .repeatable( false )
-            .binding( "application.options.only", &config() ) );
+            .callback( Poco::Util::OptionCallback< CheckApp >( this, &CheckApp::optionCallback ) ) );
+
+    options.addOption( Poco::Util::Option( "workspace", "w", "workspace path to operate within" )
+                           .required( false )
+                           .repeatable( false )
+                           .argument( "path", true )
+                           .binding( "cic.check.workspace", &config() ) );
 }
 
 int CheckApp::main( const std::vector< std::string >& args )
 {
-    logger().debug(
-        "Config:\n"
-        "* cic.dir.home:  '{}'\n"
-        "* cic.dir.bin:   '{}'\n"
-        "* cic.dir.share: '{}'"
-        ""_format( config().getString( "cic.dir.home" ),
-                   config().getString( "cic.dir.bin" ),
-                   config().getString( "cic.dir.share" ) ) );
+    print( "Start configuration:\n" );
+    printConfig( "" );
 
-    if ( mIsHelpOptionRequested )
+    std::string workspaceDir{ config().getString( "cic.check.workspace", "--:(--" ) };
+    bool verbose{ config().getBool( "cic.check.options.verbose", false ) };
+    if ( verbose )
+    {
+        print(
+            "Config:\n"
+            "* cic home dir:         : '{}'\n"
+            "* cic binary dir        : '{}'\n"
+            "* cic share dir         : '{}'\n"
+            "* cic etc dir           : '{}'\n"
+            "* application dir       : '{}'\n"
+            "* cic check share dir   : '{}'\n"
+            "* cic check etc dir     : '{}'\n"
+            "* cic check workspace   : '{}'\n",
+            config().getString( "cic.homeDir" ),
+            config().getString( "cic.binDir" ),
+            config().getString( "cic.shareDir" ),
+            config().getString( "cic.etcDir" ),
+            config().getString( "application.dir" ),
+            config().getString( "cic.check.shareDir" ),
+            config().getString( "cic.check.etcDir" ),
+            workspaceDir );
+    }
+
+    if ( mIsStopRequestedByOption )
     {
         return ( EXIT_OK );
     }
     if ( args.empty() )
     {
-        logger().debug( "No arguments given!" );
+        logger().error( "No arguments given!" );
         fmt::print( "{}\n", formatHelpText() );
         return ( EXIT_USAGE );
     }
@@ -213,39 +323,14 @@ int CheckApp::main( const std::vector< std::string >& args )
         phaseName = args[ 1 ];
     }
 
-    logger().information(
-        "Requested plan: '{}';{}"
-        ""_format( planName, phaseName.empty() ? "" : " Requested phase: '{}';"_format( phaseName ) ) );
+    if ( verbose )
+    {
+        print( "Requested plan: '{}';{}",
+               planName,
+               phaseName.empty() ? "" : " Requested phase: '{}';"_format( phaseName ) );
+    }
 
-    // TODO: load and check plan/phase
-    // try
-    // {
-    //     mPlanProvider.loadDecls( Poco::Path::forDirectory( config().getString( "cic.dir.share" ) )
-    //                                  .pushDirectory( "check" )
-    //                                  .setFileName( "declarations.xml" )
-    //                                  .toString() );
-    // }
-    // catch ( Poco::FileNotFoundException& exc )
-    // {
-    //     logger().error(
-    //         "Error while loading declarations: {}"
-    //         ""_format( exc.displayText() ) );
-    // }
-
-
-    // if ( mPlanProvider.isDeclsEmpty() )
-    // {
-    //     logger().critical( "No declarations provided" );
-    //     return ( EXIT_DATAERR );
-    // }
-
-    // if ( !mPlanProvider.isDeclared( planName ) )
-    // {
-    //     logger().critical( "Plan '{}' isnt declared;"_format( planName ) );
-    //     return ( EXIT_DATAERR );
-    // }
-
-    Poco::Path planPath{ config().getString( "cic.dir.share" ) };
+    Poco::Path planPath{ config().getString( "cic.check.shareDir" ) };
     planPath.pushDirectory( "plans" ).setBaseName( planName ).setExtension( "xml" );
     DocumentPtr doc{ plan::fetchDoc( planPath.toString(), mParser ) };
     Node* planRoot{ plan::fetchNode( doc, "/plan", Node::ELEMENT_NODE ) };
@@ -261,18 +346,8 @@ int CheckApp::main( const std::vector< std::string >& args )
     Plan::Ptr plan{ factory->create( typeId ) };
     plan->loadFromXML( planRoot, &mIndustry );
 
-    // try
-    // {
-    //     plan = mPlanProvider.get( planName );
-    // }
-    // catch ( Poco::Exception& exc )
-    // {
-    //     logger().critical( "Error loading plan '{}': {}"_format( planName, exc.displayText() ) );
-    //     return ( exc.code() );
-    // }
-
     bool result{ false };
-    bool only{ config().getBool( "application.options.only", false ) };
+    bool only{ config().getBool( "cic.check.options.only", false ) };
     try
     {
         result = plan->execute( phaseName, only );
@@ -294,6 +369,9 @@ int CheckApp::main( const std::vector< std::string >& args )
     {
         logger().information( "PLAN EXECUTION SUCCESS" );
     }
+
+    // print( "Finish configuration:\n" );
+    //    printConfig( "" );
 
     scripting::foo();
     return ( EXIT_OK );
@@ -319,6 +397,31 @@ std::string CheckApp::formatHelpText() const noexcept
     hf.format( ss );
 
     return ( ss.str() );
+}
+
+void CheckApp::printConfig( const std::string& rootKey ) const
+{
+    AbstractConfiguration::Keys keys;
+    config().keys( rootKey, keys );
+    if ( keys.size() == 0 )
+    {
+        print( "CONFIG:: '{}' -> '{}';\n"_format( rootKey, config().getString( rootKey, "--hz--" ) ) );
+    }
+    else
+    {
+        for ( auto& key : keys )
+        {
+            std::string newRoot;
+            if ( rootKey.empty() )
+            {
+                printConfig( key );
+            }
+            else
+            {
+                printConfig( "{0}.{1}"_format( rootKey, key ) );
+            }
+        }
+    }
 }
 
 

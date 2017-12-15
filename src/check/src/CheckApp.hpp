@@ -53,7 +53,7 @@ public:
     CheckApp() noexcept;
     virtual ~CheckApp() noexcept = default;
 
-    void helpOptionCallback( const std::string& name, const std::string& value );
+    void optionCallback( const std::string& name, const std::string& value );
 
 protected:
     virtual void initialize( Poco::Util::Application& self ) override;
@@ -62,9 +62,10 @@ protected:
     virtual int main( const std::vector< std::string >& args ) override;
 
     virtual std::string formatHelpText() const noexcept;
+    void printConfig( const std::string& rootKey ) const;
 
 private:
-    bool mIsHelpOptionRequested;
+    bool mIsStopRequestedByOption;
 
     Poco::XML::DOMParser mParser;
     plan::Industry mIndustry;

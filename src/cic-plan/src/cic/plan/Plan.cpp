@@ -33,10 +33,14 @@
 #include <cic/plan/Plan.hpp>
 #include <fmt/format.h>
 #include <Poco/Exception.h>
-#include <Poco/DOM/Node.h>
+#include <Poco/String.h>
 #include <cic/plan/Action.hpp>
+#include <cic/plan/XMLUtils.hpp>
+#include <cic/plan/Industry.hpp>
 
+using Poco::XML::NamedNodeMap;
 using Poco::XML::Node;
+using Poco::XML::NodeList;
 using namespace fmt::literals;
 
 namespace cic
@@ -70,26 +74,12 @@ bool Plan::execute( const std::string& phaseName, bool skipDependencies )
 
     for ( const auto& phName : seq )
     {
-        const auto& actions( mPhases.at( phName )->actions() );
-        if ( actions.empty() )
+        if ( mPhases.count( phaseName ) == 0 )
         {
-            // 			fmt::print(
-            // 				stderr
-            // 				, "[notice] no actions for phase '{}';"\
-// 				  " interpreting as successfull plan;\n"
-            // 				, tgt
-            // 			);
-            continue; // interpreting plan as successfull since no actions to check
+            throw( Poco::NotFoundException{ "Requested phase name isnt found: {}"_format( phaseName ), 8 } );
         }
 
-        for ( auto action : actions )
-        {
-            if ( !action->execute() )
-            {
-                result = false;
-                break;
-            }
-        }
+        result = mPhases.at( phName )->execute();
         if ( !result )
         {
             break;
@@ -177,7 +167,82 @@ bool Plan::isADependsOnB( const std::string& phaseA, const std::string& phaseB )
     return ( depends );
 }
 
-void Plan::loadFromXML( Node* root, Industry* industry ) {}
+void Plan::loadFromXML( Node* root, Industry* industry )
+{
+    NamedNodeMap* rootAttrs{ root->attributes() };
+
+    // Dont load the name since name is already set with declaration name.
+    // 	std::string name;
+    // 	Node* node{rootAttrs->getNamedItem( "name" ) };
+    // 	if ( node )
+    // 	{
+    // 		name = Poco::trim( node->getNodeValue() );
+    // 	}
+
+    Node* node{ fetchNode( root, "/phases", Node::ELEMENT_NODE ) };
+    if ( node == nullptr )
+    {
+        throw( Poco::SyntaxException( "Element 'phases' isnt found" ) );
+    }
+    loadPhasesFromXML( node, industry );
+}
+
+void Plan::loadPhasesFromXML( Node* root, Industry* industry )
+{
+    NodeList* list{ root->childNodes() };
+    Node* node{ nullptr };
+
+    for ( std::size_t i{ 0 }; i < list->length(); ++i )
+    {
+        node = list->item( i );
+        if ( node->nodeType() != Node::ELEMENT_NODE )
+        {
+            continue;
+        }
+        if ( node->nodeName() == "phase" )
+        {
+            loadPhaseFromXML( node, industry );
+        }
+    }
+}
+
+void Plan::loadPhaseFromXML( Node* root, Industry* industry )
+{
+    NamedNodeMap* rootAttrs{ root->attributes() };
+
+    std::string name{ "" };
+    Node* node{ rootAttrs->getNamedItem( "name" ) };
+    if ( node != nullptr )
+    {
+        name = Poco::trim( node->getNodeValue() );
+    }
+    if ( name.empty() )
+    {
+        throw( Poco::SyntaxException{ "Mandatory attribute 'name' isnt found or empty", 8 } );
+    }
+
+    std::string typeId{ "" };
+    node = rootAttrs->getNamedItem( "typeId" );
+    if ( node != nullptr )
+    {
+        typeId = Poco::trim( node->getNodeValue() );
+    }
+    if ( typeId.empty() )
+    {
+        typeId = "default";
+    }
+
+    auto phaseFactory( industry->get< Phase >() );
+    if ( phaseFactory == nullptr )
+    {
+        throw( Poco::NotFoundException{ "No factory registered for id: '{}'"_format( typeId ), 8 } );
+    }
+
+    Phase::Ptr phase{ phaseFactory->create( typeId ) };
+    phase->loadFromXML( root, industry );
+    phases().insert( PhaseMap::value_type{ name, phase } );
+}
+
 void Plan::saveToXML( Node* root ) const {}
 
 } // namespace plan

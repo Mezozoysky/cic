@@ -55,15 +55,15 @@ public:
 
 public:
     inline const std::string& cmd() const noexcept;
-    inline const std::string& options() const noexcept;
+    inline const std::string& args() const noexcept;
 
 protected:
     inline std::string& cmd() noexcept;
-    inline std::string& options() noexcept;
+    inline std::string& args() noexcept;
 
 private:
     std::string mCmd;
-    std::string mOptions;
+    std::string mArgs;
 };
 
 inline const std::string& ActionSystemCmd::cmd() const noexcept
@@ -74,13 +74,13 @@ inline std::string& ActionSystemCmd::cmd() noexcept
 {
     return ( mCmd );
 }
-inline const std::string& ActionSystemCmd::options() const noexcept
+inline const std::string& ActionSystemCmd::args() const noexcept
 {
-    return ( mOptions );
+    return ( mArgs );
 }
-inline std::string& ActionSystemCmd::options() noexcept
+inline std::string& ActionSystemCmd::args() noexcept
 {
-    return ( mOptions );
+    return ( mArgs );
 }
 
 

@@ -40,8 +40,8 @@
 #include <Poco/DOM/Node.h>
 #include <Poco/DOM/NamedNodeMap.h>
 
-using Poco::XML::Node;
 using Poco::XML::NamedNodeMap;
+using Poco::XML::Node;
 
 using namespace fmt::literals;
 
@@ -54,23 +54,24 @@ bool ActionSystemCmd::execute()
 {
     std::vector< std::string > opts;
 
-    if ( !mOptions.empty() )
+    if ( !mArgs.empty() )
     {
-        opts.push_back( mOptions );
+        opts.push_back( mArgs );
     }
 
     Poco::Pipe outPipe;
     Poco::Pipe errPipe;
     Poco::Process::Env env;
 
-    Poco::ProcessHandle ph{ Poco::Process::launch(
-    mCmd, opts, "/home/mezozoy/tmp", nullptr, &outPipe, &errPipe, env ) };
+    Poco::ProcessHandle ph{
+        Poco::Process::launch( mCmd, opts, "/Users/mezozoy/tmp", nullptr, &outPipe, &errPipe, env )
+    };
 
     Poco::PipeInputStream istrOut( outPipe );
     Poco::PipeInputStream istrErr( errPipe );
 
-    std::ofstream ostrOut{ "rule_{}_stdout.txt"_format( name() ) };
-    std::ofstream ostrErr{ "rule_{}_stderr.txt"_format( name() ) };
+    std::ofstream ostrOut{ "action_{}_stdout.txt"_format( name() ) };
+    std::ofstream ostrErr{ "action_{}_stderr.txt"_format( name() ) };
     Poco::StreamCopier::copyStream( istrOut, ostrOut );
     Poco::StreamCopier::copyStream( istrErr, ostrErr );
 
@@ -82,37 +83,24 @@ void ActionSystemCmd::loadFromXML( Node* root, Industry* industry )
 {
     NamedNodeMap* rootAttrs{ root->attributes() };
 
-    // name
-    Node* node{ rootAttrs->getNamedItem( "name" ) };
-    if ( !node )
-    {
-        throw( Poco::SyntaxException{ "Mandatory attribute 'name' isnt found", 8 } );
-    }
-    std::string rulename{ Poco::trim( node->getNodeValue() ) };
-    if ( rulename.empty() )
-    {
-        throw( Poco::DataException{ "Mandatory attribute 'name' is empty", 8 } );
-    }
-    name() = rulename;
-
     // cmd
-    node = rootAttrs->getNamedItem( "cmd" );
+    Node* node{ rootAttrs->getNamedItem( "cmd" ) };
     if ( !node )
     {
         throw( Poco::SyntaxException{ "Mandatory attribute 'cmd' isnt found", 8 } );
     }
-    std::string rulecmd{ Poco::trim( node->getNodeValue() ) };
-    if ( rulecmd.empty() )
+    std::string actioncmd{ Poco::trim( node->getNodeValue() ) };
+    if ( actioncmd.empty() )
     {
         throw( Poco::DataException{ "Mandatory attribute 'cmd' is empty", 8 } );
     }
-    cmd() = rulecmd;
+    cmd() = actioncmd;
 
-    // cmd options
-    node = rootAttrs->getNamedItem( "options" );
+    // cmd args
+    node = rootAttrs->getNamedItem( "args" );
     if ( node )
     {
-        options() = Poco::trim( node->getNodeValue() );
+        args() = Poco::trim( node->getNodeValue() );
     }
 }
 
