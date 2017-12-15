@@ -30,18 +30,23 @@
 /// \copyright cic is released under the terms of zlib/png license
 
 #include <cic/plan/ActionSystemCmd.hpp>
+#include <cic/plan/XMLUtils.hpp>
 #include <Poco/Process.h>
 #include <Poco/PipeStream.h>
 #include <Poco/StreamCopier.h>
 #include <fstream>
+#include <iostream>
 #include <Poco/Exception.h>
 #include <Poco/String.h>
 #include <fmt/format.h>
 #include <Poco/DOM/Node.h>
 #include <Poco/DOM/NamedNodeMap.h>
+#include <Poco/Util/Application.h>
 
+using Poco::Util::Application;
 using Poco::XML::NamedNodeMap;
 using Poco::XML::Node;
+using Poco::XML::NodeList;
 
 using namespace fmt::literals;
 
@@ -52,28 +57,21 @@ namespace plan
 
 bool ActionSystemCmd::execute()
 {
-    std::vector< std::string > opts;
-
-    if ( !mArgs.empty() )
-    {
-        opts.push_back( mArgs );
-    }
-
     Poco::Pipe outPipe;
     Poco::Pipe errPipe;
     Poco::Process::Env env;
 
     Poco::ProcessHandle ph{
-        Poco::Process::launch( mCmd, opts, "/Users/mezozoy/tmp", nullptr, &outPipe, &errPipe, env )
+        Poco::Process::launch( cmd(), args(), workDir(), nullptr, &outPipe, &errPipe, env )
     };
 
     Poco::PipeInputStream istrOut( outPipe );
     Poco::PipeInputStream istrErr( errPipe );
 
-    std::ofstream ostrOut{ "action_{}_stdout.txt"_format( name() ) };
-    std::ofstream ostrErr{ "action_{}_stderr.txt"_format( name() ) };
-    Poco::StreamCopier::copyStream( istrOut, ostrOut );
-    Poco::StreamCopier::copyStream( istrErr, ostrErr );
+    // std::ofstream ostrOut{ "action_systemCmd_{}_stdout.txt"_format( cmd() ) };
+    // std::ofstream ostrErr{ "action_systemCmd_{}_stderr.txt"_format( cmd() ) };
+    Poco::StreamCopier::copyStream( istrOut, std::cout/*ostrOut*/ );
+    Poco::StreamCopier::copyStream( istrErr, std::cerr/*ostrErr*/ );
 
     int rc{ ph.wait() };
     return ( rc == 0 );
@@ -81,6 +79,8 @@ bool ActionSystemCmd::execute()
 
 void ActionSystemCmd::loadFromXML( Node* root, Industry* industry )
 {
+    Application& app{ Application::instance() };
+
     NamedNodeMap* rootAttrs{ root->attributes() };
 
     // cmd
@@ -96,15 +96,60 @@ void ActionSystemCmd::loadFromXML( Node* root, Industry* industry )
     }
     cmd() = actioncmd;
 
-    // cmd args
-    node = rootAttrs->getNamedItem( "args" );
-    if ( node )
+    node = fetchNode( root, "/args", Node::ELEMENT_NODE );
+    if ( node != nullptr )
     {
-        args() = Poco::trim( node->getNodeValue() );
+        // load args
+        NodeList* argNodeList{ node->childNodes() };
+        Node* argNode{ nullptr };
+        for ( std::size_t i{ 0 }; i < argNodeList->length(); ++i )
+        {
+            argNode = argNodeList->item( i );
+            if ( argNode->nodeType() != Node::ELEMENT_NODE )
+            {
+                continue;
+            }
+            if ( argNode->nodeName() == "arg" )
+            {
+                NamedNodeMap* argAttrs{ argNode->attributes() };
+                Node* argValueNode{ argAttrs->getNamedItem( "value" ) };
+                if ( argValueNode != nullptr )
+                {
+                    std::string arg{ Poco::trim( argValueNode->getNodeValue() ) };
+                    if ( !arg.empty() )
+                    {
+                        args().push_back( arg );
+                    }
+                }
+            }
+        } // for
+
+        Poco::Path workspacePath{ app.config().getString( "cic.check.workspace" ) };
+        Poco::Path workDirPath{ workspacePath };
+
+        node = fetchNode( root, "/workDir", Node::ELEMENT_NODE );
+        if ( node != nullptr )
+        {
+            NamedNodeMap* wdAttrs{ node->attributes() };
+            Node* wdValueNode{ wdAttrs->getNamedItem( "value" ) };
+            if ( wdValueNode != nullptr )
+            {
+                std::string wd{ Poco::trim( wdValueNode->getNodeValue() ) };
+                if ( !wd.empty() )
+                {
+                    workDirPath = Poco::Path::forDirectory( wd );
+                    if ( workDirPath.isRelative() )
+                        {
+                            workDirPath.makeAbsolute( workspacePath );
+                        }
+                }
+            }
+        }
+        workDir() = workDirPath.toString();
     }
 }
 
-void ActionSystemCmd::saveToXML( Node* xml ) const {}
+void ActionSystemCmd::saveToXML( Node* root ) const {}
 
 } // namespace plan
 } // namespace cic

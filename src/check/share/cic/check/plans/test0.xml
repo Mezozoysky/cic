@@ -10,32 +10,56 @@ test0, the plan for check testing purpose
 
 		<phase name="help">
 			<actions>
-				<action typeId="systemCmd" cmd="echo" args="phase_help__print_help" />
+				<action typeId="systemCmd" cmd="echo">
+                  <args>
+                    <arg value="phase_help__print_help" />
+                  </args>
+                </action>
 			</actions>
 		</phase>
 
 		<phase name="clean">
 			<actions>
-				<action name="remove_artefacts" typeId="systemCmd" cmd="echo" args="phase_clean__remove_artefacts" />
-				<action name="remove_project" typeId="systemCmd" cmd="echo" args="phase_clean__remove_project" />
+				<action typeId="systemCmd" cmd="echo">
+                  <args>
+                    <arg value="phase_clean__remove_artefacts" />
+                  </args>
+                  <workDir value="build" />
+                </action>
+				<action typeId="systemCmd" cmd="echo">
+                  <args>
+                    <arg value="phase_clean__remove_project" />
+                  </args>
+                  <workDir value="build" />
+                </action>
 			</actions>
 		</phase>
 
 		<phase name="configure">
 			<dependencies>
-                <dependency>clean</dependency>
+                <dependency value="clean" />
 			</dependencies>
             <actions>
-                <action typeId="systemCmd" cmd="echo" args="phase_configure__generate_project" />
+                <action typeId="systemCmd" cmd="ls">
+                  <args>
+                    <arg value="-n1" />
+                  </args>
+                  <workDir value="build" />
+                </action>
             </actions>
 		</phase>
 
 		<phase name="build">
             <dependencies>
-                <dependency>configure</dependency>
+                <dependency value="configure" />
             </dependencies>
             <actions>
-                <action typeId="systemCmd" cmd="echo" args="phase_build__build_project" />
+                <action typeId="systemCmd" cmd="echo">
+                  <args>
+                    <arg value="phase_build__build_project" />
+                  </args>
+                  <workDir value="build" />
+                </action>
             </actions>
 		</phase>
 

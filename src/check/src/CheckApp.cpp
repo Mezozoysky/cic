@@ -277,10 +277,38 @@ void CheckApp::defineOptions( Poco::Util::OptionSet& options )
 
 int CheckApp::main( const std::vector< std::string >& args )
 {
+    if ( mIsStopRequestedByOption )
+    {
+        return ( EXIT_OK );
+    }
+    if ( args.empty() )
+    {
+        logger().error( "No arguments given!" );
+        fmt::print( "{}\n", formatHelpText() );
+        return ( EXIT_USAGE );
+    }
+
     print( "Start configuration:\n" );
     printConfig( "" );
 
-    std::string workspaceDir{ config().getString( "cic.check.workspace", "--:(--" ) };
+    Poco::Path pwdPath{ Poco::Path::forDirectory( config().getString( "system.currentDir" ) ) };
+    Poco::Path workspacePath;
+    std::string workspaceDir{ config().getString( "cic.check.workspace", "" ) };
+    if ( workspaceDir.empty() )
+    {
+        workspacePath = pwdPath;
+    }
+    else
+    {
+        workspacePath = Poco::Path::forDirectory( workspaceDir );
+        if ( workspacePath.isRelative() )
+        {
+            workspacePath.makeAbsolute( pwdPath );
+        }
+    }
+    workspaceDir = workspacePath.toString();
+    config().setString( "cic.check.workspace", workspaceDir );
+
     bool verbose{ config().getBool( "cic.check.options.verbose", false ) };
     if ( verbose )
     {
@@ -304,17 +332,6 @@ int CheckApp::main( const std::vector< std::string >& args )
             workspaceDir );
     }
 
-    if ( mIsStopRequestedByOption )
-    {
-        return ( EXIT_OK );
-    }
-    if ( args.empty() )
-    {
-        logger().error( "No arguments given!" );
-        fmt::print( "{}\n", formatHelpText() );
-        return ( EXIT_USAGE );
-    }
-
     std::string planName{ args[ 0 ] };
     std::string phaseName;
 
@@ -325,7 +342,7 @@ int CheckApp::main( const std::vector< std::string >& args )
 
     if ( verbose )
     {
-        print( "Requested plan: '{}';{}",
+        print( "Requested plan: '{}';{}\n",
                planName,
                phaseName.empty() ? "" : " Requested phase: '{}';"_format( phaseName ) );
     }

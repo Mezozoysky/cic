@@ -36,6 +36,7 @@
 #define CIC_PLAN__ACTION_SYSTEM_CMD_HPP
 
 #include "Action.hpp"
+#include <Poco/Process.h>
 
 namespace cic
 {
@@ -50,20 +51,23 @@ public:
     virtual ~ActionSystemCmd() noexcept = default;
 
     virtual bool execute() override;
-    virtual void loadFromXML( Poco::XML::Node* xml, Industry* industry ) override;
-    virtual void saveToXML( Poco::XML::Node* xml ) const override;
+    virtual void loadFromXML( Poco::XML::Node* root, Industry* industry ) override;
+    virtual void saveToXML( Poco::XML::Node* root ) const override;
 
 public:
     inline const std::string& cmd() const noexcept;
-    inline const std::string& args() const noexcept;
+    inline const Poco::Process::Args& args() const noexcept;
+    inline const std::string& workDir() const noexcept;
 
 protected:
     inline std::string& cmd() noexcept;
-    inline std::string& args() noexcept;
+    inline Poco::Process::Args& args() noexcept;
+    inline std::string& workDir() noexcept;
 
 private:
     std::string mCmd;
-    std::string mArgs;
+    Poco::Process::Args mArgs;
+    std::string mWorkDir;
 };
 
 inline const std::string& ActionSystemCmd::cmd() const noexcept
@@ -74,13 +78,21 @@ inline std::string& ActionSystemCmd::cmd() noexcept
 {
     return ( mCmd );
 }
-inline const std::string& ActionSystemCmd::args() const noexcept
+    inline const Poco::Process::Args& ActionSystemCmd::args() const noexcept
 {
     return ( mArgs );
 }
-inline std::string& ActionSystemCmd::args() noexcept
+    inline Poco::Process::Args& ActionSystemCmd::args() noexcept
 {
     return ( mArgs );
+}
+inline const std::string& ActionSystemCmd::workDir() const noexcept
+{
+    return ( mWorkDir );
+}
+inline std::string& ActionSystemCmd::workDir() noexcept
+{
+    return ( mWorkDir );
 }
 
 
