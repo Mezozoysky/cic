@@ -68,13 +68,14 @@ public:
 
     virtual bool execute();
 
-    inline ActionList& actions() noexcept;
-    inline const ActionList& actions() const noexcept;
-    inline StrList& deps() noexcept;
-    inline const StrList& deps() const noexcept;
-
     virtual void loadFromXML( Poco::XML::Node* root, Industry* industry ) override;
     virtual void saveToXML( Poco::XML::Node* root ) const override;
+
+public:
+    inline const ActionList& actions() const noexcept;
+    inline ActionList& actions() noexcept;
+    inline const StrList& deps() const noexcept;
+    inline StrList& deps() noexcept;
 
 protected:
     virtual void loadActionsFromXML( Poco::XML::Node* root, Industry* industry );

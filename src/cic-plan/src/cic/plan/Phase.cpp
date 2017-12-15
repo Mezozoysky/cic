@@ -77,7 +77,30 @@ void Phase::loadFromXML( Node* root, Industry* industry )
     // // 		name = Poco::trim( node->getNodeValue() );
     // // 	}
 
-    Node* node{ fetchNode( root, "/actions", Node::ELEMENT_NODE ) };
+    Node* node{ fetchNode( root, "/dependencies", Node::ELEMENT_NODE ) };
+    if ( node != nullptr )
+    {
+        NodeList* depNodeList{ node->childNodes() };
+        for ( std::size_t i{ 0 }; i < depNodeList->length(); ++i )
+        {
+            Node* depNode{ depNodeList->item( i ) };
+            if ( depNode->nodeType() == Node::ELEMENT_NODE && depNode->nodeName() == "dependency" )
+            {
+                NamedNodeMap* depAttrs{ depNode->attributes() };
+                Node* depValueNode{ depAttrs->getNamedItem( "value" ) };
+                if ( depValueNode != nullptr )
+                {
+                    std::string depName{ Poco::trim( depValueNode->getNodeValue() ) };
+                    if ( !depName.empty() )
+                    {
+                        deps().push_back( depName );
+                    }
+                }
+            }
+        }
+    }
+
+    node = fetchNode( root, "/actions", Node::ELEMENT_NODE );
     if ( node == nullptr )
     {
         throw( Poco::SyntaxException( "Element 'actions' isnt found" ) );
