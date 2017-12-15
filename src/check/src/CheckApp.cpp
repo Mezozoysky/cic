@@ -42,12 +42,22 @@
 #include <cic/plan/ActionFailure.hpp>
 #include <cic/plan/ActionSuccess.hpp>
 #include <cic/plan/ActionSystemCmd.hpp>
+#include <Poco/Logger.h>
+#include <Poco/Channel.h>
+#include <Poco/PatternFormatter.h>
+#include <Poco/FormattingChannel.h>
+#include <Poco/ConsoleChannel.h>
 
 using Poco::XML::Document;
 using Poco::XML::NamedNodeMap;
 using Poco::XML::Node;
 using DocumentPtr = Poco::AutoPtr< Document >;
 using namespace fmt::literals;
+using Poco::Channel;
+using Poco::ConsoleChannel;
+using Poco::FormattingChannel;
+using Poco::Logger;
+using Poco::PatternFormatter;
 using Poco::Util::AbstractConfiguration;
 using cic::plan::Action;
 using cic::plan::ActionFailure;
@@ -98,6 +108,16 @@ void CheckApp::optionCallback( const std::string& name, const std::string& value
 
 void CheckApp::initialize( Poco::Util::Application& self )
 {
+    Application::initialize( self );
+
+    Poco::Channel* consoleChannel{ new ConsoleChannel() };
+    //    auto formatter( new PatternFormatter( "|%q|%y.%m.%d %h:%M:%S.%i|%P:%T|%s| %t" ) );
+    auto formatter( new PatternFormatter( "|%q|%y.%m.%d %h:%M:%S.%i|%P| %t" ) );
+    auto formattingChannel( new FormattingChannel( formatter, consoleChannel ) );
+    auto& logger = Logger::get( "Application" );
+    logger.setChannel( formattingChannel );
+    logger.setLevel( Poco::Message::PRIO_DEBUG );
+
     // Define initial cic home path
     Poco::Path homePath;
     if ( Poco::Environment::has( "CIC_HOME" ) )
@@ -187,37 +207,23 @@ void CheckApp::initialize( Poco::Util::Application& self )
     }
 
 
-    // if ( !usingCustomConfig )
-    //{
-    // Load default configuration
-    std::string defCfg{ appETCPath.setFileName( "check.properties" ).toString() };
-    try
+    if ( !usingCustomConfig )
     {
-        loadConfiguration( defCfg );
+        // Load default configuration
+        std::string defCfg{ appETCPath.setFileName( "check.properties" ).toString() };
+        try
+        {
+            loadConfiguration( defCfg );
+        }
+        catch ( Poco::FileNotFoundException& exc )
+        {
+            logger.warning(
+                "Default check configuration isnt provided: {}"
+                ""_format( exc.displayText() ) );
+        }
     }
-    catch ( Poco::FileNotFoundException& exc )
-    {
-        logger().warning(
-            "Default check configuration isnt provided: {}"
-            ""_format( exc.displayText() ) );
-    }
-    //}
 
-    // Application-level properties
-    // 	if ( !config().hasProperty( "cic.check.property_name" ) )
-    // 	{
-    // 		config().setString( "cic.check.property_name", propertyValue );
-    // 	}
 
-    Poco::Util::Application::initialize( self );
-
-    // TODO: configure logging!
-    logger().setLevel( Poco::Message::PRIO_INFORMATION );
-
-    // logger.information( "---------------- Start logging ----------------" );
-    // logger.debug( "Initializing CheckApp .." );
-
-    // TODO: initialize stuff here
     {
         auto planFactory = mIndustry.create< Plan >();
         planFactory->registerId< Plan >( "default" );
@@ -228,15 +234,10 @@ void CheckApp::initialize( Poco::Util::Application& self )
         actionFactory->registerId< ActionFailure >( "failure" );
         actionFactory->registerId< ActionSystemCmd >( "systemCmd" );
     }
-    // logger.debug( ".. Done initializing CheckApp" );
 }
 
 void CheckApp::uninitialize()
 {
-    // logger().debug( "Uninitializing CheckApp .." );
-    // TODO: uninitialize stuff here
-    // logger().debug( ".. Done uninitializing CheckApp" );
-
     Poco::Util::Application::uninitialize();
 }
 
@@ -283,13 +284,13 @@ int CheckApp::main( const std::vector< std::string >& args )
     }
     if ( args.empty() )
     {
-        logger().error( "No arguments given!" );
+        logger().fatal( "No arguments given!" );
         fmt::print( "{}\n", formatHelpText() );
         return ( EXIT_USAGE );
     }
 
-    print( "Start configuration:\n" );
-    printConfig( "" );
+    //    print( "Start configuration:\n" );
+    //    printConfig( "" );
 
     Poco::Path pwdPath{ Poco::Path::forDirectory( config().getString( "system.currentDir" ) ) };
     Poco::Path workspacePath;
@@ -312,24 +313,24 @@ int CheckApp::main( const std::vector< std::string >& args )
     bool verbose{ config().getBool( "cic.check.options.verbose", false ) };
     if ( verbose )
     {
-        print(
-            "Config:\n"
-            "* cic home dir:         : '{}'\n"
-            "* cic binary dir        : '{}'\n"
-            "* cic share dir         : '{}'\n"
-            "* cic etc dir           : '{}'\n"
-            "* application dir       : '{}'\n"
-            "* cic check share dir   : '{}'\n"
-            "* cic check etc dir     : '{}'\n"
-            "* cic check workspace   : '{}'\n",
-            config().getString( "cic.homeDir" ),
-            config().getString( "cic.binDir" ),
-            config().getString( "cic.shareDir" ),
-            config().getString( "cic.etcDir" ),
-            config().getString( "application.dir" ),
-            config().getString( "cic.check.shareDir" ),
-            config().getString( "cic.check.etcDir" ),
-            workspaceDir );
+        logger().information(
+            fmt::format( "Config:\n"
+                         "\t cic home dir:       : '{}'\n"
+                         "\t cic binary dir      : '{}'\n"
+                         "\t cic share dir       : '{}'\n"
+                         "\t cic etc dir         : '{}'\n"
+                         "\t application dir     : '{}'\n"
+                         "\t cic check share dir : '{}'\n"
+                         "\t cic check etc dir   : '{}'\n"
+                         "\t cic check workspace : '{}'",
+                         config().getString( "cic.homeDir" ),
+                         config().getString( "cic.binDir" ),
+                         config().getString( "cic.shareDir" ),
+                         config().getString( "cic.etcDir" ),
+                         config().getString( "application.dir" ),
+                         config().getString( "cic.check.shareDir" ),
+                         config().getString( "cic.check.etcDir" ),
+                         workspaceDir ) );
     }
 
     std::string planName{ args[ 0 ] };
@@ -342,9 +343,10 @@ int CheckApp::main( const std::vector< std::string >& args )
 
     if ( verbose )
     {
-        print( "Requested plan: '{}';{}\n",
-               planName,
-               phaseName.empty() ? "" : " Requested phase: '{}';"_format( phaseName ) );
+        logger().information(
+            fmt::format( "Requested plan: '{}';{}\n",
+                         planName,
+                         phaseName.empty() ? "" : " Requested phase: '{}';"_format( phaseName ) ) );
     }
 
     Poco::Path planPath{ config().getString( "cic.check.shareDir" ) };

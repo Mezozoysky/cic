@@ -33,15 +33,17 @@
 #include <Poco/FileStream.h>
 #include <cassert>
 #include <fmt/format.h>
+// #include <Poco/Util/Application.h>
 
-using Poco::XML::XMLException; // ?? is it ugly?
-using Poco::XML::Node;
-using Poco::XML::NodeList;
-using Poco::XML::NamedNodeMap;
 using Poco::XML::DOMParser;
 using Poco::XML::Document;
+using Poco::XML::NamedNodeMap;
+using Poco::XML::Node;
+using Poco::XML::NodeList;
+using Poco::XML::XMLException; // ?? is it ugly?
 using DocumentPtr = Poco::AutoPtr< Document >;
 using Poco::XML::InputSource;
+// using Poco::Util::Application;
 
 using namespace fmt::literals;
 
@@ -65,28 +67,22 @@ DocumentPtr fetchDoc( const std::string& path, DOMParser& parser )
     return ( doc );
 }
 
-Node* fetchNode( const Node* root,
-                 const std::string& nodePath,
-                 unsigned short requiredType )
+Node* fetchNode( const Node* root, const std::string& nodePath, unsigned short requiredType )
 {
     if ( !root )
-        assert( false && "fetchNode: root is NULL!" );
+        assert( false && "XMLUtils::fetchNode: root is NULL!" );
     Node* node{ root->getNodeByPath( nodePath ) };
     if ( !node )
     {
-        fmt::print( stderr,
-                    "[error] '{}' node has no path '{}';\n",
-                    root->nodeName(),
-                    nodePath );
+        // Application::instance().logger().debug(
+        //     "XMLUtils::fetchNode: Node '{}' has no path '{}'"_format( root->nodeName(), nodePath ) );
         return ( nullptr );
     }
     if ( requiredType && ( requiredType != node->nodeType() ) )
     {
-        fmt::print( stderr,
-                    "[error] found node '{}' with nodeType={} but required type {};\n",
-                    node->nodeName(),
-                    node->nodeType(),
-                    requiredType );
+        // Application::instance().logger().debug(
+        //     "XMLUtuls::fetchNode: Found node '{}' with nodeType={} but required type {}"_format(
+        //         node->nodeName(), node->nodeType(), requiredType ) );
         return ( nullptr );
     }
     return ( node );
