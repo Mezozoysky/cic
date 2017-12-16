@@ -37,11 +37,13 @@
 #include <cic/plan/Action.hpp>
 #include <cic/plan/XMLUtils.hpp>
 #include <cic/plan/Industry.hpp>
+#include <cic/plan/Report.hpp>
 
 using Poco::XML::NamedNodeMap;
 using Poco::XML::Node;
 using Poco::XML::NodeList;
 using namespace fmt::literals;
+
 
 namespace cic
 {
@@ -49,18 +51,16 @@ namespace plan
 {
 
 
-bool Plan::execute( const std::string& phaseName, bool skipDependencies )
+bool Plan::execute( const std::string& phaseName, Report* report, bool skipDependencies )
 {
     if ( phaseName.empty() )
     {
-        throw( Poco::InvalidArgumentException{ "Requested phase name is empty" } );
+        throw( Poco::InvalidArgumentException{ "Target phase name is empty" } );
     }
     if ( mPhases.count( phaseName ) == 0 )
     {
-        throw( Poco::NotFoundException{ "Requested phase name isnt found: {}"_format( phaseName ), 8 } );
+        throw( Poco::NotFoundException{ "Target phase name isnt found: {}"_format( phaseName ), 8 } );
     }
-
-    bool result{ true };
 
     Sequence seq;
     if ( skipDependencies )
@@ -72,19 +72,31 @@ bool Plan::execute( const std::string& phaseName, bool skipDependencies )
         buildSequence( phaseName, seq );
     }
 
+    report->targetPlan() = name();
+    report->targetPhase() = phaseName;
+
+    bool result{ true };
+
     for ( const auto& phName : seq )
     {
-        if ( mPhases.count( phaseName ) == 0 )
+        if ( mPhases.count( phName ) == 0 )
         {
-            throw( Poco::NotFoundException{ "Requested phase name isnt found: {}"_format( phaseName ), 8 } );
+            throw( Poco::NotFoundException{ "Phase name isnt found: {}"_format( phName ), 8 } );
         }
 
-        result = mPhases.at( phName )->execute();
-        if ( !result )
+        report->phaseReports().emplace_back();
+        auto& phaseReport( report->phaseReports().back() );
+        phaseReport.name = phName;
+
+        if ( result )
         {
-            break;
+            result = mPhases.at( phName )->execute();
         }
+
+        phaseReport.success = result;
     }
+
+    report->success() = result;
 
     return ( result );
 }

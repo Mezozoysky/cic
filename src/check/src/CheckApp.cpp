@@ -47,6 +47,7 @@
 #include <Poco/PatternFormatter.h>
 #include <Poco/FormattingChannel.h>
 #include <Poco/ConsoleChannel.h>
+#include <cic/plan/Report.hpp>
 
 using Poco::XML::Document;
 using Poco::XML::NamedNodeMap;
@@ -65,6 +66,7 @@ using cic::plan::ActionSuccess;
 using cic::plan::ActionSystemCmd;
 using cic::plan::Phase;
 using cic::plan::Plan;
+using cic::plan::Report;
 using fmt::print;
 
 namespace cic
@@ -367,9 +369,10 @@ int CheckApp::main( const std::vector< std::string >& args )
 
     bool result{ false };
     bool only{ config().getBool( "cic.check.options.only", false ) };
+    Report report;
     try
     {
-        result = plan->execute( phaseName, only );
+        result = plan->execute( phaseName, &report, only );
     }
     catch ( Poco::Exception& exc )
     {

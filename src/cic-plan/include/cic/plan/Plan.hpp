@@ -36,8 +36,8 @@
 #include "Serializable.hpp"
 #include "Phase.hpp"
 #include <string>
-// #include <vector>
 #include <map>
+
 
 namespace Poco
 {
@@ -45,12 +45,18 @@ namespace XML
 {
 class Node;
 }
+namespace Util
+{
+class AbstractConfiguration;
+}
 } // namespace Poco
 
 namespace cic
 {
 namespace plan
 {
+
+class Report;
 
 class Plan : Serializable
 {
@@ -66,7 +72,9 @@ public:
     Plan& operator=( const Plan& other ) = delete;
     virtual ~Plan() noexcept = default;
 
-    virtual bool execute( const std::string& phaseName, bool skipDependencies = false );
+    virtual bool execute( const std::string& phaseName,
+                          Report* report,
+                          bool skipDependencies = false );
     virtual void buildSequence( const std::string& phaseName, Sequence& seq ) const;
     virtual bool isADependsOnB( const std::string& tgtA, const std::string& tgtB ) const;
 

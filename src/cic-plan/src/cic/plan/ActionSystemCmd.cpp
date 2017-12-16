@@ -68,10 +68,14 @@ bool ActionSystemCmd::execute()
     Poco::PipeInputStream istrOut( outPipe );
     Poco::PipeInputStream istrErr( errPipe );
 
-    // std::ofstream ostrOut{ "action_systemCmd_{}_stdout.txt"_format( cmd() ) };
-    // std::ofstream ostrErr{ "action_systemCmd_{}_stderr.txt"_format( cmd() ) };
-    Poco::StreamCopier::copyStream( istrOut, std::cout/*ostrOut*/ );
-    Poco::StreamCopier::copyStream( istrErr, std::cerr/*ostrErr*/ );
+    std::ofstream ostrOut{ "action_systemCmd_{}_stdout.txt"_format( cmd() ) };
+    std::ofstream ostrErr{ "action_systemCmd_{}_stderr.txt"_format( cmd() ) };
+
+    Poco::StreamCopier::copyStream( istrOut, std::cout );
+    Poco::StreamCopier::copyStream( istrErr, std::cerr );
+
+    // Poco::StreamCopier::copyStream( istrOut, ostrOut );
+    // Poco::StreamCopier::copyStream( istrErr, ostrErr );
 
     int rc{ ph.wait() };
     return ( rc == 0 );
