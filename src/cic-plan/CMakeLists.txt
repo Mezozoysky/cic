@@ -20,7 +20,6 @@ set(GROUP_HEADERS
     "${MODULE_ROOT}/include/${MODULE_NSPATH}/ActionSystemCmd.hpp"
     "${MODULE_ROOT}/include/${MODULE_NSPATH}/Factory.hpp"
     "${MODULE_ROOT}/include/${MODULE_NSPATH}/Industry.hpp"
-    "${MODULE_ROOT}/include/${MODULE_NSPATH}/XMLUtils.hpp"
     "${MODULE_ROOT}/include/${MODULE_NSPATH}/Report.hpp"
     )
 set(GROUP_SOURCES
@@ -30,7 +29,6 @@ set(GROUP_SOURCES
     "${MODULE_ROOT}/src/${MODULE_NSPATH}/ActionFailure.cpp"
     "${MODULE_ROOT}/src/${MODULE_NSPATH}/ActionSuccess.cpp"
     "${MODULE_ROOT}/src/${MODULE_NSPATH}/ActionSystemCmd.cpp"
-    "${MODULE_ROOT}/src/${MODULE_NSPATH}/XMLUtils.cpp"
     "${MODULE_ROOT}/src/${MODULE_NSPATH}/Report.cpp"
     )
 source_group( ${MODULE_NAME} FILES ${GROUP_HEADERS} ${GROUP_SOURCES} )

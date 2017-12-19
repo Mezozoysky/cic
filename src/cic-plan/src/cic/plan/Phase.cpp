@@ -32,65 +32,77 @@
 
 #include <cic/plan/Phase.hpp>
 #include <cic/plan/Action.hpp>
-#include <cic/plan/XMLUtils.hpp>
 #include <cic/plan/Industry.hpp>
 #include <Poco/Exception.h>
 #include <Poco/String.h>
 #include <Poco/DOM/Node.h>
-#include <Poco/DOM/NamedNodeMap.h>
 #include <fmt/format.h>
+#include <cic/plan/Report.hpp>
+#include <fstream>
+#include <Poco/DOM/Element.h>
+#include <Poco/DOM/AutoPtr.h>
+#include <Poco/DOM/NodeList.h>
 
-using Poco::XML::NamedNodeMap;
 using Poco::XML::Node;
 using Poco::XML::NodeList;
 using namespace fmt::literals;
+using Poco::AutoPtr;
+using Poco::XML::Element;
+using cic::plan::PhaseReport;
+using cic::plan::Report;
 
 namespace cic
 {
 namespace plan
 {
 
-bool Phase::execute()
+bool Phase::execute( PhaseReport* report )
 {
     bool result{ true };
 
-    for ( auto action : actions() )
+    for ( std::size_t i{ 0 }; i < actions().size(); ++i )
     {
-        if ( !action->execute() )
+        Action::Ptr action{ actions()[ i ] };
+        report->actionReports().emplace_back();
+        auto& actionReport( report->actionReports().back() );
+        actionReport.classId() = action->getClassName();
+        actionReport.outline() = action->outline();
+        std::string stdoutLogName{ "action_{}_{}_stdout.log"_format( report->name(), i ) };
+        std::string stderrLogName{ "action_{}_{}_stderr.log"_format( report->name(), i ) };
+        actionReport.stdoutFileName() = stdoutLogName;
+        actionReport.stderrFileName() = stderrLogName;
+        std::ofstream stdoutLog{ stdoutLogName };
+        std::ofstream stderrLog{ stderrLogName };
+        if ( result )
         {
-            result = false;
-            break;
+            result = action->execute( stdoutLog, stderrLog );
         }
+        stdoutLog.flush();
+        stdoutLog.close();
+        stderrLog.flush();
+        stderrLog.close();
+
+        actionReport.success() = result;
     }
     return ( result );
 };
 
-void Phase::loadFromXML( Node* root, Industry* industry )
+void Phase::loadFromXML( Element* root, Industry* industry )
 {
-    NamedNodeMap* rootAttrs{ root->attributes() };
+    assert( root != nullptr );
 
-    // // Dont load the name since name is already set with declaration name.
-    // // 	std::string name;
-    // // 	Node* node{ xmlAttrs->getNamedItem( "name" ) };
-    // // 	if ( node )
-    // // 	{
-    // // 		name = Poco::trim( node->getNodeValue() );
-    // // 	}
-
-    Node* node{ fetchNode( root, "/dependencies", Node::ELEMENT_NODE ) };
-    if ( node != nullptr )
+    // load dependencies
     {
-        NodeList* depNodeList{ node->childNodes() };
-        for ( std::size_t i{ 0 }; i < depNodeList->length(); ++i )
+        Element* elem{ root->getChildElement( "dependencies" ) };
+        if ( elem != nullptr )
         {
-            Node* depNode{ depNodeList->item( i ) };
-            if ( depNode->nodeType() == Node::ELEMENT_NODE && depNode->nodeName() == "dependency" )
+            AutoPtr< NodeList > depNodeList{ elem->childNodes() };
+            for ( std::size_t i{ 0 }; i < depNodeList->length(); ++i )
             {
-                NamedNodeMap* depAttrs{ depNode->attributes() };
-                Node* depValueNode{ depAttrs->getNamedItem( "value" ) };
-                if ( depValueNode != nullptr )
+                Element* depElem{ static_cast< Element* >( depNodeList->item( i ) ) };
+                if ( depElem != nullptr && depElem->nodeName() == "dependency" )
                 {
-                    std::string depName{ Poco::trim( depValueNode->getNodeValue() ) };
+                    std::string depName{ Poco::trim( depElem->getAttribute( "value" ) ) };
                     if ( !depName.empty() )
                     {
                         deps().push_back( depName );
@@ -100,144 +112,50 @@ void Phase::loadFromXML( Node* root, Industry* industry )
         }
     }
 
-    node = fetchNode( root, "/actions", Node::ELEMENT_NODE );
-    if ( node == nullptr )
+    // load actions
     {
-        throw( Poco::SyntaxException( "Element 'actions' isnt found" ) );
+        Element* elem{ root->getChildElement( "actions" ) };
+        if ( elem != nullptr )
+        {
+            loadActionsFromXML( elem, industry );
+        }
     }
-    loadActionsFromXML( node, industry );
 }
 
-void Phase::saveToXML( Node* root ) const {}
+void Phase::saveToXML( Element* root ) const {}
 
-void Phase::loadActionsFromXML( Node* root, Industry* industry )
+void Phase::loadActionsFromXML( Element* root, Industry* industry )
 {
-    NodeList* list{ root->childNodes() };
-    Node* node{ nullptr };
+    AutoPtr< NodeList > list{ root->childNodes() };
+    Element* elem{ nullptr };
     for ( std::size_t i{ 0 }; i < list->length(); ++i )
     {
-        node = list->item( i );
-        if ( node->nodeType() != Node::ELEMENT_NODE )
+        elem = static_cast< Element* >( list->item( i ) );
+        if ( elem != nullptr && elem->nodeName() == "action" )
         {
-            continue;
-        }
-        if ( node->nodeName() == "action" )
-        {
-            loadActionFromXML( node, industry );
+            loadActionFromXML( elem, industry );
         }
     }
 }
 
-void Phase::loadActionFromXML( Node* root, Industry* industry )
+void Phase::loadActionFromXML( Element* root, Industry* industry )
 {
-    NamedNodeMap* rootAttrs{ root->attributes() };
-
-    std::string typeId{ "" };
-    Node* node = rootAttrs->getNamedItem( "typeId" );
-    if ( node != nullptr )
+    std::string classId{ root->getAttribute( "class" ) };
+    if ( classId.empty() )
     {
-        typeId = Poco::trim( node->getNodeValue() );
-    }
-    if ( typeId.empty() )
-    {
-        throw( Poco::SyntaxException{ "Mandatory attribute 'typeId' isnt found or empty", 8 } );
+        throw( Poco::SyntaxException{
+            "Mandatory attribute 'class' isnt found or empty within the 'action' element", 8 } );
     }
 
     auto actionFactory( industry->get< Action >() );
     if ( actionFactory == nullptr )
     {
-        throw( Poco::NotFoundException{ "No factory registered for id: '{}'"_format( typeId ), 8 } );
+        throw( Poco::NotFoundException{ "No factory registered for id: '{}'"_format( classId ), 8 } );
     }
 
-    Action::Ptr action{ actionFactory->create( typeId ) };
+    Action::Ptr action{ actionFactory->create( classId ) };
     action->loadFromXML( root, industry );
     mActions.push_back( action );
-
-    // NodeList* nodes{ xml->childNodes() };
-    // for ( std::size_t i{ 0 }; i < nodes->length(); ++i )
-    // {
-    //     Node* node{ nodes->item( i ) };
-    //     NodeList* list{ nullptr };
-    //     Node* attr{ nullptr };
-    //     if ( node->nodeName() == "dependency" )
-    //     {
-    //         attr = node->attributes()->getNamedItem( "value" );
-    //         if ( attr == nullptr )
-    //         {
-    //             throw( Poco::SyntaxException{ "Mandatory attribute 'value' isnt found in 'dependency'
-    //                                           element ",
-    //                                           8 } );
-    //         }
-    //         tgtData.deps.push_back( Poco::trim( attr->getNodeValue() ) );
-    //     }
-    //     else if ( node->nodeName() == "dependencies" )
-    //     {
-    //         list = node->childNodes();
-    //         for ( std::size_t j{ 0 }; j < list->length(); ++j )
-    //         {
-    //             Node* valNode{ list->item( j ) };
-    //             if ( valNode->nodeType() != Node::ELEMENT_NODE )
-    //             {
-    //                 continue;
-    //             }
-    //             if ( valNode->nodeName() == "value" )
-    //             {
-    //                 std::string value{ Poco::trim( fetchText( valNode ) ) };
-    //                 tgtData.deps.push_back( value );
-    //             }
-    //             else
-    //             {
-    //                 // TODO: mb throw?
-    //             }
-    //         }
-    //     }
-    //     else if ( node->nodeName() == "actions" )
-    //     {
-    //         list = node->childNodes();
-    //         for ( std::size_t j{ 0 }; j < list->length(); ++j )
-    //         {
-    //             Node* tmpNode{ list->item( j ) };
-    //             if ( tmpNode->nodeType() != Node::ELEMENT_NODE )
-    //             {
-    //                 continue;
-    //             }
-    //             if ( tmpNode->nodeName() == "action" )
-    //             {
-    //                 std::string typeId;
-    //                 attr = tmpNode->attributes()->getNamedItem( "typeId" );
-    //                 if ( attr == nullptr )
-    //                 {
-    //                     throw( Poco::SyntaxException{
-    //                         "Mandatory attribute 'typeId' isnt found in 'action' element", 8 } );
-    //                 }
-    //                 typeId = Poco::trim( attr->getNodeValue() );
-    //                 if ( typeId.empty() )
-    //                 {
-    //                     throw( Poco::DataException{ "Mandatory attribute 'typeId' is empty", 8 } );
-    //                 }
-    //                 auto actionFactory( industry->get< Action >() );
-    //                 if ( actionFactory == nullptr )
-    //                 {
-    //                     throw( Poco::NotFoundException{ "No factory registered for given abstraction type",
-    //                                                     8 } );
-    //                 }
-    //                 Action::Ptr action{ actionFactory->create( typeId ) };
-    //                 poco_plan_ptr( action );
-    //                 action->loadFromXML( tmpNode, industry );
-
-    //                 tgtData.actions.push_back( action );
-    //             }
-    //             else
-    //             {
-    //                 // TODO: mb throw?
-    //             }
-    //         }
-    //     }
-    //     else
-    //     {
-    //         // TODO: mb throw?
-    //     }
-    // }
 }
 
 } // namespace plan

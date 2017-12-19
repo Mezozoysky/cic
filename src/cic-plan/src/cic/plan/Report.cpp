@@ -31,21 +31,35 @@
 
 
 #include <cic/plan/Report.hpp>
-#include <Poco/DOM/Node.h>
+#include <Poco/DOM/Element.h>
 
-using Poco::XML::Node;
+using Poco::XML::Element;
 
 namespace cic
 {
 namespace plan
 {
 
-void Report::loadFromXML( Node* root, Industry* industry )
+void ActionReport::loadFromXML( Element* root, Industry* industry )
 {
     // Do nothing
 }
 
-void Report::saveToXML( Node* root ) const {}
+void ActionReport::saveToXML( Element* root ) const {}
+
+void PhaseReport::loadFromXML( Element* root, Industry* industry )
+{
+    // Do nothing
+}
+
+void PhaseReport::saveToXML( Element* root ) const {}
+
+void TargetReport::loadFromXML( Element* root, Industry* industry )
+{
+    // Do nothing
+}
+
+void TargetReport::saveToXML( Element* root ) const {}
 
 } // namespace plan
 } // namespace cic

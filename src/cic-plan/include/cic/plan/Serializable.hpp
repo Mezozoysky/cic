@@ -33,13 +33,15 @@
 #ifndef CIC_PLAN__SERIALIZABLE_HPP
 #define CIC_PLAN__SERIALIZABLE_HPP
 
+#include <string>
+
 namespace Poco
 {
 namespace XML
 {
-class Node;
+class Element;
 }
-}
+} // namespace Poco
 
 namespace cic
 {
@@ -48,14 +50,38 @@ namespace plan
 
 class Industry;
 
-class Serializable
+#define CLASSINFO( className )                                                                               \
+public:                                                                                                      \
+    static const std::string& getClassNameStatic()                                                           \
+    {                                                                                                        \
+        static const std::string staticClassName{ #className };                                              \
+        return ( staticClassName );                                                                          \
+    };                                                                                                       \
+    virtual const std::string& getClassName() const noexcept override                                        \
+    {                                                                                                        \
+        return ( getClassNameStatic() );                                                                     \
+    }
+
+class ClassInfo
+{
+public:
+    ClassInfo() = default;
+    virtual ~ClassInfo() noexcept = default;
+
+    virtual const std::string& getClassName() const noexcept = 0;
+};
+
+
+class Serializable : public ClassInfo
 {
 public:
     Serializable() = default;
     virtual ~Serializable() noexcept = default;
 
-    virtual void loadFromXML( Poco::XML::Node* xml, Industry* industry ) = 0;
-    virtual void saveToXML( Poco::XML::Node* xml ) const = 0;
+    virtual const std::string& getClassName() const noexcept = 0;
+
+    virtual void loadFromXML( Poco::XML::Element* root, Industry* industry ) = 0;
+    virtual void saveToXML( Poco::XML::Element* root ) const = 0;
 };
 
 } // namespace plan

@@ -38,23 +38,17 @@
 #include <memory>
 #include <vector>
 
-namespace Poco
-{
-namespace XML
-{
-class Node;
-}
-} // namespace Poco
-
 namespace cic
 {
 namespace plan
 {
 
-// class Industry;
+class PhaseReport;
 
 class Phase : public Serializable
 {
+    CLASSINFO( PhaseReport );
+
 public:
     using Ptr = std::shared_ptr< Phase >;
 
@@ -66,10 +60,10 @@ public:
     Phase& operator=( const Phase& other ) = delete;
     virtual ~Phase() noexcept = default;
 
-    virtual bool execute();
+    virtual bool execute( PhaseReport* report );
 
-    virtual void loadFromXML( Poco::XML::Node* root, Industry* industry ) override;
-    virtual void saveToXML( Poco::XML::Node* root ) const override;
+    virtual void loadFromXML( Poco::XML::Element* root, Industry* industry ) override;
+    virtual void saveToXML( Poco::XML::Element* root ) const override;
 
 public:
     inline const ActionList& actions() const noexcept;
@@ -78,8 +72,8 @@ public:
     inline StrList& deps() noexcept;
 
 protected:
-    virtual void loadActionsFromXML( Poco::XML::Node* root, Industry* industry );
-    virtual void loadActionFromXML( Poco::XML::Node* root, Industry* industry );
+    virtual void loadActionsFromXML( Poco::XML::Element* root, Industry* industry );
+    virtual void loadActionFromXML( Poco::XML::Element* root, Industry* industry );
 
 private:
     ActionList mActions;

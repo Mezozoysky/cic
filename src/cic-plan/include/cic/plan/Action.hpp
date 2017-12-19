@@ -36,6 +36,7 @@
 #include "Serializable.hpp"
 #include <memory>
 #include <string>
+#include <iostream>
 
 namespace cic
 {
@@ -52,7 +53,8 @@ public:
     Action& operator=( const Action& other ) = delete;
     virtual ~Action() noexcept = default;
 
-    virtual bool execute() = 0;
+    virtual bool execute( std::ostream& outStream, std::ostream& errStream ) = 0;
+    virtual const std::string outline() const noexcept;
 
 public:
     inline const std::string& name() const noexcept;

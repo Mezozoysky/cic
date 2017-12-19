@@ -30,21 +30,21 @@
 /// \copyright cic is released under the terms of zlib/png license
 
 #include <cic/plan/ActionSystemCmd.hpp>
-#include <cic/plan/XMLUtils.hpp>
 #include <Poco/Process.h>
 #include <Poco/PipeStream.h>
 #include <Poco/StreamCopier.h>
-#include <fstream>
-#include <iostream>
 #include <Poco/Exception.h>
 #include <Poco/String.h>
 #include <fmt/format.h>
 #include <Poco/DOM/Node.h>
-#include <Poco/DOM/NamedNodeMap.h>
 #include <Poco/Util/Application.h>
+#include <Poco/DOM/Element.h>
+#include <Poco/AutoPtr.h>
+#include <Poco/DOM/NodeList.h>
 
+using Poco::AutoPtr;
 using Poco::Util::Application;
-using Poco::XML::NamedNodeMap;
+using Poco::XML::Element;
 using Poco::XML::Node;
 using Poco::XML::NodeList;
 
@@ -55,7 +55,7 @@ namespace cic
 namespace plan
 {
 
-bool ActionSystemCmd::execute()
+bool ActionSystemCmd::execute( std::ostream& outStream, std::ostream& errStream )
 {
     Poco::Pipe outPipe;
     Poco::Pipe errPipe;
@@ -68,92 +68,72 @@ bool ActionSystemCmd::execute()
     Poco::PipeInputStream istrOut( outPipe );
     Poco::PipeInputStream istrErr( errPipe );
 
-    std::ofstream ostrOut{ "action_systemCmd_{}_stdout.txt"_format( cmd() ) };
-    std::ofstream ostrErr{ "action_systemCmd_{}_stderr.txt"_format( cmd() ) };
-
-    Poco::StreamCopier::copyStream( istrOut, std::cout );
-    Poco::StreamCopier::copyStream( istrErr, std::cerr );
-
-    // Poco::StreamCopier::copyStream( istrOut, ostrOut );
-    // Poco::StreamCopier::copyStream( istrErr, ostrErr );
+    Poco::StreamCopier::copyStream( istrOut, outStream );
+    Poco::StreamCopier::copyStream( istrErr, errStream );
 
     int rc{ ph.wait() };
     return ( rc == 0 );
 }
 
-void ActionSystemCmd::loadFromXML( Node* root, Industry* industry )
+void ActionSystemCmd::loadFromXML( Element* root, Industry* industry )
 {
-    Application& app{ Application::instance() };
-
-    NamedNodeMap* rootAttrs{ root->attributes() };
-
-    // cmd
-    Node* node{ rootAttrs->getNamedItem( "cmd" ) };
-    if ( !node )
+    std::string actionCmd{ root->getAttribute( "cmd" ) };
+    if ( actionCmd.empty() )
     {
-        throw( Poco::SyntaxException{ "Mandatory attribute 'cmd' isnt found", 8 } );
+        throw( Poco::DataException{
+            "Mandatory attribute 'cmd' isnt found or empty within the 'action' element' (class='{}')"_format(
+                getClassName() ),
+            8 } );
     }
-    std::string actioncmd{ Poco::trim( node->getNodeValue() ) };
-    if ( actioncmd.empty() )
-    {
-        throw( Poco::DataException{ "Mandatory attribute 'cmd' is empty", 8 } );
-    }
-    cmd() = actioncmd;
+    cmd() = actionCmd;
 
-    node = fetchNode( root, "/args", Node::ELEMENT_NODE );
-    if ( node != nullptr )
     {
-        // load args
-        NodeList* argNodeList{ node->childNodes() };
-        Node* argNode{ nullptr };
-        for ( std::size_t i{ 0 }; i < argNodeList->length(); ++i )
+        Element* elem{ root->getChildElement( "args" ) };
+        if ( elem != nullptr )
         {
-            argNode = argNodeList->item( i );
-            if ( argNode->nodeType() != Node::ELEMENT_NODE )
+            // load args
+            AutoPtr< NodeList > argNodeList{ elem->childNodes() };
+            Element* argElem{ nullptr };
+            for ( std::size_t i{ 0 }; i < argNodeList->length(); ++i )
             {
-                continue;
-            }
-            if ( argNode->nodeName() == "arg" )
-            {
-                NamedNodeMap* argAttrs{ argNode->attributes() };
-                Node* argValueNode{ argAttrs->getNamedItem( "value" ) };
-                if ( argValueNode != nullptr )
+                argElem = static_cast< Element* >( argNodeList->item( i ) );
+                if ( argElem != nullptr && argElem->nodeName() == "arg" )
                 {
-                    std::string arg{ Poco::trim( argValueNode->getNodeValue() ) };
+                    std::string arg{ Poco::trim( argElem->getAttribute( "value" ) ) };
                     if ( !arg.empty() )
                     {
                         args().push_back( arg );
                     }
                 }
             }
-        } // for
-
-        Poco::Path workspacePath{ app.config().getString( "cic.check.workspace" ) };
-        Poco::Path workDirPath{ workspacePath };
-
-        node = fetchNode( root, "/workDir", Node::ELEMENT_NODE );
-        if ( node != nullptr )
-        {
-            NamedNodeMap* wdAttrs{ node->attributes() };
-            Node* wdValueNode{ wdAttrs->getNamedItem( "value" ) };
-            if ( wdValueNode != nullptr )
-            {
-                std::string wd{ Poco::trim( wdValueNode->getNodeValue() ) };
-                if ( !wd.empty() )
-                {
-                    workDirPath = Poco::Path::forDirectory( wd );
-                    if ( workDirPath.isRelative() )
-                        {
-                            workDirPath.makeAbsolute( workspacePath );
-                        }
-                }
-            }
         }
-        workDir() = workDirPath.toString();
+    }
+
+    {
+        Element* elem{ root->getChildElement( "workDir" ) };
+        if ( elem != nullptr )
+        {
+            workDir() = Poco::trim( elem->getAttribute( "value" ) );
+        }
     }
 }
 
-void ActionSystemCmd::saveToXML( Node* root ) const {}
+void ActionSystemCmd::saveToXML( Element* root ) const {}
+
+const std::string ActionSystemCmd::outline() const noexcept
+{
+    std::string outlineStr;
+    {
+        fmt::MemoryWriter writer;
+        writer.write( cmd() );
+        for ( const auto& arg : args() )
+        {
+            writer.write( " {}"_format( arg ) );
+        }
+        outlineStr = writer.str();
+    }
+    return ( outlineStr );
+}
 
 } // namespace plan
 } // namespace cic

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<plan name="Test0" typeId="default">
+<plan name="Test0" class="default">
 
 	<description>
 test0, the plan for check testing purpose
@@ -10,7 +10,7 @@ test0, the plan for check testing purpose
 
 		<phase name="help">
 			<actions>
-				<action typeId="systemCmd" cmd="echo">
+				<action class="ActionSystemCmd" cmd="echo">
                   <args>
                     <arg value="phase_help__print_help" />
                   </args>
@@ -20,17 +20,17 @@ test0, the plan for check testing purpose
 
 		<phase name="clean">
 			<actions>
-				<action typeId="systemCmd" cmd="echo">
+				<action class="ActionSystemCmd" cmd="echo">
                   <args>
                     <arg value="phase_clean__remove_artefacts" />
                   </args>
-                  <workDir value="build" />
+                  <workDir value="." />
                 </action>
-				<action typeId="systemCmd" cmd="echo">
+				<action class="ActionSystemCmd" cmd="echo">
                   <args>
                     <arg value="phase_clean__remove_project" />
                   </args>
-                  <workDir value="build" />
+                  <workDir value="." />
                 </action>
 			</actions>
 		</phase>
@@ -40,11 +40,11 @@ test0, the plan for check testing purpose
                 <dependency value="clean" />
 			</dependencies>
             <actions>
-                <action typeId="systemCmd" cmd="ls">
+                <action class="ActionSystemCmd" cmd="ls">
                   <args>
                     <arg value="-n1" />
                   </args>
-                  <workDir value="build" />
+                  <workDir value="." />
                 </action>
             </actions>
 		</phase>
@@ -54,11 +54,11 @@ test0, the plan for check testing purpose
                 <dependency value="configure" />
             </dependencies>
             <actions>
-                <action typeId="systemCmd" cmd="echo">
+                <action class="ActionSystemCmd" cmd="echo">
                   <args>
                     <arg value="phase_build__build_project" />
                   </args>
-                  <workDir value="build" />
+                  <workDir value="." />
                 </action>
             </actions>
 		</phase>

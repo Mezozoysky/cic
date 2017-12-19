@@ -32,7 +32,7 @@
 
 #include "CheckApp.hpp"
 #include <cic/plan/Plan.hpp>
-#include <cic/plan/XMLUtils.hpp>
+// #include <cic/plan/XMLUtils.hpp>
 #include <fmt/format.h>
 #include <sstream>
 #include <Poco/Util/HelpFormatter.h>
@@ -48,18 +48,26 @@
 #include <Poco/FormattingChannel.h>
 #include <Poco/ConsoleChannel.h>
 #include <cic/plan/Report.hpp>
+#include <Poco/FileStream.h>
+#include <Poco/DOM/Document.h>
+#include <Poco/SAX/InputSource.h>
 
+
+using Poco::AutoPtr;
+using Poco::XML::Document;
 using Poco::XML::Document;
 using Poco::XML::NamedNodeMap;
 using Poco::XML::Node;
-using DocumentPtr = Poco::AutoPtr< Document >;
 using namespace fmt::literals;
 using Poco::Channel;
 using Poco::ConsoleChannel;
+using Poco::FileInputStream;
 using Poco::FormattingChannel;
 using Poco::Logger;
 using Poco::PatternFormatter;
 using Poco::Util::AbstractConfiguration;
+using Poco::XML::Element;
+using Poco::XML::InputSource;
 using cic::plan::Action;
 using cic::plan::ActionFailure;
 using cic::plan::ActionSuccess;
@@ -67,6 +75,7 @@ using cic::plan::ActionSystemCmd;
 using cic::plan::Phase;
 using cic::plan::Plan;
 using cic::plan::Report;
+using cic::plan::TargetReport;
 using fmt::print;
 
 namespace cic
@@ -228,13 +237,15 @@ void CheckApp::initialize( Poco::Util::Application& self )
 
     {
         auto planFactory = mIndustry.create< Plan >();
+        planFactory->registerId< Plan >( Plan::getClassNameStatic() );
         planFactory->registerId< Plan >( "default" );
         auto phaseFactory = mIndustry.create< Phase >();
         phaseFactory->registerId< Phase >( "default" );
+        phaseFactory->registerId< Phase >( Phase::getClassNameStatic() );
         auto actionFactory = mIndustry.create< Action >();
-        actionFactory->registerId< ActionSuccess >( "success" );
-        actionFactory->registerId< ActionFailure >( "failure" );
-        actionFactory->registerId< ActionSystemCmd >( "systemCmd" );
+        actionFactory->registerId< ActionSuccess >( ActionSuccess::getClassNameStatic() );
+        actionFactory->registerId< ActionFailure >( ActionFailure::getClassNameStatic() );
+        actionFactory->registerId< ActionSystemCmd >( ActionSystemCmd::getClassNameStatic() );
     }
 }
 
@@ -296,21 +307,42 @@ int CheckApp::main( const std::vector< std::string >& args )
 
     Poco::Path pwdPath{ Poco::Path::forDirectory( config().getString( "system.currentDir" ) ) };
     Poco::Path workspacePath;
-    std::string workspaceDir{ config().getString( "cic.check.workspace", "" ) };
-    if ( workspaceDir.empty() )
     {
-        workspacePath = pwdPath;
-    }
-    else
-    {
-        workspacePath = Poco::Path::forDirectory( workspaceDir );
-        if ( workspacePath.isRelative() )
+        std::string workspaceDir{ config().getString( "cic.check.workspace", "" ) };
+        if ( workspaceDir.empty() )
         {
-            workspacePath.makeAbsolute( pwdPath );
+            workspacePath = pwdPath;
         }
+        else
+        {
+            workspacePath = Poco::Path::forDirectory( workspaceDir );
+            if ( workspacePath.isRelative() )
+            {
+                workspacePath.makeAbsolute( pwdPath );
+            }
+        }
+        workspaceDir = workspacePath.toString();
+        config().setString( "cic.check.workspace", workspaceDir );
     }
-    workspaceDir = workspacePath.toString();
-    config().setString( "cic.check.workspace", workspaceDir );
+
+    Poco::Path reportPath;
+    {
+        std::string reportDir{ config().getString( "cic.check.reportDir", "" ) };
+        if ( reportDir.empty() )
+        {
+            reportPath = pwdPath;
+        }
+        else
+        {
+            reportPath = Poco::Path::forDirectory( reportDir );
+            if ( reportPath.isRelative() )
+            {
+                reportPath.makeAbsolute( pwdPath );
+            }
+        }
+        reportDir = reportPath.toString();
+        config().setString( "cic.check.reportDir", reportDir );
+    }
 
     bool verbose{ config().getBool( "cic.check.options.verbose", false ) };
     if ( verbose )
@@ -324,7 +356,8 @@ int CheckApp::main( const std::vector< std::string >& args )
                          "\t application dir     : '{}'\n"
                          "\t cic check share dir : '{}'\n"
                          "\t cic check etc dir   : '{}'\n"
-                         "\t cic check workspace : '{}'",
+                         "\t cic check workspace : '{}'\n"
+                         "\t cic check report dir: '{}'",
                          config().getString( "cic.homeDir" ),
                          config().getString( "cic.binDir" ),
                          config().getString( "cic.shareDir" ),
@@ -332,7 +365,8 @@ int CheckApp::main( const std::vector< std::string >& args )
                          config().getString( "application.dir" ),
                          config().getString( "cic.check.shareDir" ),
                          config().getString( "cic.check.etcDir" ),
-                         workspaceDir ) );
+                         workspacePath.toString(),
+                         reportPath.toString() ) );
     }
 
     std::string planName{ args[ 0 ] };
@@ -346,30 +380,41 @@ int CheckApp::main( const std::vector< std::string >& args )
     if ( verbose )
     {
         logger().information(
-            fmt::format( "Requested plan: '{}';{}\n",
+            fmt::format( "Target plan: '{}';{}\n",
                          planName,
-                         phaseName.empty() ? "" : " Requested phase: '{}';"_format( phaseName ) ) );
+                         phaseName.empty() ? "" : " Target phase: '{}';"_format( phaseName ) ) );
     }
 
     Poco::Path planPath{ config().getString( "cic.check.shareDir" ) };
     planPath.pushDirectory( "plans" ).setBaseName( planName ).setExtension( "xml" );
-    DocumentPtr doc{ plan::fetchDoc( planPath.toString(), mParser ) };
-    Node* planRoot{ plan::fetchNode( doc, "/plan", Node::ELEMENT_NODE ) };
-    std::string typeId{ "default" };
-    NamedNodeMap* attrs{ planRoot->attributes() };
-    Node* attr{ attrs->getNamedItem( "typeId" ) };
-    if ( attr )
+    AutoPtr< Document > doc;
     {
-        typeId = Poco::trim( attr->getNodeValue() );
+        FileInputStream istr{ planPath.toString() };
+        InputSource input{ istr };
+        doc = mParser.parse( &input );
+    }
+    Element* planRoot{ doc->documentElement() };
+    if ( planRoot->nodeName() != "plan" )
+    {
+        logger().fatal(
+            "Plan's root XML element should be named 'plan', not '{}'"_format( planRoot->nodeName() ) );
+        return ( EXIT_DATAERR );
+    }
+    std::string planClass{ Poco::trim( planRoot->getAttribute( "class" ) ) };
+    if ( !planClass.empty() )
+    {
+        planClass = "default";
     }
     auto factory = mIndustry.get< Plan >();
     assert( factory != nullptr );
-    Plan::Ptr plan{ factory->create( typeId ) };
+    Plan::Ptr plan{ factory->create( planClass ) };
     plan->loadFromXML( planRoot, &mIndustry );
 
     bool result{ false };
     bool only{ config().getBool( "cic.check.options.only", false ) };
-    Report report;
+    TargetReport report;
+    report.targetPlan() = planName;
+    report.targetPhase() = phaseName;
     try
     {
         result = plan->execute( phaseName, &report, only );
@@ -381,6 +426,7 @@ int CheckApp::main( const std::vector< std::string >& args )
             ""_format( planName, phaseName, exc.displayText() ) );
         return ( exc.code() );
     }
+    report.success() = result;
 
     if ( !result )
     {

@@ -24,7 +24,7 @@
 
 
 /// \file
-/// \brief AAction implementation
+/// \brief Action implementation
 /// \author Stanislav Demyanovich <mezozoysky@gmail.com>
 /// \date 2016
 /// \copyright cic is released under the terms of zlib/png license
@@ -36,6 +36,12 @@ namespace cic
 {
 namespace plan
 {
+
+const std::string Action::outline() const noexcept
+{
+    std::string outline;
+    return ( outline );
+}
 
 } // namespace plan
 } // namespace cic

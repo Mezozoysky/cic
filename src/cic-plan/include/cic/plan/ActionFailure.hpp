@@ -34,14 +34,6 @@
 
 #include "Action.hpp"
 
-namespace Poco
-{
-namespace XML
-{
-class Node;
-}
-}
-
 
 namespace cic
 {
@@ -52,16 +44,18 @@ class Industry;
 
 class ActionFailure : public Action
 {
+    CLASSINFO( ActionFailure );
+
 public:
     using Ptr = std::shared_ptr< ActionFailure >;
 
     ActionFailure() = default;
     virtual ~ActionFailure() noexcept = default;
 
-    virtual bool execute() override;
+    virtual bool execute( std::ostream& outStream, std::ostream& errStream ) override;
 
-    virtual void loadFromXML( Poco::XML::Node* xml, Industry* industry ) override;
-    virtual void saveToXML( Poco::XML::Node* xml ) const override;
+    virtual void loadFromXML( Poco::XML::Element* xml, Industry* industry ) override;
+    virtual void saveToXML( Poco::XML::Element* xml ) const override;
 };
 
 

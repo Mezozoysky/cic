@@ -30,9 +30,9 @@
 /// \copyright cic is released under the terms of zlib/png license
 
 #include <cic/plan/ActionSuccess.hpp>
-#include <Poco/DOM/Node.h>
+#include <Poco/DOM/Element.h>
 
-using Poco::XML::Node;
+using Poco::XML::Element;
 
 namespace cic
 {
@@ -40,17 +40,17 @@ namespace plan
 {
 
 
-bool ActionSuccess::execute()
+bool ActionSuccess::execute( std::ostream& outStream, std::ostream& errStream )
 {
     return ( true );
 }
 
-void ActionSuccess::loadFromXML( Poco::XML::Node* xml, Industry* industry )
+void ActionSuccess::loadFromXML( Element* xml, Industry* industry )
 {
     // Do nothing
 }
 
-void ActionSuccess::saveToXML( Node* root ) const {}
+void ActionSuccess::saveToXML( Element* root ) const {}
 
 } // namespace plan
 } // namespace cic

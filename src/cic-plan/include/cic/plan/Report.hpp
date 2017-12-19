@@ -46,81 +46,17 @@ namespace plan
 class Report : public Serializable
 {
 public:
-    struct ActionReport
-    {
-        std::string typeId;
-        std::string outline;
-        std::string stdoutFileName;
-        std::string stderrFileName;
-        bool success;
-    };
-    using ActionReportList = std::vector< ActionReport >;
-
-    struct PhaseReport
-    {
-        std::string name;
-        bool success;
-        ActionReportList actionReports;
-    };
-    using PhaseReportList = std::vector< PhaseReport >;
-
-    using StrList = std::vector< std::string >;
-
-public:
     Report() = default;
-    Report( const Report& other ) = delete;
+    // Report( const Report& other ) = delete;
     Report& operator=( const Report& other ) = delete;
     virtual ~Report() noexcept = default;
 
-    virtual void loadFromXML( Poco::XML::Node* xml, Industry* industry );
-    virtual void saveToXML( Poco::XML::Node* xml ) const;
-
-public:
-    inline const std::string& targetPlan() const noexcept;
-    inline std::string& targetPlan() noexcept;
-    inline const std::string& targetPhase() const noexcept;
-    inline std::string& targetPhase() noexcept;
-    inline const PhaseReportList& phaseReports() const noexcept;
-    inline PhaseReportList& phaseReports() noexcept;
     inline bool success() const noexcept;
     inline bool& success() noexcept;
 
 private:
-    std::string mTargetPlan;
-    std::string mTargetPhase;
-    PhaseReportList mPhaseReports;
     bool mSuccess;
 };
-
-inline const std::string& Report::targetPlan() const noexcept
-{
-    return ( mTargetPlan );
-}
-
-inline std::string& Report::targetPlan() noexcept
-{
-    return ( mTargetPlan );
-}
-
-inline const std::string& Report::targetPhase() const noexcept
-{
-    return ( mTargetPlan );
-}
-
-inline std::string& Report::targetPhase() noexcept
-{
-    return ( mTargetPhase );
-}
-
-inline const Report::PhaseReportList& Report::phaseReports() const noexcept
-{
-    return ( mPhaseReports );
-}
-
-inline Report::PhaseReportList& Report::phaseReports() noexcept
-{
-    return ( mPhaseReports );
-}
 
 inline bool Report::success() const noexcept
 {
@@ -130,6 +66,183 @@ inline bool Report::success() const noexcept
 inline bool& Report::success() noexcept
 {
     return ( mSuccess );
+}
+
+
+class ActionReport : public Report
+{
+    CLASSINFO( ActionReport )
+public:
+    using List = std::vector< ActionReport >;
+
+    ActionReport() = default;
+    // ActionReport( const Report& other ) = delete;
+    ActionReport& operator=( const ActionReport& other ) = delete;
+    virtual ~ActionReport() noexcept = default;
+
+    inline const std::string& classId() const noexcept;
+    inline std::string& classId() noexcept;
+    inline const std::string& outline() const noexcept;
+    inline std::string& outline() noexcept;
+    inline const std::string& stdoutFileName() const noexcept;
+    inline std::string& stdoutFileName() noexcept;
+    inline const std::string& stderrFileName() const noexcept;
+    inline std::string& stderrFileName() noexcept;
+
+    virtual void loadFromXML( Poco::XML::Element* root, Industry* industry ) override;
+    virtual void saveToXML( Poco::XML::Element* root ) const override;
+
+private:
+    std::string mTypeId;
+    std::string mOutline;
+    std::string mStdoutFileName;
+    std::string mStderrFileName;
+};
+
+inline const std::string& ActionReport::classId() const noexcept
+{
+    return ( mTypeId );
+}
+
+inline std::string& ActionReport::classId() noexcept
+{
+    return ( mTypeId );
+}
+
+inline const std::string& ActionReport::outline() const noexcept
+{
+    return ( mOutline );
+}
+
+inline std::string& ActionReport::outline() noexcept
+{
+    return ( mOutline );
+}
+
+inline const std::string& ActionReport::stdoutFileName() const noexcept
+{
+    return ( mStdoutFileName );
+}
+
+inline std::string& ActionReport::stdoutFileName() noexcept
+{
+    return ( mStdoutFileName );
+}
+
+inline const std::string& ActionReport::stderrFileName() const noexcept
+{
+    return ( mStderrFileName );
+}
+
+inline std::string& ActionReport::stderrFileName() noexcept
+{
+    return ( mStderrFileName );
+}
+
+
+class PhaseReport : public Report
+{
+    CLASSINFO( PhaseReport )
+
+public:
+    using List = std::vector< PhaseReport >;
+
+    PhaseReport() = default;
+    // PhaseReport( const PhaseReport& other ) = delete;
+    PhaseReport& operator=( const PhaseReport& other ) = delete;
+    virtual ~PhaseReport() noexcept = default;
+
+    inline const std::string& name() const noexcept;
+    inline std::string& name() noexcept;
+    inline const ActionReport::List& actionReports() const noexcept;
+    inline ActionReport::List& actionReports() noexcept;
+
+    virtual void loadFromXML( Poco::XML::Element* root, Industry* industry ) override;
+    virtual void saveToXML( Poco::XML::Element* root ) const override;
+
+private:
+    std::string mName;
+    ActionReport::List mActionReports;
+};
+
+inline const std::string& PhaseReport::name() const noexcept
+{
+    return ( mName );
+}
+
+inline std::string& PhaseReport::name() noexcept
+{
+    return ( mName );
+}
+
+inline const ActionReport::List& PhaseReport::actionReports() const noexcept
+{
+    return ( mActionReports );
+}
+
+inline ActionReport::List& PhaseReport::actionReports() noexcept
+{
+    return ( mActionReports );
+}
+
+
+class TargetReport : public Report
+{
+    CLASSINFO( TargetReport )
+public:
+    using StrList = std::vector< std::string >;
+
+public:
+    TargetReport() = default;
+    // TargetReport( const TargetReport& other ) = delete;
+    TargetReport& operator=( const TargetReport& other ) = delete;
+    virtual ~TargetReport() noexcept = default;
+
+    virtual void loadFromXML( Poco::XML::Element* root, Industry* industry ) override;
+    virtual void saveToXML( Poco::XML::Element* root ) const override;
+
+public:
+    inline const std::string& targetPlan() const noexcept;
+    inline std::string& targetPlan() noexcept;
+    inline const std::string& targetPhase() const noexcept;
+    inline std::string& targetPhase() noexcept;
+    inline const PhaseReport::List& phaseReports() const noexcept;
+    inline PhaseReport::List& phaseReports() noexcept;
+
+private:
+    std::string mTargetPlan;
+    std::string mTargetPhase;
+    PhaseReport::List mPhaseReports;
+};
+
+inline const std::string& TargetReport::targetPlan() const noexcept
+{
+    return ( mTargetPlan );
+}
+
+inline std::string& TargetReport::targetPlan() noexcept
+{
+    return ( mTargetPlan );
+}
+
+inline const std::string& TargetReport::targetPhase() const noexcept
+{
+    return ( mTargetPlan );
+}
+
+inline std::string& TargetReport::targetPhase() noexcept
+{
+    return ( mTargetPhase );
+}
+
+inline const PhaseReport::List& TargetReport::phaseReports() const noexcept
+{
+    return ( mPhaseReports );
+}
+
+inline PhaseReport::List& TargetReport::phaseReports() noexcept
+{
+    return ( mPhaseReports );
 }
 
 } // namespace plan

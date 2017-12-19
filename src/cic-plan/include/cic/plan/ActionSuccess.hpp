@@ -42,16 +42,17 @@ namespace plan
 
 class ActionSuccess : public Action
 {
+    CLASSINFO( ActionSuccess )
 public:
     using Ptr = std::shared_ptr< ActionSuccess >;
 
     ActionSuccess() = default;
     virtual ~ActionSuccess() noexcept = default;
 
-    virtual bool execute() override;
+    virtual bool execute( std::ostream& outStream, std::ostream& errStream ) override;
 
-    virtual void loadFromXML( Poco::XML::Node* xml, Industry* industry ) override;
-    virtual void saveToXML( Poco::XML::Node* xml ) const override;
+    virtual void loadFromXML( Poco::XML::Element* xml, Industry* industry ) override;
+    virtual void saveToXML( Poco::XML::Element* xml ) const override;
 };
 
 

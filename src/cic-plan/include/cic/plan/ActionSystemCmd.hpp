@@ -45,14 +45,16 @@ namespace plan
 
 class ActionSystemCmd : public Action
 {
+    CLASSINFO( ActionSystemCmd )
 public:
     using Ptr = std::shared_ptr< ActionSystemCmd >;
 
     virtual ~ActionSystemCmd() noexcept = default;
 
-    virtual bool execute() override;
-    virtual void loadFromXML( Poco::XML::Node* root, Industry* industry ) override;
-    virtual void saveToXML( Poco::XML::Node* root ) const override;
+    virtual bool execute( std::ostream& outStream, std::ostream& errStream ) override;
+    virtual void loadFromXML( Poco::XML::Element* root, Industry* industry ) override;
+    virtual void saveToXML( Poco::XML::Element* root ) const override;
+    virtual const std::string outline() const noexcept override;
 
 public:
     inline const std::string& cmd() const noexcept;
@@ -78,11 +80,11 @@ inline std::string& ActionSystemCmd::cmd() noexcept
 {
     return ( mCmd );
 }
-    inline const Poco::Process::Args& ActionSystemCmd::args() const noexcept
+inline const Poco::Process::Args& ActionSystemCmd::args() const noexcept
 {
     return ( mArgs );
 }
-    inline Poco::Process::Args& ActionSystemCmd::args() noexcept
+inline Poco::Process::Args& ActionSystemCmd::args() noexcept
 {
     return ( mArgs );
 }

@@ -37,29 +37,20 @@
 #include "Phase.hpp"
 #include <string>
 #include <map>
+#include <vector>
 
-
-namespace Poco
-{
-namespace XML
-{
-class Node;
-}
-namespace Util
-{
-class AbstractConfiguration;
-}
-} // namespace Poco
 
 namespace cic
 {
 namespace plan
 {
 
-class Report;
+class TargetReport;
 
 class Plan : Serializable
 {
+    CLASSINFO( Plan )
+
 public:
     using Ptr = std::shared_ptr< Plan >;
 
@@ -72,14 +63,12 @@ public:
     Plan& operator=( const Plan& other ) = delete;
     virtual ~Plan() noexcept = default;
 
-    virtual bool execute( const std::string& phaseName,
-                          Report* report,
-                          bool skipDependencies = false );
+    virtual bool execute( const std::string& phaseName, TargetReport* report, bool skipDependencies = false );
     virtual void buildSequence( const std::string& phaseName, Sequence& seq ) const;
     virtual bool isADependsOnB( const std::string& tgtA, const std::string& tgtB ) const;
 
-    virtual void loadFromXML( Poco::XML::Node* root, Industry* industry ) override;
-    virtual void saveToXML( Poco::XML::Node* root ) const override;
+    virtual void loadFromXML( Poco::XML::Element* root, Industry* industry ) override;
+    virtual void saveToXML( Poco::XML::Element* root ) const override;
 
 public:
     inline const std::string& name() const noexcept;
@@ -92,8 +81,8 @@ protected:
     inline PhaseMap& phases() noexcept;
 
 protected:
-    virtual void loadPhasesFromXML( Poco::XML::Node* root, Industry* industry );
-    virtual void loadPhaseFromXML( Poco::XML::Node* root, Industry* industry );
+    virtual void loadPhasesFromXML( Poco::XML::Element* root, Industry* industry );
+    virtual void loadPhaseFromXML( Poco::XML::Element* root, Industry* industry );
 
 private:
     std::string mName;
