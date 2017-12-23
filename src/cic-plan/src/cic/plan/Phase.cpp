@@ -32,7 +32,6 @@
 
 #include <cic/plan/Phase.hpp>
 #include <cic/plan/Action.hpp>
-#include <cic/plan/Industry.hpp>
 #include <Poco/Exception.h>
 #include <Poco/String.h>
 #include <Poco/DOM/Node.h>
@@ -50,6 +49,7 @@ using Poco::AutoPtr;
 using Poco::XML::Element;
 using cic::plan::PhaseReport;
 using cic::plan::Report;
+using cic::industry::Industry;
 
 namespace cic
 {
@@ -147,7 +147,7 @@ void Phase::loadActionFromXML( Element* root, Industry* industry )
             "Mandatory attribute 'class' isnt found or empty within the 'action' element", 8 } );
     }
 
-    auto actionFactory( industry->get< Action >() );
+    auto actionFactory( industry->getFactory< Action >() );
     if ( actionFactory == nullptr )
     {
         throw( Poco::NotFoundException{ "No factory registered for id: '{}'"_format( classId ), 8 } );

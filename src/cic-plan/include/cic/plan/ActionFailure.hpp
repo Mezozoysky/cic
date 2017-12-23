@@ -40,7 +40,6 @@ namespace cic
 namespace plan
 {
 
-class Industry;
 
 class ActionFailure : public Action
 {
@@ -54,7 +53,7 @@ public:
 
     virtual bool execute( std::ostream& outStream, std::ostream& errStream ) override;
 
-    virtual void loadFromXML( Poco::XML::Element* xml, Industry* industry ) override;
+    virtual void loadFromXML( Poco::XML::Element* xml, cic::industry::Industry* industry ) override;
     virtual void saveToXML( Poco::XML::Element* xml ) const override;
 };
 

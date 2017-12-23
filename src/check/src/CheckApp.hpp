@@ -36,7 +36,7 @@
 #include <Poco/Util/Application.h>
 #include <Poco/AutoPtr.h>
 #include <Poco/DOM/DOMParser.h>
-#include <cic/plan/Industry.hpp>
+#include <cic/industry/Industry.hpp>
 #include <map>
 
 namespace cic
@@ -68,7 +68,7 @@ private:
     bool mIsStopRequestedByOption;
 
     Poco::XML::DOMParser mParser;
-    plan::Industry mIndustry;
+    industry::Industry mIndustry;
 };
 
 } // namespace check

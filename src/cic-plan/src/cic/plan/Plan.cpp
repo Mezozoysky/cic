@@ -35,7 +35,6 @@
 #include <Poco/Exception.h>
 #include <Poco/String.h>
 #include <cic/plan/Action.hpp>
-#include <cic/plan/Industry.hpp>
 #include <cic/plan/Report.hpp>
 #include <Poco/DOM/Element.h>
 #include <Poco/AutoPtr.h>
@@ -46,6 +45,7 @@ using Poco::XML::Element;
 using Poco::XML::NodeList;
 using namespace fmt::literals;
 using Poco::AutoPtr;
+using cic::industry::Industry;
 
 
 namespace cic
@@ -215,7 +215,7 @@ void Plan::loadPhaseFromXML( Element* root, Industry* industry )
         classId = "default";
     }
 
-    auto phaseFactory( industry->get< Phase >() );
+    auto phaseFactory( industry->getFactory< Phase >() );
     if ( phaseFactory == nullptr )
     {
         throw( Poco::NotFoundException{ "No factory registered for id: '{}'"_format( classId ), 8 } );

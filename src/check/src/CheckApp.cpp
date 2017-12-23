@@ -236,13 +236,13 @@ void CheckApp::initialize( Poco::Util::Application& self )
 
 
     {
-        auto planFactory = mIndustry.create< Plan >();
+        auto planFactory = mIndustry.registerFactory< Plan >();
         planFactory->registerId< Plan >( Plan::getClassNameStatic() );
         planFactory->registerId< Plan >( "default" );
-        auto phaseFactory = mIndustry.create< Phase >();
+        auto phaseFactory = mIndustry.registerFactory< Phase >();
         phaseFactory->registerId< Phase >( "default" );
         phaseFactory->registerId< Phase >( Phase::getClassNameStatic() );
-        auto actionFactory = mIndustry.create< Action >();
+        auto actionFactory = mIndustry.registerFactory< Action >();
         actionFactory->registerId< ActionSuccess >( ActionSuccess::getClassNameStatic() );
         actionFactory->registerId< ActionFailure >( ActionFailure::getClassNameStatic() );
         actionFactory->registerId< ActionSystemCmd >( ActionSystemCmd::getClassNameStatic() );
@@ -405,7 +405,7 @@ int CheckApp::main( const std::vector< std::string >& args )
     {
         planClass = "default";
     }
-    auto factory = mIndustry.get< Plan >();
+    auto factory = mIndustry.getFactory< Plan >();
     assert( factory != nullptr );
     Plan::Ptr plan{ factory->create( planClass ) };
     plan->loadFromXML( planRoot, &mIndustry );

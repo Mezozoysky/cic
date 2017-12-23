@@ -2,7 +2,6 @@ cmake_minimum_required( VERSION 3.1.0 )
 
 set( CMAKE_BUILD_TYPE "Debug" CACHE STRING "Project build type" )
 set( CMAKE_INSTALL_PREFIX "/usr/local" CACHE PATH "Install prefix" )
-set( CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake_modules" ${CMAKE_MODULE_PATH} )
 set( EXECUTABLE_OUTPUT_PATH "${CMAKE_BINARY_DIR}/bin" )
 set( LIBRARY_OUTPUT_PATH "${CMAKE_BINARY_DIR}/lib" )
 set( CMAKE_VERBOSE_MAKEFILE TRUE )
@@ -78,13 +77,14 @@ find_package( Threads REQUIRED )
 #
 option( CIC_BUILD_CHECK_APP "Build cic-check tool"  ON )
 option( CIC_BUILD_PLAN_LIB "Build cic-plan library"  ON )
+option( CIC_BUILD_INDUSTRY_LIB "Build cic-industry library"  ON )
 option( CIC_BUILD_SCRIPTING_LIB "Build cic-scripting library"  ON )
 
 #
 # Modules
 #
 if ( CIC_BUILD_SCRIPTING_LIB OR CIC_BUILD_CHECK_APP )
-    add_subdirectory( deps/angelscript )
+    add_subdirectory( deps/angelscript/ )
 endif()
 
 add_subdirectory( src )

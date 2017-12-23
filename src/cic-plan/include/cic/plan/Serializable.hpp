@@ -34,6 +34,7 @@
 #define CIC_PLAN__SERIALIZABLE_HPP
 
 #include <string>
+#include <cic/industry/Industry.hpp>
 
 namespace Poco
 {
@@ -47,8 +48,6 @@ namespace cic
 {
 namespace plan
 {
-
-class Industry;
 
 #define CLASSINFO( className )                                                                               \
 public:                                                                                                      \
@@ -78,9 +77,9 @@ public:
     Serializable() = default;
     virtual ~Serializable() noexcept = default;
 
-    virtual const std::string& getClassName() const noexcept = 0;
+    // virtual const std::string& getClassName() const noexcept = 0;
 
-    virtual void loadFromXML( Poco::XML::Element* root, Industry* industry ) = 0;
+    virtual void loadFromXML( Poco::XML::Element* root, industry::Industry* industry ) = 0;
     virtual void saveToXML( Poco::XML::Element* root ) const = 0;
 };
 

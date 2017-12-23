@@ -89,7 +89,7 @@ public:
     inline const std::string& stderrFileName() const noexcept;
     inline std::string& stderrFileName() noexcept;
 
-    virtual void loadFromXML( Poco::XML::Element* root, Industry* industry ) override;
+    virtual void loadFromXML( Poco::XML::Element* root, cic::industry::Industry* industry ) override;
     virtual void saveToXML( Poco::XML::Element* root ) const override;
 
 private:
@@ -157,7 +157,7 @@ public:
     inline const ActionReport::List& actionReports() const noexcept;
     inline ActionReport::List& actionReports() noexcept;
 
-    virtual void loadFromXML( Poco::XML::Element* root, Industry* industry ) override;
+    virtual void loadFromXML( Poco::XML::Element* root, cic::industry::Industry* industry ) override;
     virtual void saveToXML( Poco::XML::Element* root ) const override;
 
 private:
@@ -198,7 +198,7 @@ public:
     TargetReport& operator=( const TargetReport& other ) = delete;
     virtual ~TargetReport() noexcept = default;
 
-    virtual void loadFromXML( Poco::XML::Element* root, Industry* industry ) override;
+    virtual void loadFromXML( Poco::XML::Element* root, cic::industry::Industry* industry ) override;
     virtual void saveToXML( Poco::XML::Element* root ) const override;
 
 public:

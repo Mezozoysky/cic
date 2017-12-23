@@ -33,6 +33,7 @@
 #include <Poco/DOM/Element.h>
 
 using Poco::XML::Element;
+using cic::industry::Industry;
 
 namespace cic
 {

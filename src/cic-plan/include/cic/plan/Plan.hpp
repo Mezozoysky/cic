@@ -67,7 +67,7 @@ public:
     virtual void buildSequence( const std::string& phaseName, Sequence& seq ) const;
     virtual bool isADependsOnB( const std::string& tgtA, const std::string& tgtB ) const;
 
-    virtual void loadFromXML( Poco::XML::Element* root, Industry* industry ) override;
+    virtual void loadFromXML( Poco::XML::Element* root, cic::industry::Industry* industry ) override;
     virtual void saveToXML( Poco::XML::Element* root ) const override;
 
 public:
@@ -81,8 +81,8 @@ protected:
     inline PhaseMap& phases() noexcept;
 
 protected:
-    virtual void loadPhasesFromXML( Poco::XML::Element* root, Industry* industry );
-    virtual void loadPhaseFromXML( Poco::XML::Element* root, Industry* industry );
+    virtual void loadPhasesFromXML( Poco::XML::Element* root, cic::industry::Industry* industry );
+    virtual void loadPhaseFromXML( Poco::XML::Element* root, cic::industry::Industry* industry );
 
 private:
     std::string mName;

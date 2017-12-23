@@ -47,6 +47,7 @@ using Poco::Util::Application;
 using Poco::XML::Element;
 using Poco::XML::Node;
 using Poco::XML::NodeList;
+using cic::industry::Industry;
 
 using namespace fmt::literals;
 

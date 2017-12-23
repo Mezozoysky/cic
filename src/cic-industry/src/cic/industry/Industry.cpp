@@ -24,43 +24,28 @@
 
 
 /// \file
-/// \brief Report implementation
+/// \brief Common industry defines
 /// \author Stanislav Demyanovich <mezozoysky@gmail.com>
-/// \date 2017
+/// \date 2016
 /// \copyright cic is released under the terms of zlib/png license
 
 
-#include <cic/plan/Report.hpp>
-#include <Poco/DOM/Element.h>
+#include <cic/industry/Industry.hpp>
+#include <fmt/format.h>
 
-using Poco::XML::Element;
-using cic::industry::Industry;
+using namespace fmt::literals;
 
 namespace cic
 {
-namespace plan
+namespace industry
 {
 
-void ActionReport::loadFromXML( Element* root, Industry* industry )
+
+bool bar()
 {
-    // Do nothing
+    return ( false );
 }
 
-void ActionReport::saveToXML( Element* root ) const {}
 
-void PhaseReport::loadFromXML( Element* root, Industry* industry )
-{
-    // Do nothing
-}
-
-void PhaseReport::saveToXML( Element* root ) const {}
-
-void TargetReport::loadFromXML( Element* root, Industry* industry )
-{
-    // Do nothing
-}
-
-void TargetReport::saveToXML( Element* root ) const {}
-
-} // namespace plan
+} // namespace industry
 } // namespace cic

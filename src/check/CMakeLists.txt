@@ -32,6 +32,7 @@ include_directories(
     ${MODULE_ROOT}/src
     $<TARGET_PROPERTY:cic-plan,INTERFACE_INCLUDE_DIRECTORIES>
     $<TARGET_PROPERTY:cic-scripting,INTERFACE_INCLUDE_DIRECTORIES>
+    $<TARGET_PROPERTY:cic-industry,INTERFACE_INCLUDE_DIRECTORIES>
     Threads::Threads
     )
 set( TARGET_PROPERTIES LINKER_LANGUAGE CXX )
@@ -43,6 +44,7 @@ add_executable( ${MODULE_TGT} WIN32 #MACOSX_BUNDLE
 target_link_libraries( ${MODULE_TGT}
     cic-plan
     cic-scripting
+    cic-industry
     Poco::Util
     Poco::XML
     Poco::JSON

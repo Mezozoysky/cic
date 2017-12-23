@@ -1,6 +1,6 @@
 //  cic
 //
-//  cic - Copyright (C) 2016 Stanislav Demyanovich <mezozoysky@gmail.com>
+//  cic - Copyright (C) 2017 Stanislav Demyanovich <mezozoysky@gmail.com>
 //
 //  This software is provided 'as-is', without any express or
 //  implied warranty. In no event will the authors be held
@@ -24,43 +24,31 @@
 
 
 /// \file
-/// \brief Report implementation
+/// \brief Common industry defines
 /// \author Stanislav Demyanovich <mezozoysky@gmail.com>
 /// \date 2017
 /// \copyright cic is released under the terms of zlib/png license
 
 
-#include <cic/plan/Report.hpp>
-#include <Poco/DOM/Element.h>
+#ifndef CIC_INDUSTRY__INDUSTRY_HPP
+#define CIC_INDUSTRY__INDUSTRY_HPP
 
-using Poco::XML::Element;
-using cic::industry::Industry;
+#include "wrapped/Industry.hpp"
 
 namespace cic
 {
-namespace plan
+namespace industry
 {
 
-void ActionReport::loadFromXML( Element* root, Industry* industry )
+using ::industry::Factory;
+
+class Industry : public ::industry::Industry<>
 {
-    // Do nothing
-}
+};
 
-void ActionReport::saveToXML( Element* root ) const {}
+bool bar();
 
-void PhaseReport::loadFromXML( Element* root, Industry* industry )
-{
-    // Do nothing
-}
-
-void PhaseReport::saveToXML( Element* root ) const {}
-
-void TargetReport::loadFromXML( Element* root, Industry* industry )
-{
-    // Do nothing
-}
-
-void TargetReport::saveToXML( Element* root ) const {}
-
-} // namespace plan
+} // namespace industry
 } // namespace cic
+
+#endif // CIC_INDUSTRY__INDUSTRY_HPP

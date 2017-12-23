@@ -62,7 +62,7 @@ public:
 
     virtual bool execute( PhaseReport* report );
 
-    virtual void loadFromXML( Poco::XML::Element* root, Industry* industry ) override;
+    virtual void loadFromXML( Poco::XML::Element* root, cic::industry::Industry* industry ) override;
     virtual void saveToXML( Poco::XML::Element* root ) const override;
 
 public:
@@ -72,8 +72,8 @@ public:
     inline StrList& deps() noexcept;
 
 protected:
-    virtual void loadActionsFromXML( Poco::XML::Element* root, Industry* industry );
-    virtual void loadActionFromXML( Poco::XML::Element* root, Industry* industry );
+    virtual void loadActionsFromXML( Poco::XML::Element* root, cic::industry::Industry* industry );
+    virtual void loadActionFromXML( Poco::XML::Element* root, cic::industry::Industry* industry );
 
 private:
     ActionList mActions;
