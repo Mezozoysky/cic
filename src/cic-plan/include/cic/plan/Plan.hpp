@@ -33,10 +33,9 @@
 #ifndef CIC_PLAN__PLAN_HPP
 #define CIC_PLAN__PLAN_HPP
 
-#include "Serializable.hpp"
+#include "Action.hpp"
 #include "Phase.hpp"
 #include <string>
-#include <map>
 #include <vector>
 
 
@@ -45,17 +44,15 @@ namespace cic
 namespace plan
 {
 
-class TargetReport;
-
-class Plan : Serializable
+class Plan : public Action
 {
     CLASSINFO( Plan )
 
 public:
     using Ptr = std::shared_ptr< Plan >;
 
-    using Sequence = std::vector< std::string >;
-    using PhaseMap = std::map< std::string, Phase::Ptr >;
+    using Sequence = std::vector< std::size_t >;
+    using PhaseList = std::vector< Phase::Ptr >;
 
 public:
     Plan() = default;
@@ -63,59 +60,64 @@ public:
     Plan& operator=( const Plan& other ) = delete;
     virtual ~Plan() noexcept = default;
 
-    virtual bool execute( const std::string& phaseName, TargetReport* report, bool skipDependencies = false );
+    virtual bool perform( Report& report, cic::industry::Industry& industry ) const override;
+    // virtual bool perform( const std::string& phaseName, TargetReport* report, bool skipDependencies = false
+    // );
     virtual void buildSequence( const std::string& phaseName, Sequence& seq ) const;
-    virtual bool isADependsOnB( const std::string& tgtA, const std::string& tgtB ) const;
 
     virtual void loadFromXML( Poco::XML::Element* root, cic::industry::Industry* industry ) override;
     virtual void saveToXML( Poco::XML::Element* root ) const override;
 
-public:
-    inline const std::string& name() const noexcept;
-    inline const std::string& defaultPhase() const noexcept;
-    inline const PhaseMap& phases() const noexcept;
+    inline std::size_t getPhasesCount() const noexcept;
+    inline const PhaseList& getPhases() const noexcept;
+    inline Phase::Ptr getPhase( std::size_t index ) const noexcept;
+    Phase::Ptr getPhase( const std::string& name ) const noexcept;
+    inline void addPhase( const Phase::Ptr& phase ) noexcept;
+    inline void addPhases( const PhaseList& phases ) noexcept;
 
-protected:
-    inline std::string& name() noexcept;
-    inline std::string& defaultPhase() noexcept;
-    inline PhaseMap& phases() noexcept;
 
 protected:
     virtual void loadPhasesFromXML( Poco::XML::Element* root, cic::industry::Industry* industry );
     virtual void loadPhaseFromXML( Poco::XML::Element* root, cic::industry::Industry* industry );
 
 private:
-    std::string mName;
-    std::string mDefaultPhase;
-    PhaseMap mPhases;
+    PhaseList mPhases;
 };
 
 
-inline const std::string& Plan::name() const noexcept
+// Inliners
+
+inline std::size_t Plan::getPhasesCount() const noexcept
 {
-    return ( mName );
-}
-inline std::string& Plan::name() noexcept
-{
-    return ( mName );
+    return ( mPhases.size() );
 }
 
-inline const std::string& Plan::defaultPhase() const noexcept
-{
-    return ( mDefaultPhase );
-}
-inline std::string& Plan::defaultPhase() noexcept
-{
-    return ( mDefaultPhase );
-}
-
-inline const Plan::PhaseMap& Plan::phases() const noexcept
+inline const Plan::PhaseList& Plan::getPhases() const noexcept
 {
     return ( mPhases );
 }
-inline Plan::PhaseMap& Plan::phases() noexcept
+
+inline Phase::Ptr Plan::getPhase( std::size_t index ) const noexcept
 {
-    return ( mPhases );
+    Phase::Ptr phase{};
+    if ( index < getPhasesCount() )
+    {
+        phase = mPhases[ index ];
+    }
+    return ( phase );
+}
+
+inline void Plan::addPhase( const Phase::Ptr& phase ) noexcept
+{
+    mPhases.push_back( phase );
+}
+
+inline void Plan::addPhases( const Plan::PhaseList& phases ) noexcept
+{
+    for ( const auto& phase : phases )
+    {
+        mPhases.push_back( phase );
+    }
 }
 
 } // namespace plan

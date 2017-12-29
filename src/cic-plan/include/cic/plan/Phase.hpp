@@ -33,7 +33,6 @@
 #ifndef CIC_PLAN__PHASE_HPP
 #define CIC_PLAN__PHASE_HPP
 
-#include "Serializable.hpp"
 #include "Action.hpp"
 #include <memory>
 #include <vector>
@@ -43,63 +42,56 @@ namespace cic
 namespace plan
 {
 
-class PhaseReport;
-
-class Phase : public Serializable
+class Phase : public Action
 {
-    CLASSINFO( PhaseReport );
+    CLASSINFO( Phase );
 
 public:
     using Ptr = std::shared_ptr< Phase >;
 
     using ActionList = std::vector< Action::Ptr >;
-    using StrList = std::vector< std::string >;
 
-    Phase() = default;
-    Phase( const Phase& other ) = delete;
-    Phase& operator=( const Phase& other ) = delete;
+    Phase();
     virtual ~Phase() noexcept = default;
-
-    virtual bool execute( PhaseReport* report );
 
     virtual void loadFromXML( Poco::XML::Element* root, cic::industry::Industry* industry ) override;
     virtual void saveToXML( Poco::XML::Element* root ) const override;
 
-public:
-    inline const ActionList& actions() const noexcept;
-    inline ActionList& actions() noexcept;
-    inline const StrList& deps() const noexcept;
-    inline StrList& deps() noexcept;
+    inline const std::string& getName() const noexcept;
+    inline void setName( const std::string& name ) noexcept;
+    inline const ActionList& getActions() const noexcept;
+    inline void setActions( const ActionList& actions ) noexcept;
 
 protected:
+    virtual bool perform( Report& report, cic::industry::Industry& industry ) const override;
+
     virtual void loadActionsFromXML( Poco::XML::Element* root, cic::industry::Industry* industry );
     virtual void loadActionFromXML( Poco::XML::Element* root, cic::industry::Industry* industry );
 
+
 private:
+    std::string mName;
     ActionList mActions;
-    StrList mDeps;
-    std::string mSuccessTrigger;
-    std::string mFailureTrigger;
 };
 
-inline Phase::ActionList& Phase::actions() noexcept
+inline const std::string& Phase::getName() const noexcept
+{
+    return ( mName );
+}
+
+inline void Phase::setName( const std::string& name ) noexcept
+{
+    mName = name;
+}
+
+inline const Phase::ActionList& Phase::getActions() const noexcept
 {
     return ( mActions );
 }
 
-inline const Phase::ActionList& Phase::actions() const noexcept
+inline void Phase::setActions( const ActionList& actions ) noexcept
 {
-    return ( mActions );
-}
-
-inline Phase::StrList& Phase::deps() noexcept
-{
-    return ( mDeps );
-}
-
-inline const Phase::StrList& Phase::deps() const noexcept
-{
-    return ( mDeps );
+    mActions = actions;
 }
 
 } // namespace plan

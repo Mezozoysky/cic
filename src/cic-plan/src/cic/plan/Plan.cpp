@@ -31,6 +31,7 @@
 
 
 #include <cic/plan/Plan.hpp>
+#include <cic/plan/Phase.hpp>
 #include <fmt/format.h>
 #include <Poco/Exception.h>
 #include <Poco/String.h>
@@ -53,127 +54,47 @@ namespace cic
 namespace plan
 {
 
-bool Plan::execute( const std::string& phaseName, TargetReport* report, bool skipDependencies )
+bool Plan::perform( Report& report, Industry& industry ) const
 {
-    if ( phaseName.empty() )
-    {
-        throw( Poco::InvalidArgumentException{ "Target phase name is empty" } );
-    }
-    if ( mPhases.count( phaseName ) == 0 )
-    {
-        throw( Poco::NotFoundException{ "Target phase name isnt found: {}"_format( phaseName ), 8 } );
-    }
+    // TODO: Apply system wide options
+    // TODO: Apply application wide options
+    // TODO: Apply plan wide options
 
-    Sequence seq;
-    if ( skipDependencies )
-    {
-        seq.push_back( phaseName );
-    }
-    else
-    {
-        buildSequence( phaseName, seq );
-    }
+    Sequence sequence;
+    buildSequence( "" /*targetPhase*/, sequence );
 
-    bool result{ true };
+    bool success{ true };
 
-    for ( const auto& phName : seq )
+    for ( const std::size_t& index : sequence )
     {
-        if ( mPhases.count( phName ) == 0 )
+        auto phase( getPhases()[ index ] );
+        Report::Ptr phaseReport{};
+        if ( success )
         {
-            throw( Poco::NotFoundException{ "Phase name isnt found: {}"_format( phName ), 8 } );
+            phaseReport = phase->Action::perform( industry );
+            success = phaseReport->getSuccess();
         }
-
-        report->phaseReports().emplace_back();
-        auto& phaseReport( report->phaseReports().back() );
-        phaseReport.name() = phName;
-
-        if ( result )
+        else
         {
-            result = mPhases.at( phName )->execute( &phaseReport );
+            phaseReport.reset( industry.getFactory< Report >()->create( phase->getClassName() ) );
+            phaseReport->fillWithAction( *phase );
+            // phaseReport->setSuccess( false );
         }
-
-        phaseReport.success() = result;
+        report.addChildReport( phaseReport );
     }
-
-    return ( result );
+    return ( success );
 }
 
 void Plan::buildSequence( const std::string& phaseName, Sequence& seq ) const
 {
-    if ( mPhases.count( phaseName ) == 0 )
+    for ( std::size_t index{ 0 }; index < getPhasesCount(); ++index )
     {
-        throw( Poco::NotFoundException{ "Requested phase isnt found", 8 } );
-    }
-
-    const auto& deps( mPhases.at( phaseName )->deps() );
-    for ( const auto& dep : deps )
-    {
-        if ( dep == phaseName || isADependsOnB( dep, phaseName ) )
-        {
-            throw( Poco::DataException{ "Phase '{}' cyclic dependency!"_format( phaseName ), 8 } );
-        }
-
-        bool needSkip{ false };
-        for ( const auto& otherDep : deps )
-        {
-            if ( otherDep == dep )
-            {
-                continue;
-            }
-            if ( isADependsOnB( otherDep, dep ) )
-            {
-                needSkip = true;
-                break;
-            }
-        }
-
-        if ( needSkip )
-        {
-            // dont include dep into sequence as it will be included by other dep
-            continue;
-        }
-
-        Sequence subseq;
-        buildSequence( dep, subseq );
-        seq.insert( seq.end(), subseq.begin(), subseq.end() );
-    }
-
-    seq.push_back( phaseName );
-
-    // remove duplicates from sequence;
-    auto it( seq.begin() );
-    while ( it != seq.end() )
-    {
-        auto it2( it + 1 );
-        while ( it2 != seq.end() )
-        {
-            if ( ( *it2 ) == ( *it ) )
-            {
-                it2 = seq.erase( it2 );
-            }
-            else
-            {
-                ++it2;
-            }
-        }
-        ++it;
-    }
-}
-
-bool Plan::isADependsOnB( const std::string& phaseA, const std::string& phaseB ) const
-{
-    if ( phaseA == phaseB )
-        return ( true );
-
-    bool depends{ false };
-    for ( const auto& dep : mPhases.at( phaseA )->deps() )
-    {
-        if ( ( depends = isADependsOnB( dep, phaseB ) ) )
+        seq.push_back( index );
+        if ( getPhases()[ index ]->getName() == phaseName )
         {
             break;
         }
     }
-    return ( depends );
 }
 
 void Plan::loadFromXML( Element* root, Industry* industry )
@@ -223,10 +144,27 @@ void Plan::loadPhaseFromXML( Element* root, Industry* industry )
 
     Phase::Ptr phase{ phaseFactory->create( classId ) };
     phase->loadFromXML( root, industry );
-    phases().insert( PhaseMap::value_type{ name, phase } );
+    addPhase( phase );
 }
 
 void Plan::saveToXML( Element* root ) const {}
+
+Phase::Ptr Plan::getPhase( const std::string& name ) const noexcept
+{
+    Phase::Ptr phase{};
+
+    for ( auto it( mPhases.begin() ); it != mPhases.end(); ++it )
+    {
+        const auto& currPhase = *it;
+        if ( currPhase->getName() == name )
+        {
+            phase = currPhase;
+            break;
+        }
+    }
+
+    return ( phase );
+}
 
 } // namespace plan
 } // namespace cic

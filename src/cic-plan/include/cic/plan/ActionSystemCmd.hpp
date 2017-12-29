@@ -51,10 +51,12 @@ public:
 
     virtual ~ActionSystemCmd() noexcept = default;
 
-    virtual bool execute( std::ostream& outStream, std::ostream& errStream ) override;
     virtual void loadFromXML( Poco::XML::Element* root, cic::industry::Industry* industry ) override;
     virtual void saveToXML( Poco::XML::Element* root ) const override;
-    virtual const std::string outline() const noexcept override;
+    virtual const std::string formOutline() const noexcept override;
+
+protected:
+    virtual bool perform( Report& report, cic::industry::Industry& industry ) const override;
 
 public:
     inline const std::string& cmd() const noexcept;

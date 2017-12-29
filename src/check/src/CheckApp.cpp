@@ -51,6 +51,7 @@
 #include <Poco/FileStream.h>
 #include <Poco/DOM/Document.h>
 #include <Poco/SAX/InputSource.h>
+#include <Poco/File.h>
 
 
 using Poco::AutoPtr;
@@ -73,9 +74,10 @@ using cic::plan::ActionFailure;
 using cic::plan::ActionSuccess;
 using cic::plan::ActionSystemCmd;
 using cic::plan::Phase;
+using cic::plan::PhaseReport;
 using cic::plan::Plan;
+using cic::plan::PlanReport;
 using cic::plan::Report;
-using cic::plan::TargetReport;
 using fmt::print;
 
 namespace cic
@@ -236,16 +238,22 @@ void CheckApp::initialize( Poco::Util::Application& self )
 
 
     {
-        auto planFactory = mIndustry.registerFactory< Plan >();
+        auto reportFactory( mIndustry.registerFactory< Report >() );
+        auto planFactory( mIndustry.registerFactory< Plan >() );
         planFactory->registerId< Plan >( Plan::getClassNameStatic() );
         planFactory->registerId< Plan >( "default" );
+        reportFactory->registerId< PlanReport >( Plan::getClassNameStatic() );
         auto phaseFactory = mIndustry.registerFactory< Phase >();
         phaseFactory->registerId< Phase >( "default" );
         phaseFactory->registerId< Phase >( Phase::getClassNameStatic() );
+        reportFactory->registerId< PhaseReport >( Phase::getClassNameStatic() );
         auto actionFactory = mIndustry.registerFactory< Action >();
         actionFactory->registerId< ActionSuccess >( ActionSuccess::getClassNameStatic() );
+        reportFactory->registerId< Report >( ActionSuccess::getClassNameStatic() );
         actionFactory->registerId< ActionFailure >( ActionFailure::getClassNameStatic() );
+        reportFactory->registerId< Report >( ActionFailure::getClassNameStatic() );
         actionFactory->registerId< ActionSystemCmd >( ActionSystemCmd::getClassNameStatic() );
+        reportFactory->registerId< Report >( ActionSystemCmd::getClassNameStatic() );
     }
 }
 
@@ -349,15 +357,15 @@ int CheckApp::main( const std::vector< std::string >& args )
     {
         logger().information(
             fmt::format( "Config:\n"
-                         "\t cic home dir:       : '{}'\n"
-                         "\t cic binary dir      : '{}'\n"
-                         "\t cic share dir       : '{}'\n"
-                         "\t cic etc dir         : '{}'\n"
-                         "\t application dir     : '{}'\n"
-                         "\t cic check share dir : '{}'\n"
-                         "\t cic check etc dir   : '{}'\n"
-                         "\t cic check workspace : '{}'\n"
-                         "\t cic check report dir: '{}'",
+                         "\t cic home dir:       : '{}';\n"
+                         "\t cic binary dir      : '{}';\n"
+                         "\t cic share dir       : '{}';\n"
+                         "\t cic etc dir         : '{}';\n"
+                         "\t application dir     : '{}';\n"
+                         "\t cic check share dir : '{}';\n"
+                         "\t cic check etc dir   : '{}';\n"
+                         "\t cic check workspace : '{}';\n"
+                         "\t cic check report dir: '{}';",
                          config().getString( "cic.homeDir" ),
                          config().getString( "cic.binDir" ),
                          config().getString( "cic.shareDir" ),
@@ -370,79 +378,67 @@ int CheckApp::main( const std::vector< std::string >& args )
     }
 
     std::string planName{ args[ 0 ] };
-    std::string phaseName;
+    std::vector< std::string > phaseList;
 
     if ( args.size() > 1 )
     {
-        phaseName = args[ 1 ];
+        for ( std::size_t i{ 1 }; i < args.size(); ++i )
+        {
+            phaseList.push_back( args[ i ] );
+        }
     }
 
-    if ( verbose )
-    {
-        logger().information(
-            fmt::format( "Target plan: '{}';{}\n",
-                         planName,
-                         phaseName.empty() ? "" : " Target phase: '{}';"_format( phaseName ) ) );
-    }
+    // if ( verbose )
+    // {
+    //     logger().information(
+    //         fmt::format( "Target plan: '{}';{}\n",
+    //                      planName,
+    //                      phaseName.empty() ? "" : " Target phase: '{}';"_format( phaseName ) ) );
+    // }
 
-    Poco::Path planPath{ config().getString( "cic.check.shareDir" ) };
-    planPath.pushDirectory( "plans" ).setBaseName( planName ).setExtension( "xml" );
-    AutoPtr< Document > doc;
-    {
-        FileInputStream istr{ planPath.toString() };
-        InputSource input{ istr };
-        doc = mParser.parse( &input );
-    }
-    Element* planRoot{ doc->documentElement() };
-    if ( planRoot->nodeName() != "plan" )
-    {
-        logger().fatal(
-            "Plan's root XML element should be named 'plan', not '{}'"_format( planRoot->nodeName() ) );
-        return ( EXIT_DATAERR );
-    }
-    std::string planClass{ Poco::trim( planRoot->getAttribute( "class" ) ) };
-    if ( !planClass.empty() )
-    {
-        planClass = "default";
-    }
-    auto factory = mIndustry.getFactory< Plan >();
-    assert( factory != nullptr );
-    Plan::Ptr plan{ factory->create( planClass ) };
-    plan->loadFromXML( planRoot, &mIndustry );
+    // Poco::Path planPath{ config().getString( "cic.check.shareDir" ) };
+    // planPath.pushDirectory( "plans" ).setBaseName( planName ).setExtension( "xml" );
+    // AutoPtr< Document > doc;
+    // {
+    //     FileInputStream istr{ planPath.toString() };
+    //     InputSource input{ istr };
+    //     doc = mParser.parse( &input );
+    // }
+    // Element* planRoot{ doc->documentElement() };
+    // if ( planRoot->nodeName() != "plan" )
+    // {
+    //     logger().fatal(
+    //         "Plan's root XML element should be named 'plan', not '{}'"_format( planRoot->nodeName() ) );
+    //     return ( EXIT_DATAERR );
+    // }
+    // std::string planClass{ Poco::trim( planRoot->getAttribute( "class" ) ) };
+    // if ( !planClass.empty() )
+    // {
+    //     planClass = "default";
+    // }
+    // auto factory = mIndustry.getFactory< Plan >();
+    // assert( factory != nullptr );
+    // Plan::Ptr plan{ factory->create( planClass ) };
+    // plan->loadFromXML( planRoot, &mIndustry );
 
-    bool result{ false };
-    bool only{ config().getBool( "cic.check.options.only", false ) };
-    TargetReport report;
-    report.targetPlan() = planName;
-    report.targetPhase() = phaseName;
-    try
-    {
-        result = plan->execute( phaseName, &report, only );
-    }
-    catch ( Poco::Exception& exc )
-    {
-        logger().critical(
-            "Fail to execute plan '{}' for phase '{}': {}"
-            ""_format( planName, phaseName, exc.displayText() ) );
-        return ( exc.code() );
-    }
-    report.success() = result;
+    // bool only{ config().getBool( "cic.check.options.only", false ) };
+    // //     plan->setTargetPhase( phaseName );
+    // std::shared_ptr< Report > report{ plan->plan::Action::perform( mIndustry ) };
 
-    if ( !result )
-    {
-        logger().information( "PLAN EXECUTION FAILURE" );
-        // TODO: Failure analysis / reporting
-    }
-    else
-    {
-        logger().information( "PLAN EXECUTION SUCCESS" );
-    }
+    // if ( !report->getSuccess() )
+    // {
+    //     logger().information( "PLAN EXECUTION FAILURE" );
+    //     // TODO: Failure analysis / reporting
+    // }
+    // else
+    // {
+    //     logger().information( "PLAN EXECUTION SUCCESS" );
+    // }
 
     // print( "Finish configuration:\n" );
     //    printConfig( "" );
 
-    scripting::foo();
-    return ( EXIT_OK );
+    return ( performTask( planName, phaseList, workspacePath, reportPath ) );
 }
 
 std::string CheckApp::formatHelpText() const noexcept
@@ -492,6 +488,91 @@ void CheckApp::printConfig( const std::string& rootKey ) const
     }
 }
 
+int CheckApp::performTask( const std::string& planFileName,
+                           const std::vector< std::string >& phaseList,
+                           const Poco::Path& workspacePath,
+                           const Poco::Path& reportPath,
+                           bool only ) noexcept
+{
+    bool verbose{ config().getBool( "cic.check.options.verbose", false ) };
+
+    // locate plan file
+    Poco::Path planPath{ planFileName };
+    if ( planPath.isRelative() )
+    {
+        Poco::Path tmpPath{ planPath };
+        tmpPath.makeAbsolute( workspacePath );
+        // TODO: if file doesnt exist then try makeAbsolute with <shareDir>/plans/
+        Poco::File planFile{ tmpPath };
+        if ( !planFile.exists() )
+        {
+            tmpPath.assign( planPath );
+            Poco::Path sharePlansPath{ Poco::Path::forDirectory(
+                config().getString( "cic.check.shareDir" ) ) };
+            sharePlansPath.pushDirectory( "plans" );
+            tmpPath.makeAbsolute( sharePlansPath );
+        }
+        planPath.assign( tmpPath );
+    }
+
+    // verbose output
+    if ( verbose )
+    {
+        fmt::MemoryWriter mw;
+        mw.write( "Performing:\n" );
+        mw.write( "\t Plan: '{}';\n", planPath.toString() );
+        mw.write( "\t Phase list:" );
+        for ( const auto& phaseName : phaseList )
+        {
+            mw.write( " '{}';", phaseName );
+        }
+        mw.write( "\n" );
+        logger().information( mw.str() );
+    }
+
+    // load plan xml
+    AutoPtr< Document > doc;
+    {
+        FileInputStream istr{ planPath.toString() };
+        InputSource input{ istr };
+        doc = mParser.parse( &input );
+    }
+    Element* planRoot{ doc->documentElement() };
+    if ( planRoot->nodeName() != "plan" )
+    {
+        logger().error(
+            "Plan's root XML element should be named 'plan', not '{}'"_format( planRoot->nodeName() ) );
+        return ( EXIT_DATAERR );
+    }
+
+    // load plan from xml
+    std::string planClass{ Poco::trim( planRoot->getAttribute( "class" ) ) };
+    if ( planClass.empty() )
+    {
+        planClass = "default";
+    }
+    auto factory = mIndustry.getFactory< Plan >();
+    assert( factory != nullptr );
+    Plan::Ptr plan{ factory->create( planClass ) };
+    plan->loadFromXML( planRoot, &mIndustry );
+
+    // actually perform
+    std::shared_ptr< Report > report{};
+    if ( only )
+    {
+        assert( !phaseList.empty() );
+        Phase::Ptr phase{ plan->getPhase( phaseList[ 0 ] ) };
+        report = phase->plan::Action::perform( mIndustry );
+    }
+    else
+    {
+        report = plan->plan::Action::perform( mIndustry );
+    }
+
+    logger().information( "PERFORM {}"_format( report->getSuccess() ? "SUCCESS" : "FAILURE" ) );
+
+    return ( EXIT_OK );
+}
 
 } // namespace check
 } // namespace cic

@@ -31,16 +31,28 @@
 
 
 #include <cic/plan/Action.hpp>
+#include <cic/plan/Report.hpp>
+
+using Industry = cic::industry::Industry;
 
 namespace cic
 {
 namespace plan
 {
 
-const std::string Action::outline() const noexcept
+const std::string Action::formOutline() const noexcept
 {
-    std::string outline;
-    return ( outline );
+    return ( getClassName() );
+}
+
+std::shared_ptr< cic::plan::Report > Action::perform( industry::Industry& industry ) const noexcept
+{
+    Report::Ptr report{ industry.getFactory< Report >()->create( this->getClassName() ) };
+    // assert( report );
+    report->fillWithAction( *this );
+    bool success{ perform( *report, industry ) };
+    report->setSuccess( success );
+    return ( report );
 }
 
 } // namespace plan

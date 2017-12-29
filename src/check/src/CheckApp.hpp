@@ -64,6 +64,12 @@ protected:
     virtual std::string formatHelpText() const noexcept;
     void printConfig( const std::string& rootKey ) const;
 
+    int performTask( const std::string& planFileName,
+                     const std::vector< std::string >& phaseList,
+                     const Poco::Path& workspacePath,
+                     const Poco::Path& reportPath,
+                     bool only = false ) noexcept;
+
 private:
     bool mIsStopRequestedByOption;
 

@@ -41,7 +41,7 @@ namespace plan
 {
 
 
-bool ActionFailure::execute( std::ostream& outStream, std::ostream& errStream )
+bool ActionFailure::perform( Report& report, Industry& industry ) const
 {
     return ( false );
 }

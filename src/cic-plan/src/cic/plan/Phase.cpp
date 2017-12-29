@@ -47,70 +47,75 @@ using Poco::XML::NodeList;
 using namespace fmt::literals;
 using Poco::AutoPtr;
 using Poco::XML::Element;
-using cic::plan::PhaseReport;
-using cic::plan::Report;
 using cic::industry::Industry;
+// using cic::plan::PhaseReport;
+using cic::plan::Report;
 
 namespace cic
 {
 namespace plan
 {
 
-bool Phase::execute( PhaseReport* report )
+Phase::Phase()
+: Action()
 {
-    bool result{ true };
+}
 
-    for ( std::size_t i{ 0 }; i < actions().size(); ++i )
+bool Phase::perform( Report& report, Industry& industry ) const
+{
+    bool success{ true };
+
+    for ( std::size_t i{ 0 }; i < getActions().size(); ++i )
     {
-        Action::Ptr action{ actions()[ i ] };
-        report->actionReports().emplace_back();
-        auto& actionReport( report->actionReports().back() );
-        actionReport.classId() = action->getClassName();
-        actionReport.outline() = action->outline();
-        std::string stdoutLogName{ "action_{}_{}_stdout.log"_format( report->name(), i ) };
-        std::string stderrLogName{ "action_{}_{}_stderr.log"_format( report->name(), i ) };
-        actionReport.stdoutFileName() = stdoutLogName;
-        actionReport.stderrFileName() = stderrLogName;
-        std::ofstream stdoutLog{ stdoutLogName };
-        std::ofstream stderrLog{ stderrLogName };
-        if ( result )
+        Action::Ptr action{ getActions()[ i ] };
+        std::shared_ptr< Report > actionReport{};
+        if ( success )
         {
-            result = action->execute( stdoutLog, stderrLog );
+            actionReport = action->perform( industry );
+            success = actionReport->getSuccess();
         }
-        stdoutLog.flush();
-        stdoutLog.close();
-        stderrLog.flush();
-        stderrLog.close();
-
-        actionReport.success() = result;
+        else
+        {
+            actionReport.reset( industry.getFactory< Report >()->create( action->getClassName() ) );
+            actionReport->fillWithAction( *action );
+        }
+        report.addChildReport( actionReport );
     }
-    return ( result );
+    return ( success );
 };
 
 void Phase::loadFromXML( Element* root, Industry* industry )
 {
     assert( root != nullptr );
 
-    // load dependencies
+    std::string name{ root->getAttribute( "name" ) };
+    if ( name.empty() )
     {
-        Element* elem{ root->getChildElement( "dependencies" ) };
-        if ( elem != nullptr )
-        {
-            AutoPtr< NodeList > depNodeList{ elem->childNodes() };
-            for ( std::size_t i{ 0 }; i < depNodeList->length(); ++i )
-            {
-                Element* depElem{ static_cast< Element* >( depNodeList->item( i ) ) };
-                if ( depElem != nullptr && depElem->nodeName() == "dependency" )
-                {
-                    std::string depName{ Poco::trim( depElem->getAttribute( "value" ) ) };
-                    if ( !depName.empty() )
-                    {
-                        deps().push_back( depName );
-                    }
-                }
-            }
-        }
+        throw( Poco::SyntaxException{
+            "Mandatory attribute 'name' isnt found or empty within the 'phase' element", 8 } );
     }
+    setName( name );
+
+    // load dependencies
+    // {
+    //     Element* elem{ root->getChildElement( "dependencies" ) };
+    //     if ( elem != nullptr )
+    //     {
+    //         AutoPtr< NodeList > depNodeList{ elem->childNodes() };
+    //         for ( std::size_t i{ 0 }; i < depNodeList->length(); ++i )
+    //         {
+    //             Element* depElem{ static_cast< Element* >( depNodeList->item( i ) ) };
+    //             if ( depElem != nullptr && depElem->nodeName() == "dependency" )
+    //             {
+    //                 std::string depName{ Poco::trim( depElem->getAttribute( "value" ) ) };
+    //                 if ( !depName.empty() )
+    //                 {
+    //                     deps().push_back( depName );
+    //                 }
+    //             }
+    //         }
+    //     }
+    // }
 
     // load actions
     {

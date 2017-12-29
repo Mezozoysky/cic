@@ -43,6 +43,8 @@ namespace cic
 namespace plan
 {
 
+class Report;
+
 class Action : public Serializable
 {
 public:
@@ -53,28 +55,13 @@ public:
     Action& operator=( const Action& other ) = delete;
     virtual ~Action() noexcept = default;
 
-    virtual bool execute( std::ostream& outStream, std::ostream& errStream ) = 0;
-    virtual const std::string outline() const noexcept;
+    std::shared_ptr< Report > perform( cic::industry::Industry& industry ) const noexcept;
 
-public:
-    inline const std::string& name() const noexcept;
+    virtual const std::string formOutline() const noexcept;
 
 protected:
-    inline std::string& name() noexcept;
-
-private:
-    std::string mName;
+    virtual bool perform( Report& report, cic::industry::Industry& industry ) const = 0;
 };
-
-inline const std::string& Action::name() const noexcept
-{
-    return ( mName );
-}
-
-inline std::string& Action::name() noexcept
-{
-    return ( mName );
-}
 
 } // namespace plan
 } // namespace cic

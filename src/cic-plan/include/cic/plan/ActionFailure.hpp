@@ -51,10 +51,11 @@ public:
     ActionFailure() = default;
     virtual ~ActionFailure() noexcept = default;
 
-    virtual bool execute( std::ostream& outStream, std::ostream& errStream ) override;
-
     virtual void loadFromXML( Poco::XML::Element* xml, cic::industry::Industry* industry ) override;
     virtual void saveToXML( Poco::XML::Element* xml ) const override;
+
+protected:
+    virtual bool perform( Report& report, cic::industry::Industry& industry ) const override;
 };
 
 

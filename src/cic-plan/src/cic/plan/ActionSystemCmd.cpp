@@ -56,7 +56,7 @@ namespace cic
 namespace plan
 {
 
-bool ActionSystemCmd::execute( std::ostream& outStream, std::ostream& errStream )
+bool ActionSystemCmd::perform( Report& report, Industry& industry ) const
 {
     Poco::Pipe outPipe;
     Poco::Pipe errPipe;
@@ -69,8 +69,8 @@ bool ActionSystemCmd::execute( std::ostream& outStream, std::ostream& errStream 
     Poco::PipeInputStream istrOut( outPipe );
     Poco::PipeInputStream istrErr( errPipe );
 
-    Poco::StreamCopier::copyStream( istrOut, outStream );
-    Poco::StreamCopier::copyStream( istrErr, errStream );
+    Poco::StreamCopier::copyStream( istrOut, std::cout );
+    Poco::StreamCopier::copyStream( istrErr, std::cerr );
 
     int rc{ ph.wait() };
     return ( rc == 0 );
@@ -121,7 +121,7 @@ void ActionSystemCmd::loadFromXML( Element* root, Industry* industry )
 
 void ActionSystemCmd::saveToXML( Element* root ) const {}
 
-const std::string ActionSystemCmd::outline() const noexcept
+const std::string ActionSystemCmd::formOutline() const noexcept
 {
     std::string outlineStr;
     {

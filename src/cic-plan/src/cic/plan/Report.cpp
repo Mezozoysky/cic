@@ -32,6 +32,7 @@
 
 #include <cic/plan/Report.hpp>
 #include <Poco/DOM/Element.h>
+#include <cic/plan/Action.hpp>
 
 using Poco::XML::Element;
 using cic::industry::Industry;
@@ -41,12 +42,22 @@ namespace cic
 namespace plan
 {
 
-void ActionReport::loadFromXML( Element* root, Industry* industry )
+void Report::addChildReport( Ptr& child )
+{
+    mChildren.push_back( child );
+}
+
+void Report::fillWithAction( const Action& action ) noexcept
+{
+    mOutline = action.formOutline();
+}
+
+void Report::loadFromXML( Element* root, Industry* industry )
 {
     // Do nothing
 }
 
-void ActionReport::saveToXML( Element* root ) const {}
+void Report::saveToXML( Element* root ) const {}
 
 void PhaseReport::loadFromXML( Element* root, Industry* industry )
 {
@@ -55,12 +66,12 @@ void PhaseReport::loadFromXML( Element* root, Industry* industry )
 
 void PhaseReport::saveToXML( Element* root ) const {}
 
-void TargetReport::loadFromXML( Element* root, Industry* industry )
+void PlanReport::loadFromXML( Element* root, Industry* industry )
 {
     // Do nothing
 }
 
-void TargetReport::saveToXML( Element* root ) const {}
+void PlanReport::saveToXML( Element* root ) const {}
 
 } // namespace plan
 } // namespace cic
