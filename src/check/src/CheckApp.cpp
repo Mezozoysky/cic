@@ -310,10 +310,21 @@ int CheckApp::main( const std::vector< std::string >& args )
         return ( EXIT_USAGE );
     }
 
-    //    print( "Start configuration:\n" );
-    //    printConfig( "" );
+    // define plan/phases from args
+    std::string planName{ Poco::trim( args[ 0 ] ) };
+    std::vector< std::string > phaseList;
+    if ( args.size() > 1 )
+    {
+        for ( std::size_t i{ 1 }; i < args.size(); ++i )
+        {
+            phaseList.push_back( Poco::trim( args[ i ] ) );
+        }
+    }
+
 
     Poco::Path pwdPath{ Poco::Path::forDirectory( config().getString( "system.currentDir" ) ) };
+
+    // define workspace path
     Poco::Path workspacePath;
     {
         std::string workspaceDir{ config().getString( "cic.check.workspace", "" ) };
@@ -330,9 +341,11 @@ int CheckApp::main( const std::vector< std::string >& args )
             }
         }
         workspaceDir = workspacePath.toString();
+        // TODO: Shure for workspace directory exists
         config().setString( "cic.check.workspace", workspaceDir );
     }
 
+    // define report dir path
     Poco::Path reportPath;
     {
         std::string reportDir{ config().getString( "cic.check.reportDir", "" ) };
@@ -349,9 +362,11 @@ int CheckApp::main( const std::vector< std::string >& args )
             }
         }
         reportDir = reportPath.toString();
+        // TODO: Shure for report directory exists
         config().setString( "cic.check.reportDir", reportDir );
     }
 
+    // verbose output
     bool verbose{ config().getBool( "cic.check.options.verbose", false ) };
     if ( verbose )
     {
@@ -377,68 +392,11 @@ int CheckApp::main( const std::vector< std::string >& args )
                          reportPath.toString() ) );
     }
 
-    std::string planName{ args[ 0 ] };
-    std::vector< std::string > phaseList;
-
-    if ( args.size() > 1 )
-    {
-        for ( std::size_t i{ 1 }; i < args.size(); ++i )
-        {
-            phaseList.push_back( args[ i ] );
-        }
-    }
-
-    // if ( verbose )
-    // {
-    //     logger().information(
-    //         fmt::format( "Target plan: '{}';{}\n",
-    //                      planName,
-    //                      phaseName.empty() ? "" : " Target phase: '{}';"_format( phaseName ) ) );
-    // }
-
-    // Poco::Path planPath{ config().getString( "cic.check.shareDir" ) };
-    // planPath.pushDirectory( "plans" ).setBaseName( planName ).setExtension( "xml" );
-    // AutoPtr< Document > doc;
-    // {
-    //     FileInputStream istr{ planPath.toString() };
-    //     InputSource input{ istr };
-    //     doc = mParser.parse( &input );
-    // }
-    // Element* planRoot{ doc->documentElement() };
-    // if ( planRoot->nodeName() != "plan" )
-    // {
-    //     logger().fatal(
-    //         "Plan's root XML element should be named 'plan', not '{}'"_format( planRoot->nodeName() ) );
-    //     return ( EXIT_DATAERR );
-    // }
-    // std::string planClass{ Poco::trim( planRoot->getAttribute( "class" ) ) };
-    // if ( !planClass.empty() )
-    // {
-    //     planClass = "default";
-    // }
-    // auto factory = mIndustry.getFactory< Plan >();
-    // assert( factory != nullptr );
-    // Plan::Ptr plan{ factory->create( planClass ) };
-    // plan->loadFromXML( planRoot, &mIndustry );
-
-    // bool only{ config().getBool( "cic.check.options.only", false ) };
-    // //     plan->setTargetPhase( phaseName );
-    // std::shared_ptr< Report > report{ plan->plan::Action::perform( mIndustry ) };
-
-    // if ( !report->getSuccess() )
-    // {
-    //     logger().information( "PLAN EXECUTION FAILURE" );
-    //     // TODO: Failure analysis / reporting
-    // }
-    // else
-    // {
-    //     logger().information( "PLAN EXECUTION SUCCESS" );
-    // }
-
-    // print( "Finish configuration:\n" );
-    //    printConfig( "" );
-
-    return ( performTask( planName, phaseList, workspacePath, reportPath ) );
+    return ( performTask( planName,
+                          phaseList,
+                          workspacePath,
+                          reportPath,
+                          config().getBool( "cic.check.options.only", false ) ) );
 }
 
 std::string CheckApp::formatHelpText() const noexcept
@@ -519,15 +477,30 @@ int CheckApp::performTask( const std::string& planFileName,
     if ( verbose )
     {
         fmt::MemoryWriter mw;
-        mw.write( "Performing:\n" );
+        mw.write( "Performing {}:\n", only ? "phase" : "plan" );
         mw.write( "\t Plan: '{}';\n", planPath.toString() );
         mw.write( "\t Phase list:" );
         for ( const auto& phaseName : phaseList )
         {
             mw.write( " '{}';", phaseName );
         }
-        mw.write( "\n" );
         logger().information( mw.str() );
+    }
+
+    // check phase list
+    if ( only )
+    {
+        if ( phaseList.empty() )
+        {
+            logger().fatal(
+                "No phase specified - one specified phase is mandatory then --only option is used" );
+            return ( EXIT_USAGE );
+        }
+        if ( phaseList.size() > 1 )
+        {
+            logger().information(
+                "Only first specified phase will be performed: {}"_format( phaseList[ 0 ] ) );
+        }
     }
 
     // load plan xml
