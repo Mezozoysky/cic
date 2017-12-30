@@ -1,6 +1,6 @@
 //  CICheck
 //
-//  CICheck - Copyright (C) 2016 Stanislav Demyanovich <mezozoysky@gmail.com>
+//  CICheck - Copyright (C) 2017 Stanislav Demyanovich <mezozoysky@gmail.com>
 //
 //  This software is provided 'as-is', without any express or
 //  implied warranty. In no event will the authors be held
@@ -26,7 +26,7 @@
 /// \file
 /// \brief Provides entry point for cic-check application
 /// \author Stanislav Demyanovich <mezozoysky@gmail.com>
-/// \date 2016
+/// \date 2017
 /// \copyright CICheck is released under the terms of zlib/png license
 
 #include "CheckApp.hpp"

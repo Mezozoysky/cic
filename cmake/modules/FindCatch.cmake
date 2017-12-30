@@ -3,9 +3,9 @@
 # Author: Stanislav Demyanovich <mezozoysky@gmail.com>
 #
 # Usage:
-#	set( ENV{Catch_HOME} /path/to/Catch )
-#   set( Catch_USE_SINGLE_INCLUDE TRUE ) # TRUE for using single-include release
-#	find_package( Catch REQUIRED )
+#     set( ENV{Catch_HOME} /path/to/Catch )
+#     set( Catch_USE_SINGLE_INCLUDE TRUE ) # TRUE for using single-include release
+#     find_package( Catch REQUIRED )
 #
 # Defines:
 # Catch_INCLUDE_DIR	   path to Catch includes or single include

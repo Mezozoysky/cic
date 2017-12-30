@@ -1,6 +1,6 @@
 //  cic
 //
-//  cic - Copyright (C) 2016 Stanislav Demyanovich <mezozoysky@gmail.com>
+//  cic - Copyright (C) 2017 Stanislav Demyanovich <mezozoysky@gmail.com>
 //
 //  This software is provided 'as-is', without any express or
 //  implied warranty. In no event will the authors be held
@@ -26,7 +26,7 @@
 /// \file
 /// \brief Provides CheckApp, the application class for cic-check tool
 /// \author Stanislav Demyanovich <mezozoysky@gmail.com>
-/// \date 2016
+/// \date 2017
 /// \copyright cic is released under the terms of zlib/png license
 
 
