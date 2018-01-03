@@ -1,6 +1,6 @@
 //  cic
 //
-//  cic - Copyright (C) 2017 Stanislav Demyanovich <mezozoysky@gmail.com>
+//  cic - Copyright (C) 2017-2018 Stanislav Demyanovich <mezozoysky@gmail.com>
 //
 //  This software is provided 'as-is', without any express or
 //  implied warranty. In no event will the authors be held
@@ -49,9 +49,7 @@ class Phase : public Action
 public:
     using Ptr = std::shared_ptr< Phase >;
 
-    using ActionList = std::vector< Action::Ptr >;
-
-    Phase();
+    Phase() = default;
     virtual ~Phase() noexcept = default;
 
     virtual void loadFromXML( Poco::XML::Element* root, cic::industry::Industry* industry ) override;
@@ -59,19 +57,13 @@ public:
 
     inline const std::string& getName() const noexcept;
     inline void setName( const std::string& name ) noexcept;
-    inline const ActionList& getActions() const noexcept;
-    inline void setActions( const ActionList& actions ) noexcept;
 
 protected:
-    virtual bool perform( Report& report, cic::industry::Industry& industry ) const override;
-
     virtual void loadActionsFromXML( Poco::XML::Element* root, cic::industry::Industry* industry );
     virtual void loadActionFromXML( Poco::XML::Element* root, cic::industry::Industry* industry );
 
-
 private:
     std::string mName;
-    ActionList mActions;
 };
 
 inline const std::string& Phase::getName() const noexcept
@@ -82,16 +74,6 @@ inline const std::string& Phase::getName() const noexcept
 inline void Phase::setName( const std::string& name ) noexcept
 {
     mName = name;
-}
-
-inline const Phase::ActionList& Phase::getActions() const noexcept
-{
-    return ( mActions );
-}
-
-inline void Phase::setActions( const ActionList& actions ) noexcept
-{
-    mActions = actions;
 }
 
 } // namespace plan

@@ -1,6 +1,6 @@
 //  cic
 //
-//  cic - Copyright (C) 2017 Stanislav Demyanovich <mezozoysky@gmail.com>
+//  cic - Copyright (C) 2017-2018 Stanislav Demyanovich <mezozoysky@gmail.com>
 //
 //  This software is provided 'as-is', without any express or
 //  implied warranty. In no event will the authors be held
@@ -33,6 +33,7 @@
 #ifndef CIC_PLAN__ACTION_HPP
 #define CIC_PLAN__ACTION_HPP
 
+#include "DAGNode.hpp"
 #include "Serializable.hpp"
 #include <memory>
 #include <string>
@@ -45,14 +46,14 @@ namespace plan
 
 class Report;
 
-class Action : public Serializable
+class Action
+: public DAGNode< Action >
+, public Serializable
 {
 public:
     using Ptr = std::shared_ptr< Action >;
 
     Action() = default;
-    Action( const Action& other ) = delete;
-    Action& operator=( const Action& other ) = delete;
     virtual ~Action() noexcept = default;
 
     std::shared_ptr< Report > perform( cic::industry::Industry& industry ) const noexcept;
@@ -60,7 +61,7 @@ public:
     virtual const std::string formOutline() const noexcept;
 
 protected:
-    virtual bool perform( Report& report, cic::industry::Industry& industry ) const = 0;
+    virtual bool perform( Report& report, cic::industry::Industry& industry ) const;
 };
 
 } // namespace plan

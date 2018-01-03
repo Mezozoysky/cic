@@ -1,6 +1,6 @@
 //  cic
 //
-//  cic - Copyright (C) 2017 Stanislav Demyanovich <mezozoysky@gmail.com>
+//  cic - Copyright (C) 2017-2018 Stanislav Demyanovich <mezozoysky@gmail.com>
 //
 //  This software is provided 'as-is', without any express or
 //  implied warranty. In no event will the authors be held
@@ -33,6 +33,7 @@
 #include <cic/plan/Report.hpp>
 #include <Poco/DOM/Element.h>
 #include <cic/plan/Action.hpp>
+#include <cassert>
 
 using Poco::XML::Element;
 using cic::industry::Industry;
@@ -41,11 +42,6 @@ namespace cic
 {
 namespace plan
 {
-
-void Report::addChildReport( Ptr& child )
-{
-    mChildren.push_back( child );
-}
 
 void Report::fillWithAction( const Action& action ) noexcept
 {

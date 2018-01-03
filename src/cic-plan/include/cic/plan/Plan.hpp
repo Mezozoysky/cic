@@ -1,6 +1,6 @@
 //  cic
 //
-//  cic - Copyright (C) 2017 Stanislav Demyanovich <mezozoysky@gmail.com>
+//  cic - Copyright (C) 2017-2018 Stanislav Demyanovich <mezozoysky@gmail.com>
 //
 //  This software is provided 'as-is', without any express or
 //  implied warranty. In no event will the authors be held
@@ -37,6 +37,7 @@
 #include "Phase.hpp"
 #include <string>
 #include <vector>
+#include <map>
 
 
 namespace cic
@@ -52,73 +53,32 @@ public:
     using Ptr = std::shared_ptr< Plan >;
 
     using Sequence = std::vector< std::size_t >;
-    using PhaseList = std::vector< Phase::Ptr >;
+    using IndexMap = std::map< std::string, std::size_t >;
 
 public:
     Plan() = default;
-    Plan( const Plan& other ) = delete;
-    Plan& operator=( const Plan& other ) = delete;
     virtual ~Plan() noexcept = default;
 
     virtual bool perform( Report& report, cic::industry::Industry& industry ) const override;
-    // virtual bool perform( const std::string& phaseName, TargetReport* report, bool skipDependencies = false
-    // );
+
     virtual void buildSequence( const std::string& phaseName, Sequence& seq ) const;
 
     virtual void loadFromXML( Poco::XML::Element* root, cic::industry::Industry* industry ) override;
     virtual void saveToXML( Poco::XML::Element* root ) const override;
 
-    inline std::size_t getPhasesCount() const noexcept;
-    inline const PhaseList& getPhases() const noexcept;
-    inline Phase::Ptr getPhase( std::size_t index ) const noexcept;
+    std::size_t getPhaseIndex( const std::string& name ) const noexcept;
     Phase::Ptr getPhase( const std::string& name ) const noexcept;
-    inline void addPhase( const Phase::Ptr& phase ) noexcept;
-    inline void addPhases( const PhaseList& phases ) noexcept;
-
 
 protected:
+    virtual void onAddChild( const DAGShared& child, std::size_t index ) override;
+
     virtual void loadPhasesFromXML( Poco::XML::Element* root, cic::industry::Industry* industry );
     virtual void loadPhaseFromXML( Poco::XML::Element* root, cic::industry::Industry* industry );
 
 private:
-    PhaseList mPhases;
+    IndexMap mIndexMap;
 };
 
-
-// Inliners
-
-inline std::size_t Plan::getPhasesCount() const noexcept
-{
-    return ( mPhases.size() );
-}
-
-inline const Plan::PhaseList& Plan::getPhases() const noexcept
-{
-    return ( mPhases );
-}
-
-inline Phase::Ptr Plan::getPhase( std::size_t index ) const noexcept
-{
-    Phase::Ptr phase{};
-    if ( index < getPhasesCount() )
-    {
-        phase = mPhases[ index ];
-    }
-    return ( phase );
-}
-
-inline void Plan::addPhase( const Phase::Ptr& phase ) noexcept
-{
-    mPhases.push_back( phase );
-}
-
-inline void Plan::addPhases( const Plan::PhaseList& phases ) noexcept
-{
-    for ( const auto& phase : phases )
-    {
-        mPhases.push_back( phase );
-    }
-}
 
 } // namespace plan
 } // namespace cic

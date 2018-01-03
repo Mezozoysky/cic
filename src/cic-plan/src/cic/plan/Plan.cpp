@@ -1,6 +1,6 @@
 //  cic
 //
-//  cic - Copyright (C) 2017 Stanislav Demyanovich <mezozoysky@gmail.com>
+//  cic - Copyright (C) 2017-2018 Stanislav Demyanovich <mezozoysky@gmail.com>
 //
 //  This software is provided 'as-is', without any express or
 //  implied warranty. In no event will the authors be held
@@ -65,9 +65,10 @@ bool Plan::perform( Report& report, Industry& industry ) const
 
     bool success{ true };
 
+    DAGShared phase{};
     for ( const std::size_t& index : sequence )
     {
-        auto phase( getPhases()[ index ] );
+        phase = getChild( index );
         Report::Ptr phaseReport{};
         if ( success )
         {
@@ -80,17 +81,19 @@ bool Plan::perform( Report& report, Industry& industry ) const
             phaseReport->fillWithAction( *phase );
             // phaseReport->setSuccess( false );
         }
-        report.addChildReport( phaseReport );
+        report.addChild( phaseReport );
     }
     return ( success );
 }
 
 void Plan::buildSequence( const std::string& phaseName, Sequence& seq ) const
 {
-    for ( std::size_t index{ 0 }; index < getPhasesCount(); ++index )
+    Phase::Ptr phase{};
+    for ( std::size_t index{ 0 }; index < getChildrenSize(); ++index )
     {
         seq.push_back( index );
-        if ( getPhases()[ index ]->getName() == phaseName )
+        phase = std::static_pointer_cast< Phase >( getChild( index ) );
+        if ( phase->getName() == phaseName )
         {
             break;
         }
@@ -104,6 +107,36 @@ void Plan::loadFromXML( Element* root, Industry* industry )
     {
         loadPhasesFromXML( elem, industry );
     }
+}
+
+std::size_t Plan::getPhaseIndex( const std::string& name ) const noexcept
+{
+    const auto it( mIndexMap.find( name ) );
+    if ( it == mIndexMap.end() )
+    {
+        return ( BAD_INDEX );
+    }
+
+    return ( it->second );
+}
+
+Phase::Ptr Plan::getPhase( const std::string& name ) const noexcept
+{
+    std::size_t index{ getPhaseIndex( name ) };
+    if ( index == BAD_INDEX )
+    {
+        return ( nullptr );
+    }
+
+    Phase::Ptr phase{ std::static_pointer_cast< Phase >( getChild( index ) ) };
+    return ( phase );
+}
+
+void Plan::onAddChild( const DAGShared& child, std::size_t index )
+{
+    Phase::Ptr phase{ std::static_pointer_cast< Phase >( child ) };
+    assert( phase );
+    mIndexMap.insert( std::make_pair( phase->getName(), index ) );
 }
 
 void Plan::loadPhasesFromXML( Element* root, Industry* industry )
@@ -144,27 +177,10 @@ void Plan::loadPhaseFromXML( Element* root, Industry* industry )
 
     Phase::Ptr phase{ phaseFactory->create( classId ) };
     phase->loadFromXML( root, industry );
-    addPhase( phase );
+    addChild( phase );
 }
 
 void Plan::saveToXML( Element* root ) const {}
-
-Phase::Ptr Plan::getPhase( const std::string& name ) const noexcept
-{
-    Phase::Ptr phase{};
-
-    for ( auto it( mPhases.begin() ); it != mPhases.end(); ++it )
-    {
-        const auto& currPhase = *it;
-        if ( currPhase->getName() == name )
-        {
-            phase = currPhase;
-            break;
-        }
-    }
-
-    return ( phase );
-}
 
 } // namespace plan
 } // namespace cic

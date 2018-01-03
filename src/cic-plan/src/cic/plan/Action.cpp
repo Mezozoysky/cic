@@ -1,6 +1,6 @@
 //  cic
 //
-//  cic - Copyright (C) 2017 Stanislav Demyanovich <mezozoysky@gmail.com>
+//  cic - Copyright (C) 2017-2018 Stanislav Demyanovich <mezozoysky@gmail.com>
 //
 //  This software is provided 'as-is', without any express or
 //  implied warranty. In no event will the authors be held
@@ -48,12 +48,34 @@ const std::string Action::formOutline() const noexcept
 std::shared_ptr< cic::plan::Report > Action::perform( industry::Industry& industry ) const noexcept
 {
     Report::Ptr report{ industry.getFactory< Report >()->create( this->getClassName() ) };
-    // assert( report );
     report->fillWithAction( *this );
     bool success{ perform( *report, industry ) };
     report->setSuccess( success );
     return ( report );
 }
+
+bool Action::perform( Report& report, Industry& industry ) const
+{
+    bool success{ true };
+
+    for ( std::size_t i{ 0 }; i < getChildrenSize(); ++i )
+    {
+        DAGShared child{ getChild( i ) };
+        std::shared_ptr< Report > childReport{};
+        if ( success )
+        {
+            childReport = child->perform( industry );
+            success = childReport->getSuccess();
+        }
+        else
+        {
+            childReport.reset( industry.getFactory< Report >()->create( child->getClassName() ) );
+            childReport->fillWithAction( *child );
+        }
+        report.addChild( childReport );
+    }
+    return ( success );
+};
 
 } // namespace plan
 } // namespace cic

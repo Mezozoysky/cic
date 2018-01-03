@@ -1,6 +1,6 @@
 //  cic
 //
-//  cic - Copyright (C) 2017 Stanislav Demyanovich <mezozoysky@gmail.com>
+//  cic - Copyright (C) 2017-2018 Stanislav Demyanovich <mezozoysky@gmail.com>
 //
 //  This software is provided 'as-is', without any express or
 //  implied warranty. In no event will the authors be held
@@ -48,41 +48,12 @@ using namespace fmt::literals;
 using Poco::AutoPtr;
 using Poco::XML::Element;
 using cic::industry::Industry;
-// using cic::plan::PhaseReport;
 using cic::plan::Report;
 
 namespace cic
 {
 namespace plan
 {
-
-Phase::Phase()
-: Action()
-{
-}
-
-bool Phase::perform( Report& report, Industry& industry ) const
-{
-    bool success{ true };
-
-    for ( std::size_t i{ 0 }; i < getActions().size(); ++i )
-    {
-        Action::Ptr action{ getActions()[ i ] };
-        std::shared_ptr< Report > actionReport{};
-        if ( success )
-        {
-            actionReport = action->perform( industry );
-            success = actionReport->getSuccess();
-        }
-        else
-        {
-            actionReport.reset( industry.getFactory< Report >()->create( action->getClassName() ) );
-            actionReport->fillWithAction( *action );
-        }
-        report.addChildReport( actionReport );
-    }
-    return ( success );
-};
 
 void Phase::loadFromXML( Element* root, Industry* industry )
 {
@@ -95,27 +66,6 @@ void Phase::loadFromXML( Element* root, Industry* industry )
             "Mandatory attribute 'name' isnt found or empty within the 'phase' element", 8 } );
     }
     setName( name );
-
-    // load dependencies
-    // {
-    //     Element* elem{ root->getChildElement( "dependencies" ) };
-    //     if ( elem != nullptr )
-    //     {
-    //         AutoPtr< NodeList > depNodeList{ elem->childNodes() };
-    //         for ( std::size_t i{ 0 }; i < depNodeList->length(); ++i )
-    //         {
-    //             Element* depElem{ static_cast< Element* >( depNodeList->item( i ) ) };
-    //             if ( depElem != nullptr && depElem->nodeName() == "dependency" )
-    //             {
-    //                 std::string depName{ Poco::trim( depElem->getAttribute( "value" ) ) };
-    //                 if ( !depName.empty() )
-    //                 {
-    //                     deps().push_back( depName );
-    //                 }
-    //             }
-    //         }
-    //     }
-    // }
 
     // load actions
     {
@@ -160,7 +110,7 @@ void Phase::loadActionFromXML( Element* root, Industry* industry )
 
     Action::Ptr action{ actionFactory->create( classId ) };
     action->loadFromXML( root, industry );
-    mActions.push_back( action );
+    addChild( action );
 }
 
 } // namespace plan
