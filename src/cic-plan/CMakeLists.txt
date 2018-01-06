@@ -14,20 +14,22 @@ set( MODULE_SOURCES "" )
 set(GROUP_HEADERS
     "${MODULE_ROOT}/include/${MODULE_NSPATH}/DAGNode.hpp"
     "${MODULE_ROOT}/include/${MODULE_NSPATH}/Action.hpp"
-    "${MODULE_ROOT}/include/${MODULE_NSPATH}/Plan.hpp"
-    "${MODULE_ROOT}/include/${MODULE_NSPATH}/Phase.hpp"
     "${MODULE_ROOT}/include/${MODULE_NSPATH}/ActionFailure.hpp"
     "${MODULE_ROOT}/include/${MODULE_NSPATH}/ActionSuccess.hpp"
     "${MODULE_ROOT}/include/${MODULE_NSPATH}/ActionSystemCmd.hpp"
+    "${MODULE_ROOT}/include/${MODULE_NSPATH}/Plan.hpp"
+    "${MODULE_ROOT}/include/${MODULE_NSPATH}/LinearPlan.hpp"
+    "${MODULE_ROOT}/include/${MODULE_NSPATH}/Phase.hpp"
     "${MODULE_ROOT}/include/${MODULE_NSPATH}/Report.hpp"
     )
 set(GROUP_SOURCES
     "${MODULE_ROOT}/src/${MODULE_NSPATH}/Action.cpp"
-    "${MODULE_ROOT}/src/${MODULE_NSPATH}/Plan.cpp"
-    "${MODULE_ROOT}/src/${MODULE_NSPATH}/Phase.cpp"
     "${MODULE_ROOT}/src/${MODULE_NSPATH}/ActionFailure.cpp"
     "${MODULE_ROOT}/src/${MODULE_NSPATH}/ActionSuccess.cpp"
     "${MODULE_ROOT}/src/${MODULE_NSPATH}/ActionSystemCmd.cpp"
+    "${MODULE_ROOT}/src/${MODULE_NSPATH}/Plan.cpp"
+    "${MODULE_ROOT}/src/${MODULE_NSPATH}/LinearPlan.cpp"
+    "${MODULE_ROOT}/src/${MODULE_NSPATH}/Phase.cpp"
     "${MODULE_ROOT}/src/${MODULE_NSPATH}/Report.cpp"
     )
 source_group( ${MODULE_NAME} FILES ${GROUP_HEADERS} ${GROUP_SOURCES} )

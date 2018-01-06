@@ -55,6 +55,32 @@ namespace cic
 namespace plan
 {
 
+
+void Phase::setName( const std::string& name )
+{
+    onSetName( name );
+    mName = name;
+}
+
+void Phase::onSetName( const std::string& name )
+{
+    return;
+}
+
+void Phase::setPhony( bool phony )
+{
+    if ( phony != mPhony )
+    {
+        onSetPhony( phony );
+        mPhony = phony;
+    }
+}
+
+void Phase::onSetPhony( bool phony )
+{
+    return;
+}
+
 void Phase::loadFromXML( Element* root, Industry* industry )
 {
     assert( root != nullptr );
@@ -112,6 +138,7 @@ void Phase::loadActionFromXML( Element* root, Industry* industry )
     action->loadFromXML( root, industry );
     addChild( action );
 }
+
 
 } // namespace plan
 } // namespace cic

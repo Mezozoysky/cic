@@ -40,6 +40,8 @@
 #include <Poco/DOM/Element.h>
 #include <Poco/AutoPtr.h>
 #include <Poco/DOM/NodeList.h>
+#include <algorithm>
+#include <functional>
 
 using Poco::XML::Element;
 // using Poco::XML::Node;
@@ -56,12 +58,8 @@ namespace plan
 
 bool Plan::perform( Report& report, Industry& industry ) const
 {
-    // TODO: Apply system wide options
-    // TODO: Apply application wide options
-    // TODO: Apply plan wide options
-
     Sequence sequence;
-    buildSequence( "" /*targetPhase*/, sequence );
+    buildSequence( sequence );
 
     bool success{ true };
 
@@ -72,7 +70,7 @@ bool Plan::perform( Report& report, Industry& industry ) const
         Report::Ptr phaseReport{};
         if ( success )
         {
-            phaseReport = phase->Action::perform( industry );
+            phaseReport = phase->perform( industry );
             success = phaseReport->getSuccess();
         }
         else
@@ -84,20 +82,6 @@ bool Plan::perform( Report& report, Industry& industry ) const
         report.addChild( phaseReport );
     }
     return ( success );
-}
-
-void Plan::buildSequence( const std::string& phaseName, Sequence& seq ) const
-{
-    Phase::Ptr phase{};
-    for ( std::size_t index{ 0 }; index < getChildrenSize(); ++index )
-    {
-        seq.push_back( index );
-        phase = std::static_pointer_cast< Phase >( getChild( index ) );
-        if ( phase->getName() == phaseName )
-        {
-            break;
-        }
-    }
 }
 
 void Plan::loadFromXML( Element* root, Industry* industry )
@@ -130,6 +114,17 @@ Phase::Ptr Plan::getPhase( const std::string& name ) const noexcept
 
     Phase::Ptr phase{ std::static_pointer_cast< Phase >( getChild( index ) ) };
     return ( phase );
+}
+
+void Plan::setTargetPhases( const std::vector< std::string >& phaseList )
+{
+    onSetTargetPhases( phaseList );
+    mTargetPhases = phaseList;
+}
+
+void Plan::onSetTargetPhases( const std::vector< std::string >& phaseList )
+{
+    return;
 }
 
 void Plan::onAddChild( const DAGShared& child, std::size_t index )

@@ -61,7 +61,7 @@ public:
 
     virtual bool perform( Report& report, cic::industry::Industry& industry ) const override;
 
-    virtual void buildSequence( const std::string& phaseName, Sequence& seq ) const;
+    virtual void buildSequence( Sequence& seq ) const = 0;
 
     virtual void loadFromXML( Poco::XML::Element* root, cic::industry::Industry* industry ) override;
     virtual void saveToXML( Poco::XML::Element* root ) const override;
@@ -69,7 +69,12 @@ public:
     std::size_t getPhaseIndex( const std::string& name ) const noexcept;
     Phase::Ptr getPhase( const std::string& name ) const noexcept;
 
+    inline const std::vector< std::string >& getTargetPhases() const noexcept;
+    void setTargetPhases( const std::vector< std::string >& phaseList );
+
 protected:
+    virtual void onSetTargetPhases( const std::vector< std::string >& phaseList );
+
     virtual void onAddChild( const DAGShared& child, std::size_t index ) override;
 
     virtual void loadPhasesFromXML( Poco::XML::Element* root, cic::industry::Industry* industry );
@@ -77,8 +82,13 @@ protected:
 
 private:
     IndexMap mIndexMap;
+    std::vector<std::string> mTargetPhases;
 };
 
+inline const std::vector< std::string >& Plan::getTargetPhases() const noexcept
+{
+    return ( mTargetPhases );
+}
 
 } // namespace plan
 } // namespace cic

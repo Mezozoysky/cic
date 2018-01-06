@@ -1,6 +1,6 @@
 //  cic
 //
-//  cic - Copyright (C) 2017 Stanislav Demyanovich <mezozoysky@gmail.com>
+//  cic - Copyright (C) 2017-2018 Stanislav Demyanovich <mezozoysky@gmail.com>
 //
 //  This software is provided 'as-is', without any express or
 //  implied warranty. In no event will the authors be held
@@ -31,8 +31,7 @@
 
 
 #include "CheckApp.hpp"
-#include <cic/plan/Plan.hpp>
-// #include <cic/plan/XMLUtils.hpp>
+#include <cic/plan/LinearPlan.hpp>
 #include <fmt/format.h>
 #include <sstream>
 #include <Poco/Util/HelpFormatter.h>
@@ -76,6 +75,7 @@ using cic::plan::ActionSystemCmd;
 using cic::plan::Phase;
 using cic::plan::PhaseReport;
 using cic::plan::Plan;
+using cic::plan::LinearPlan;
 using cic::plan::PlanReport;
 using cic::plan::Report;
 using fmt::print;
@@ -240,9 +240,9 @@ void CheckApp::initialize( Poco::Util::Application& self )
     {
         auto reportFactory( mIndustry.registerFactory< Report >() );
         auto planFactory( mIndustry.registerFactory< Plan >() );
-        planFactory->registerId< Plan >( Plan::getClassNameStatic() );
-        planFactory->registerId< Plan >( "default" );
-        reportFactory->registerId< PlanReport >( Plan::getClassNameStatic() );
+        planFactory->registerId< LinearPlan >( LinearPlan::getClassNameStatic() );
+        planFactory->registerId< LinearPlan >( "default" );
+        reportFactory->registerId< PlanReport >( LinearPlan::getClassNameStatic() );
         auto phaseFactory = mIndustry.registerFactory< Phase >();
         phaseFactory->registerId< Phase >( "default" );
         phaseFactory->registerId< Phase >( Phase::getClassNameStatic() );
@@ -539,6 +539,7 @@ int CheckApp::performTask( const std::string& planFileName,
     }
     else
     {
+        plan->setTargetPhases( phaseList );
         report = plan->plan::Action::perform( mIndustry );
     }
 

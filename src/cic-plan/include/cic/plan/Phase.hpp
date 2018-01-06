@@ -42,6 +42,7 @@ namespace cic
 namespace plan
 {
 
+
 class Phase : public Action
 {
     CLASSINFO( Phase );
@@ -52,11 +53,18 @@ public:
     Phase() = default;
     virtual ~Phase() noexcept = default;
 
+    inline const std::string& getName() const noexcept;
+    void setName( const std::string& name );
+    inline bool isPhony() const noexcept;
+    void setPhony( bool phony );
+
+protected:
+    virtual void onSetName( const std::string& name );
+    virtual void onSetPhony( bool phony );
+
+public:
     virtual void loadFromXML( Poco::XML::Element* root, cic::industry::Industry* industry ) override;
     virtual void saveToXML( Poco::XML::Element* root ) const override;
-
-    inline const std::string& getName() const noexcept;
-    inline void setName( const std::string& name ) noexcept;
 
 protected:
     virtual void loadActionsFromXML( Poco::XML::Element* root, cic::industry::Industry* industry );
@@ -64,17 +72,20 @@ protected:
 
 private:
     std::string mName;
+    bool mPhony;
 };
+
 
 inline const std::string& Phase::getName() const noexcept
 {
     return ( mName );
 }
 
-inline void Phase::setName( const std::string& name ) noexcept
+inline bool Phase::isPhony() const noexcept
 {
-    mName = name;
+    return ( mPhony );
 }
+
 
 } // namespace plan
 } // namespace cic
