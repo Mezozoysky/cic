@@ -1,15 +1,3 @@
-<!-- MarkdownTOC depth=0 -->
-
-- cic
-	- Dependencies
-	- Build / install
-		- OS X
-			- Build with XCode
-			- Build with Make
-		- Linux
-
-<!-- /MarkdownTOC -->
-
 # cic
 "ci" is for Continuous Intergation and the last "c" for checking!
 
