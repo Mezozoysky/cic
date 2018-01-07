@@ -32,6 +32,8 @@
 
 #include "CheckApp.hpp"
 #include <cic/plan/LinearPlan.hpp>
+#include <cic/plan/DepsTreePlan.hpp>
+#include <cic/plan/DepsTreePhase.hpp>
 #include <fmt/format.h>
 #include <sstream>
 #include <Poco/Util/HelpFormatter.h>
@@ -72,10 +74,12 @@ using cic::plan::Action;
 using cic::plan::ActionFailure;
 using cic::plan::ActionSuccess;
 using cic::plan::ActionSystemCmd;
+using cic::plan::DepsTreePhase;
+using cic::plan::DepsTreePlan;
+using cic::plan::LinearPlan;
 using cic::plan::Phase;
 using cic::plan::PhaseReport;
 using cic::plan::Plan;
-using cic::plan::LinearPlan;
 using cic::plan::PlanReport;
 using cic::plan::Report;
 using fmt::print;
@@ -240,11 +244,15 @@ void CheckApp::initialize( Poco::Util::Application& self )
     {
         auto reportFactory( mIndustry.registerFactory< Report >() );
         auto planFactory( mIndustry.registerFactory< Plan >() );
+        planFactory->registerId< DepsTreePlan >( DepsTreePlan::getClassNameStatic() );
+        planFactory->registerId< DepsTreePlan >( "default" );
+        reportFactory->registerId< PlanReport >( DepsTreePlan::getClassNameStatic() );
         planFactory->registerId< LinearPlan >( LinearPlan::getClassNameStatic() );
-        planFactory->registerId< LinearPlan >( "default" );
         reportFactory->registerId< PlanReport >( LinearPlan::getClassNameStatic() );
         auto phaseFactory = mIndustry.registerFactory< Phase >();
-        phaseFactory->registerId< Phase >( "default" );
+        phaseFactory->registerId< DepsTreePhase >( DepsTreePhase::getClassNameStatic() );
+        phaseFactory->registerId< DepsTreePhase >( "default" );
+        reportFactory->registerId< PhaseReport >( DepsTreePhase::getClassNameStatic() );
         phaseFactory->registerId< Phase >( Phase::getClassNameStatic() );
         reportFactory->registerId< PhaseReport >( Phase::getClassNameStatic() );
         auto actionFactory = mIndustry.registerFactory< Action >();
@@ -540,7 +548,7 @@ int CheckApp::performTask( const std::string& planFileName,
     else
     {
         plan->setTargetPhases( phaseList );
-        report = plan->plan::Action::perform( mIndustry );
+        report = plan->Action::perform( mIndustry );
     }
 
     logger().information( "PERFORM {}"_format( report->getSuccess() ? "SUCCESS" : "FAILURE" ) );

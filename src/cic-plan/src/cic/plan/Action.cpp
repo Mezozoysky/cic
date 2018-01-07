@@ -32,6 +32,7 @@
 
 #include <cic/plan/Action.hpp>
 #include <cic/plan/Report.hpp>
+#include <cassert>
 
 using Industry = cic::industry::Industry;
 
@@ -48,6 +49,7 @@ const std::string Action::formOutline() const noexcept
 std::shared_ptr< cic::plan::Report > Action::perform( industry::Industry& industry ) const noexcept
 {
     Report::Ptr report{ industry.getFactory< Report >()->create( this->getClassName() ) };
+    assert( report );
     report->fillWithAction( *this );
     bool success{ perform( *report, industry ) };
     report->setSuccess( success );
