@@ -59,7 +59,10 @@ public:
     Plan();
     virtual ~Plan() noexcept = default;
 
-    virtual bool perform( Report& report, cic::industry::Industry& industry ) const override;
+    virtual bool perform( Report& report,
+                          cic::industry::Industry& industry,
+                          std::ostream& outStream = std::cout,
+                          std::ostream& errStream = std::cerr ) const override;
 
     virtual void buildSequence( Sequence& seq ) const = 0;
 

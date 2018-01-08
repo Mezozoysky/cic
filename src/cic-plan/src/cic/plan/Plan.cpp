@@ -62,7 +62,10 @@ Plan::Plan()
 {
 }
 
-bool Plan::perform( Report& report, Industry& industry ) const
+bool Plan::perform( Report& report,
+                    Industry& industry,
+                    std::ostream& outStream,
+                    std::ostream& errStream ) const
 {
     Sequence sequence;
     buildSequence( sequence );

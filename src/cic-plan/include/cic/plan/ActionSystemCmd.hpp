@@ -56,7 +56,10 @@ public:
     virtual const std::string formOutline() const noexcept override;
 
 protected:
-    virtual bool perform( Report& report, cic::industry::Industry& industry ) const override;
+    virtual bool perform( Report& report,
+                          cic::industry::Industry& industry,
+                          std::ostream& outStream = std::cout,
+                          std::ostream& errStream = std::cerr ) const override;
 
 public:
     inline const std::string& cmd() const noexcept;

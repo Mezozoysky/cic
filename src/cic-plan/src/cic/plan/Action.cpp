@@ -46,7 +46,9 @@ const std::string Action::formOutline() const noexcept
     return ( getClassName() );
 }
 
-std::shared_ptr< cic::plan::Report > Action::perform( industry::Industry& industry ) const noexcept
+std::shared_ptr< cic::plan::Report > Action::perform( industry::Industry& industry,
+                                                      const std::ostream& outStream,
+                                                      const std::ostream& errStream ) const noexcept
 {
     Report::Ptr report{ industry.getFactory< Report >()->create( this->getClassName() ) };
     assert( report );
@@ -56,7 +58,10 @@ std::shared_ptr< cic::plan::Report > Action::perform( industry::Industry& indust
     return ( report );
 }
 
-bool Action::perform( Report& report, Industry& industry ) const
+bool Action::perform( Report& report,
+                      Industry& industry,
+                      std::ostream& outStream,
+                      std::ostream& errStream ) const
 {
     bool success{ true };
 

@@ -56,7 +56,10 @@ namespace cic
 namespace plan
 {
 
-bool ActionSystemCmd::perform( Report& report, Industry& industry ) const
+bool ActionSystemCmd::perform( Report& report,
+                               Industry& industry,
+                               std::ostream& outStream,
+                               std::ostream& errStream ) const
 {
     Poco::Pipe outPipe;
     Poco::Pipe errPipe;
@@ -69,8 +72,8 @@ bool ActionSystemCmd::perform( Report& report, Industry& industry ) const
     Poco::PipeInputStream istrOut( outPipe );
     Poco::PipeInputStream istrErr( errPipe );
 
-    Poco::StreamCopier::copyStream( istrOut, std::cout );
-    Poco::StreamCopier::copyStream( istrErr, std::cerr );
+    Poco::StreamCopier::copyStream( istrOut, outStream );
+    Poco::StreamCopier::copyStream( istrErr, errStream );
 
     int rc{ ph.wait() };
     return ( rc == 0 );

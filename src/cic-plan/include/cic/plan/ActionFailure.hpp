@@ -55,7 +55,10 @@ public:
     virtual void saveToXML( Poco::XML::Element* xml ) const override;
 
 protected:
-    virtual bool perform( Report& report, cic::industry::Industry& industry ) const override;
+    virtual bool perform( Report& report,
+                          cic::industry::Industry& industry,
+                          std::ostream& outStream = std::cout,
+                          std::ostream& errStream = std::cerr ) const override;
 };
 
 

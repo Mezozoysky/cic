@@ -41,7 +41,10 @@ namespace plan
 {
 
 
-bool ActionFailure::perform( Report& report, Industry& industry ) const
+bool ActionFailure::perform( Report& report,
+                             Industry& industry,
+                             std::ostream& outStream,
+                             std::ostream& errStream ) const
 {
     return ( false );
 }
