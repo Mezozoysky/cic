@@ -9,9 +9,9 @@ Download from http://pocoproject.org/download/index.html
 or ``` git clone git@github.com:pocoproject/poco.git ```
 
 We need _PocoFoundation_, _PocoXML_, _PocoJSON_, _PocoUtil_ libraries
-in order to build __check__ command line tool.
+in order to build __cic__ libraries and __prfrm__ command line tool.
 
-* fmt formatting library 3.0.0+
+* fmt formatting library 4.0.0+
 
 Download latest from http://fmtlib.net/latest/index.html
 or ``` git clone git@github.com:fmtlib/fmt.git ```
