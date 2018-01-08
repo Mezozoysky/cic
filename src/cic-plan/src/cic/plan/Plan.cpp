@@ -79,7 +79,7 @@ bool Plan::perform( Report& report,
         Report::Ptr phaseReport{};
         if ( success )
         {
-            phaseReport = phase->perform( industry );
+            phaseReport = phase->perform( industry, outStream, errStream );
             success = phaseReport->getSuccess();
         }
         else

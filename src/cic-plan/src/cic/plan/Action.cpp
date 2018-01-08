@@ -47,13 +47,13 @@ const std::string Action::formOutline() const noexcept
 }
 
 std::shared_ptr< cic::plan::Report > Action::perform( industry::Industry& industry,
-                                                      const std::ostream& outStream,
-                                                      const std::ostream& errStream ) const noexcept
+                                                      std::ostream& outStream,
+                                                      std::ostream& errStream ) const noexcept
 {
     Report::Ptr report{ industry.getFactory< Report >()->create( this->getClassName() ) };
     assert( report );
     report->fillWithAction( *this );
-    bool success{ perform( *report, industry ) };
+    bool success{ perform( *report, industry, outStream, errStream ) };
     report->setSuccess( success );
     return ( report );
 }
@@ -71,7 +71,7 @@ bool Action::perform( Report& report,
         std::shared_ptr< Report > childReport{};
         if ( success )
         {
-            childReport = child->perform( industry );
+            childReport = child->perform( industry, outStream, errStream );
             success = childReport->getSuccess();
         }
         else

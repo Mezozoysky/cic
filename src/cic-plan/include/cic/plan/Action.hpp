@@ -57,16 +57,16 @@ public:
     virtual ~Action() noexcept = default;
 
     std::shared_ptr< Report > perform( cic::industry::Industry& industry,
-                                       const std::ostream& outStream = std::cout,
-                                       const std::ostream& errStream = std::cerr ) const noexcept;
+                                       std::ostream& outStream = std::cout,
+                                       std::ostream& errStream = std::cerr ) const noexcept;
 
     virtual const std::string formOutline() const noexcept;
 
 protected:
     virtual bool perform( Report& report,
                           cic::industry::Industry& industry,
-                          std::ostream& outStream = std::cout,
-                          std::ostream& errStream = std::cerr ) const;
+                          std::ostream& outStream,
+                          std::ostream& errStream ) const;
 };
 
 } // namespace plan

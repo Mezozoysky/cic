@@ -36,6 +36,7 @@
 #include <cic/plan/DepsTreePhase.hpp>
 #include <fmt/format.h>
 #include <sstream>
+#include <fstream>
 #include <Poco/Util/HelpFormatter.h>
 #include <Poco/Environment.h>
 #include <Poco/String.h>
@@ -547,8 +548,14 @@ int PrfrmApp::performTask( const std::string& planFileName,
     }
     else
     {
+        std::ofstream outStream{ "prfrm_report.log" };
+        // std::ofstream errStream{ "prfrm_report_err.log" };
+
         plan->setTargetPhases( phaseList );
-        report = plan->Action::perform( mIndustry );
+        report = plan->Action::perform( mIndustry, outStream, outStream );
+
+        outStream.close();
+        // errStream.close();
     }
 
     logger().information( "PERFORM {}"_format( report->getSuccess() ? "SUCCESS" : "FAILURE" ) );

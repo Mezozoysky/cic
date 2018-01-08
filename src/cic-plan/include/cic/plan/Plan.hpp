@@ -61,8 +61,8 @@ public:
 
     virtual bool perform( Report& report,
                           cic::industry::Industry& industry,
-                          std::ostream& outStream = std::cout,
-                          std::ostream& errStream = std::cerr ) const override;
+                          std::ostream& outStream,
+                          std::ostream& errStream ) const override;
 
     virtual void buildSequence( Sequence& seq ) const = 0;
 
