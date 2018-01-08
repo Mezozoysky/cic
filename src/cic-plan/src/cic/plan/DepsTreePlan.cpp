@@ -54,6 +54,12 @@ namespace cic
 namespace plan
 {
 
+DepsTreePlan::DepsTreePlan()
+: Plan()
+{
+    setDefaultPhaseClass( DepsTreePhase::getClassNameStatic() );
+}
+
 void DepsTreePlan::buildSequence( Sequence& seq ) const
 {
     assert( getTargetPhases().size() > 0 );
@@ -185,6 +191,33 @@ void DepsTreePlan::loadFromXML( Element* root, Industry* industry )
 }
 
 void DepsTreePlan::saveToXML( Element* root ) const {}
+
+void DepsTreePlan::loadPhaseFromXML( Element* root, Industry* industry )
+{
+    std::string name{ root->getAttribute( "name" ) };
+    if ( name.empty() )
+    {
+        throw( Poco::SyntaxException{
+            "Mandatory attribute 'name' isnt found or empty within the 'phase' element", 8 } );
+    }
+
+    std::string classId{ root->getAttribute( "class" ) };
+    if ( classId.empty() )
+    {
+        classId = DepsTreePhase::getClassNameStatic();
+    }
+
+    auto phaseFactory( industry->getFactory< Phase >() );
+    if ( phaseFactory == nullptr )
+    {
+        throw( Poco::NotFoundException{ "No factory registered for id: '{}'"_format( classId ), 8 } );
+    }
+
+    Phase::Ptr phase{ phaseFactory->create( classId ) };
+    phase->loadFromXML( root, industry );
+    addChild( phase );
+}
+
 
 } // namespace plan
 } // namespace cic

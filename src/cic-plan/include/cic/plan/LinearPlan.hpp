@@ -49,7 +49,7 @@ public:
     using Ptr = std::shared_ptr< LinearPlan >;
 
 public:
-    LinearPlan() = default;
+    LinearPlan();
     virtual ~LinearPlan() noexcept = default;
 
     virtual void buildSequence( Sequence& seq ) const override;

@@ -56,6 +56,12 @@ namespace cic
 namespace plan
 {
 
+Plan::Plan()
+: Action()
+, mDefaultPhaseClass( "default" )
+{
+}
+
 bool Plan::perform( Report& report, Industry& industry ) const
 {
     Sequence sequence;
@@ -122,7 +128,18 @@ void Plan::setTargetPhases( const std::vector< std::string >& phaseList )
     mTargetPhases = phaseList;
 }
 
+void Plan::setDefaultPhaseClass( const std::string& classId )
+{
+    onSetDefaultPhaseClass( classId );
+    mDefaultPhaseClass = classId;
+}
+
 void Plan::onSetTargetPhases( const std::vector< std::string >& phaseList )
+{
+    return;
+}
+
+void Plan::onSetDefaultPhaseClass( const std::string& classId )
 {
     return;
 }
@@ -161,7 +178,7 @@ void Plan::loadPhaseFromXML( Element* root, Industry* industry )
     std::string classId{ root->getAttribute( "class" ) };
     if ( classId.empty() )
     {
-        classId = "default";
+        classId = mDefaultPhaseClass;
     }
 
     auto phaseFactory( industry->getFactory< Phase >() );

@@ -119,7 +119,7 @@ test0, the plan for check testing purpose
 
 		<phase name="run_ut" phony="true">
             <dependencies>
-                <dependency value="build" />
+                <dependency value="build_ut" />
             </dependencies>
             <actions>
                 <action class="ActionSystemCmd" cmd="echo">
@@ -133,7 +133,7 @@ test0, the plan for check testing purpose
 
 		<phase name="check_ut" phony="false">
             <dependencies>
-                <dependency value="build" />
+                <dependency value="run_ut" />
             </dependencies>
             <actions>
                 <action class="ActionSystemCmd" cmd="echo">

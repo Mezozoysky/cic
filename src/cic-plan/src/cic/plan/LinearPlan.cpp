@@ -52,6 +52,11 @@ namespace cic
 namespace plan
 {
 
+LinearPlan::LinearPlan()
+: Plan()
+{
+}
+
 void LinearPlan::buildSequence( Sequence& seq ) const
 {
     assert( getTargetPhases().size() > 0 );
@@ -73,7 +78,7 @@ void LinearPlan::buildSequence( Sequence& seq ) const
             assert( phaseIndices.size() > 0 );
             if ( phaseIndices.size() > 1 )
             {
-                std::sort( phaseIndices.begin(), phaseIndices.end()/*, std::greater< std::size_t >()*/ );
+                std::sort( phaseIndices.begin(), phaseIndices.end() );
             }
         }
     }

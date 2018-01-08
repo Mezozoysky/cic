@@ -51,7 +51,7 @@ class DepsTreePlan : public Plan
 public:
     using Ptr = std::shared_ptr< DepsTreePlan >;
 
-    DepsTreePlan() = default;
+    DepsTreePlan();
     virtual ~DepsTreePlan() noexcept = default;
 
     virtual void buildSequence( Sequence& seq ) const override;
@@ -63,6 +63,9 @@ public:
 
 protected:
     virtual void buildSubseq( Sequence& subseq, const std::shared_ptr< DepsTreePhase >& phase ) const;
+
+    virtual void loadPhaseFromXML( Poco::XML::Element* root, cic::industry::Industry* industry ) override;
+
 };
 
 

@@ -56,7 +56,7 @@ public:
     using IndexMap = std::map< std::string, std::size_t >;
 
 public:
-    Plan() = default;
+    Plan();
     virtual ~Plan() noexcept = default;
 
     virtual bool perform( Report& report, cic::industry::Industry& industry ) const override;
@@ -71,10 +71,14 @@ public:
 
     inline const std::vector< std::string >& getTargetPhases() const noexcept;
     void setTargetPhases( const std::vector< std::string >& phaseList );
+    inline const std::string& getDefaultPhaseClass() const noexcept;
+    void setDefaultPhaseClass( const std::string& classId );
 
 protected:
     virtual void onSetTargetPhases( const std::vector< std::string >& phaseList );
+    virtual void onSetDefaultPhaseClass( const std::string& classId );
 
+protected:
     virtual void onAddChild( const DAGShared& child, std::size_t index ) override;
 
     virtual void loadPhasesFromXML( Poco::XML::Element* root, cic::industry::Industry* industry );
@@ -82,13 +86,20 @@ protected:
 
 private:
     IndexMap mIndexMap;
-    std::vector<std::string> mTargetPhases;
+    std::vector< std::string > mTargetPhases;
+    std::string mDefaultPhaseClass;
 };
 
 inline const std::vector< std::string >& Plan::getTargetPhases() const noexcept
 {
     return ( mTargetPhases );
 }
+
+inline const std::string& Plan::getDefaultPhaseClass() const noexcept
+{
+    return ( mDefaultPhaseClass );
+}
+
 
 } // namespace plan
 } // namespace cic
