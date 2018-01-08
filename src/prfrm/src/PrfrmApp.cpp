@@ -24,13 +24,13 @@
 
 
 /// \file
-/// \brief CheckApp definition
+/// \brief PrfrmApp definition
 /// \author Stanislav Demyanovich <mezozoysky@gmail.com>
 /// \date 2017
 /// \copyright cic is released under the terms of zlib/png license
 
 
-#include "CheckApp.hpp"
+#include "PrfrmApp.hpp"
 #include <cic/plan/LinearPlan.hpp>
 #include <cic/plan/DepsTreePlan.hpp>
 #include <cic/plan/DepsTreePhase.hpp>
@@ -86,16 +86,16 @@ using fmt::print;
 
 namespace cic
 {
-namespace check
+namespace prfrm
 {
 
-CheckApp::CheckApp() noexcept
+PrfrmApp::PrfrmApp() noexcept
 : Poco::Util::Application()
 , mIsStopRequestedByOption{ false }
 {
 }
 
-void CheckApp::optionCallback( const std::string& name, const std::string& value )
+void PrfrmApp::optionCallback( const std::string& name, const std::string& value )
 {
     if ( name == "help" )
     {
@@ -106,16 +106,16 @@ void CheckApp::optionCallback( const std::string& name, const std::string& value
     else if ( name == "version" )
     {
         mIsStopRequestedByOption = true;
-        print( "cic check v.0.0.1\n" );
+        print( "cic prfrm v.0.0.1\n" );
         stopOptionsProcessing();
     }
     else if ( name == "verbose" )
     {
-        config().setBool( "cic.check.options.verbose", true );
+        config().setBool( "cic.prfrm.options.verbose", true );
     }
     else if ( name == "only" )
     {
-        config().setBool( "cic.check.options.only", true );
+        config().setBool( "cic.prfrm.options.only", true );
     }
     else
     {
@@ -123,7 +123,7 @@ void CheckApp::optionCallback( const std::string& name, const std::string& value
     }
 }
 
-void CheckApp::initialize( Poco::Util::Application& self )
+void PrfrmApp::initialize( Poco::Util::Application& self )
 {
     Application::initialize( self );
 
@@ -186,15 +186,15 @@ void CheckApp::initialize( Poco::Util::Application& self )
 
     // define app share path
     Poco::Path appSharePath{ sharePath };
-    appSharePath.pushDirectory( "check" );
+    appSharePath.pushDirectory( "prfrm" );
 
-    if ( !config().hasProperty( "cic.check.shareDir" ) )
+    if ( !config().hasProperty( "cic.prfrm.shareDir" ) )
     {
-        config().setString( "cic.check.shareDir", appSharePath.toString() );
+        config().setString( "cic.prfrm.shareDir", appSharePath.toString() );
     }
     else
     {
-        appSharePath = Poco::Path::forDirectory( config().getString( "cic.check.shareDir" ) );
+        appSharePath = Poco::Path::forDirectory( config().getString( "cic.prfrm.shareDir" ) );
     }
 
     // define cic etc path
@@ -212,22 +212,22 @@ void CheckApp::initialize( Poco::Util::Application& self )
 
     // define app etc path
     Poco::Path appETCPath{ etcPath };
-    appETCPath.pushDirectory( "check" );
+    appETCPath.pushDirectory( "prfrm" );
 
-    if ( !config().hasProperty( "cic.check.etcDir" ) )
+    if ( !config().hasProperty( "cic.prfrm.etcDir" ) )
     {
-        config().setString( "cic.check.etcDir", appETCPath.toString() );
+        config().setString( "cic.prfrm.etcDir", appETCPath.toString() );
     }
     else
     {
-        appETCPath = Poco::Path::forDirectory( config().getString( "cic.check.etcDir" ) );
+        appETCPath = Poco::Path::forDirectory( config().getString( "cic.prfrm.etcDir" ) );
     }
 
 
     if ( !usingCustomConfig )
     {
         // Load default configuration
-        std::string defCfg{ appETCPath.setFileName( "check.properties" ).toString() };
+        std::string defCfg{ appETCPath.setFileName( "prfrm.properties" ).toString() };
         try
         {
             loadConfiguration( defCfg );
@@ -235,7 +235,7 @@ void CheckApp::initialize( Poco::Util::Application& self )
         catch ( Poco::FileNotFoundException& exc )
         {
             logger.warning(
-                "Default check configuration isnt provided: {}"
+                "Default prfrm configuration isnt provided: {}"
                 ""_format( exc.displayText() ) );
         }
     }
@@ -265,12 +265,12 @@ void CheckApp::initialize( Poco::Util::Application& self )
     }
 }
 
-void CheckApp::uninitialize()
+void PrfrmApp::uninitialize()
 {
     Poco::Util::Application::uninitialize();
 }
 
-void CheckApp::defineOptions( Poco::Util::OptionSet& options )
+void PrfrmApp::defineOptions( Poco::Util::OptionSet& options )
 {
     Poco::Util::Application::defineOptions( options );
 
@@ -278,34 +278,34 @@ void CheckApp::defineOptions( Poco::Util::OptionSet& options )
         Poco::Util::Option( "help", "h", "print help and exit" )
             .required( false )
             .repeatable( false )
-            .callback( Poco::Util::OptionCallback< CheckApp >( this, &CheckApp::optionCallback ) ) );
+            .callback( Poco::Util::OptionCallback< PrfrmApp >( this, &PrfrmApp::optionCallback ) ) );
 
     options.addOption(
         Poco::Util::Option( "version", "v", "print version/copyright info and exit" )
             .required( false )
             .repeatable( false )
-            .callback( Poco::Util::OptionCallback< CheckApp >( this, &CheckApp::optionCallback ) ) );
+            .callback( Poco::Util::OptionCallback< PrfrmApp >( this, &PrfrmApp::optionCallback ) ) );
 
     options.addOption(
         Poco::Util::Option( "verbose", "V", "be verbose" )
             .required( false )
             .repeatable( false )
-            .callback( Poco::Util::OptionCallback< CheckApp >( this, &CheckApp::optionCallback ) ) );
+            .callback( Poco::Util::OptionCallback< PrfrmApp >( this, &PrfrmApp::optionCallback ) ) );
 
     options.addOption(
         Poco::Util::Option( "only", "1", "execute specified phase only, skip any dependencies" )
             .required( false )
             .repeatable( false )
-            .callback( Poco::Util::OptionCallback< CheckApp >( this, &CheckApp::optionCallback ) ) );
+            .callback( Poco::Util::OptionCallback< PrfrmApp >( this, &PrfrmApp::optionCallback ) ) );
 
     options.addOption( Poco::Util::Option( "workspace", "w", "workspace path to operate within" )
                            .required( false )
                            .repeatable( false )
                            .argument( "path", true )
-                           .binding( "cic.check.workspace", &config() ) );
+                           .binding( "cic.prfrm.workspace", &config() ) );
 }
 
-int CheckApp::main( const std::vector< std::string >& args )
+int PrfrmApp::main( const std::vector< std::string >& args )
 {
     if ( mIsStopRequestedByOption )
     {
@@ -335,7 +335,7 @@ int CheckApp::main( const std::vector< std::string >& args )
     // define workspace path
     Poco::Path workspacePath;
     {
-        std::string workspaceDir{ config().getString( "cic.check.workspace", "" ) };
+        std::string workspaceDir{ config().getString( "cic.prfrm.workspace", "" ) };
         if ( workspaceDir.empty() )
         {
             workspacePath = pwdPath;
@@ -350,13 +350,13 @@ int CheckApp::main( const std::vector< std::string >& args )
         }
         workspaceDir = workspacePath.toString();
         // TODO: Shure for workspace directory exists
-        config().setString( "cic.check.workspace", workspaceDir );
+        config().setString( "cic.prfrm.workspace", workspaceDir );
     }
 
     // define report dir path
     Poco::Path reportPath;
     {
-        std::string reportDir{ config().getString( "cic.check.reportDir", "" ) };
+        std::string reportDir{ config().getString( "cic.prfrm.reportDir", "" ) };
         if ( reportDir.empty() )
         {
             reportPath = pwdPath;
@@ -371,11 +371,11 @@ int CheckApp::main( const std::vector< std::string >& args )
         }
         reportDir = reportPath.toString();
         // TODO: Shure for report directory exists
-        config().setString( "cic.check.reportDir", reportDir );
+        config().setString( "cic.prfrm.reportDir", reportDir );
     }
 
     // verbose output
-    bool verbose{ config().getBool( "cic.check.options.verbose", false ) };
+    bool verbose{ config().getBool( "cic.prfrm.options.verbose", false ) };
     if ( verbose )
     {
         logger().information(
@@ -385,17 +385,17 @@ int CheckApp::main( const std::vector< std::string >& args )
                          "\t cic share dir       : '{}';\n"
                          "\t cic etc dir         : '{}';\n"
                          "\t application dir     : '{}';\n"
-                         "\t cic check share dir : '{}';\n"
-                         "\t cic check etc dir   : '{}';\n"
-                         "\t cic check workspace : '{}';\n"
-                         "\t cic check report dir: '{}';",
+                         "\t cic prfrm share dir : '{}';\n"
+                         "\t cic prfrm etc dir   : '{}';\n"
+                         "\t cic prfrm workspace : '{}';\n"
+                         "\t cic prfrm report dir: '{}';",
                          config().getString( "cic.homeDir" ),
                          config().getString( "cic.binDir" ),
                          config().getString( "cic.shareDir" ),
                          config().getString( "cic.etcDir" ),
                          config().getString( "application.dir" ),
-                         config().getString( "cic.check.shareDir" ),
-                         config().getString( "cic.check.etcDir" ),
+                         config().getString( "cic.prfrm.shareDir" ),
+                         config().getString( "cic.prfrm.etcDir" ),
                          workspacePath.toString(),
                          reportPath.toString() ) );
     }
@@ -404,10 +404,10 @@ int CheckApp::main( const std::vector< std::string >& args )
                           phaseList,
                           workspacePath,
                           reportPath,
-                          config().getBool( "cic.check.options.only", false ) ) );
+                          config().getBool( "cic.prfrm.options.only", false ) ) );
 }
 
-std::string CheckApp::formatHelpText() const noexcept
+std::string PrfrmApp::formatHelpText() const noexcept
 {
     std::ostringstream ss;
 
@@ -416,8 +416,8 @@ std::string CheckApp::formatHelpText() const noexcept
     hf.setUsage( "[options] [<plan> [phase]]" );
     hf.setHeader(
         R"(where:
-		plan        plan name to check;
-		phase      specific phase to check; plan's default phase used if no specified;
+		plan        plan name to prfrm;
+		phase      specific phase to prfrm; plan's default phase used if no specified;
 
 		!Note: plan should but not must to provide default phase
 
@@ -429,7 +429,7 @@ std::string CheckApp::formatHelpText() const noexcept
     return ( ss.str() );
 }
 
-void CheckApp::printConfig( const std::string& rootKey ) const
+void PrfrmApp::printConfig( const std::string& rootKey ) const
 {
     AbstractConfiguration::Keys keys;
     config().keys( rootKey, keys );
@@ -454,13 +454,13 @@ void CheckApp::printConfig( const std::string& rootKey ) const
     }
 }
 
-int CheckApp::performTask( const std::string& planFileName,
+int PrfrmApp::performTask( const std::string& planFileName,
                            const std::vector< std::string >& phaseList,
                            const Poco::Path& workspacePath,
                            const Poco::Path& reportPath,
                            bool only ) noexcept
 {
-    bool verbose{ config().getBool( "cic.check.options.verbose", false ) };
+    bool verbose{ config().getBool( "cic.prfrm.options.verbose", false ) };
 
     // locate plan file
     Poco::Path planPath{ planFileName };
@@ -474,7 +474,7 @@ int CheckApp::performTask( const std::string& planFileName,
         {
             tmpPath.assign( planPath );
             Poco::Path sharePlansPath{ Poco::Path::forDirectory(
-                config().getString( "cic.check.shareDir" ) ) };
+                config().getString( "cic.prfrm.shareDir" ) ) };
             sharePlansPath.pushDirectory( "plans" );
             tmpPath.makeAbsolute( sharePlansPath );
         }
@@ -495,7 +495,7 @@ int CheckApp::performTask( const std::string& planFileName,
         logger().information( mw.str() );
     }
 
-    // check phase list
+    // prfrm phase list
     if ( only )
     {
         if ( phaseList.empty() )
@@ -556,5 +556,5 @@ int CheckApp::performTask( const std::string& planFileName,
     return ( EXIT_OK );
 }
 
-} // namespace check
+} // namespace prfrm
 } // namespace cic

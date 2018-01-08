@@ -1,8 +1,8 @@
-# check app
+# prfrm app
 
-set( MODULE_NAME "check" )
-set( MODULE_NSPATH "cic/check" )
-set( MODULE_TGT "check" )
+set( MODULE_NAME "prfrm" )
+set( MODULE_NSPATH "cic/prfrm" )
+set( MODULE_TGT "prfrm" )
 set( MODULE_ROOT ${CMAKE_CURRENT_SOURCE_DIR} )
 
 set( MODULE_HEADERS "" )
@@ -12,11 +12,11 @@ set( MODULE_SOURCES "" )
 # ==== ${MODULE_ROOT}/${MODULE_NSPATH} group ====
 # ===============================================
 set(GROUP_HEADERS
-	${MODULE_ROOT}/src/CheckApp.hpp
+	${MODULE_ROOT}/src/PrfrmApp.hpp
 )
 set(GROUP_SOURCES
 	${MODULE_ROOT}/src/main.cpp
-	${MODULE_ROOT}/src/CheckApp.cpp
+	${MODULE_ROOT}/src/PrfrmApp.cpp
 )
 source_group( "${MODULE_NAME}\\${MODULE_NSPATH}"
     FILES ${GROUP_HEADERS} ${GROUP_SOURCES}

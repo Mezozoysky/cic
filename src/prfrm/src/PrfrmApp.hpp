@@ -1,6 +1,6 @@
 //  cic
 //
-//  cic - Copyright (C) 2017 Stanislav Demyanovich <mezozoysky@gmail.com>
+//  cic - Copyright (C) 2017-2018 Stanislav Demyanovich <mezozoysky@gmail.com>
 //
 //  This software is provided 'as-is', without any express or
 //  implied warranty. In no event will the authors be held
@@ -24,14 +24,14 @@
 
 
 /// \file
-/// \brief Provides CheckApp, the application class for cic-check tool
+/// \brief Provides PrfrmApp, the application class for prfrm tool
 /// \author Stanislav Demyanovich <mezozoysky@gmail.com>
 /// \date 2017
 /// \copyright cic is released under the terms of zlib/png license
 
 
-#ifndef CIC_CHECK__CHECK_APP_HPP
-#define CIC_CHECK__CHECK_APP_HPP
+#ifndef CIC_PRFRM__PRFRM_APP_HPP
+#define CIC_PRFRM__PRFRM_APP_HPP
 
 #include <Poco/Util/Application.h>
 #include <Poco/AutoPtr.h>
@@ -41,17 +41,17 @@
 
 namespace cic
 {
-namespace check
+namespace prfrm
 {
 
-class CheckApp : public Poco::Util::Application
+class PrfrmApp : public Poco::Util::Application
 {
 public:
-    using Ptr = Poco::AutoPtr< CheckApp >;
+    using Ptr = Poco::AutoPtr< PrfrmApp >;
 
 public:
-    CheckApp() noexcept;
-    virtual ~CheckApp() noexcept = default;
+    PrfrmApp() noexcept;
+    virtual ~PrfrmApp() noexcept = default;
 
     void optionCallback( const std::string& name, const std::string& value );
 
@@ -77,7 +77,7 @@ private:
     industry::Industry mIndustry;
 };
 
-} // namespace check
+} // namespace prfrm
 } // namespace cic
 
-#endif // CIC_CHECK__CHECK_APP_HPP
+#endif // CIC_PRFRM__PRFRM_APP_HPP

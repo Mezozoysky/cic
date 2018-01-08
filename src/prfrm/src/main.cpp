@@ -1,6 +1,6 @@
-//  CICheck
+//  cic
 //
-//  CICheck - Copyright (C) 2017 Stanislav Demyanovich <mezozoysky@gmail.com>
+//  cic - Copyright (C) 2017-2018 Stanislav Demyanovich <mezozoysky@gmail.com>
 //
 //  This software is provided 'as-is', without any express or
 //  implied warranty. In no event will the authors be held
@@ -24,19 +24,19 @@
 
 
 /// \file
-/// \brief Provides entry point for cic-check application
+/// \brief Provides entry point for prfrm application
 /// \author Stanislav Demyanovich <mezozoysky@gmail.com>
 /// \date 2017
-/// \copyright CICheck is released under the terms of zlib/png license
+/// \copyright cic is released under the terms of zlib/png license
 
-#include "CheckApp.hpp"
+#include "PrfrmApp.hpp"
 
 
-using namespace cic::check;
+using namespace cic::prfrm;
 
 int main( int argc, char** argv )
 {
-	CheckApp::Ptr app{ new CheckApp() };
+	PrfrmApp::Ptr app{ new PrfrmApp() };
 	app->setUnixOptions( true );
 
 	try

@@ -75,7 +75,7 @@ find_package( Threads REQUIRED )
 #
 # Modules' build options
 #
-option( CIC_BUILD_CHECK_APP "Build cic-check tool"  ON )
+option( CIC_BUILD_PRFRM_APP "Build prfrm tool"  ON )
 option( CIC_BUILD_PLAN_LIB "Build cic-plan library"  ON )
 option( CIC_BUILD_INDUSTRY_LIB "Build cic-industry library"  ON )
 option( CIC_BUILD_SCRIPTING_LIB "Build cic-scripting library"  ON )
@@ -83,7 +83,7 @@ option( CIC_BUILD_SCRIPTING_LIB "Build cic-scripting library"  ON )
 #
 # Modules
 #
-if ( CIC_BUILD_SCRIPTING_LIB OR CIC_BUILD_CHECK_APP )
+if ( CIC_BUILD_SCRIPTING_LIB OR CIC_BUILD_PRFRM_APP )
     add_subdirectory( deps/angelscript/ )
 endif()
 
