@@ -41,6 +41,7 @@
 #include <Poco/DOM/Element.h>
 #include <Poco/DOM/AutoPtr.h>
 #include <Poco/DOM/NodeList.h>
+#include <Poco/Util/Application.h>
 
 using Poco::XML::Node;
 using Poco::XML::NodeList;
@@ -85,13 +86,33 @@ void Phase::loadFromXML( Element* root, Industry* industry )
 {
     assert( root != nullptr );
 
-    std::string name{ root->getAttribute( "name" ) };
-    if ( name.empty() )
     {
-        throw( Poco::SyntaxException{
-            "Mandatory attribute 'name' isnt found or empty within the 'phase' element", 8 } );
+        std::string name{ root->getAttribute( "name" ) };
+        if ( name.empty() )
+        {
+            throw( Poco::SyntaxException{
+                "Mandatory attribute 'name' isnt found or empty within the 'phase' element", 8 } );
+        }
+        setName( name );
     }
-    setName( name );
+
+    {
+        bool phony{ false };
+        std::string phonyStr{ root->getAttribute( "phony" ) };
+        if ( phonyStr == "true" )
+        {
+            phony = true;
+        }
+
+        if ( ( !phony ) && ( phonyStr != "false" ) && ( !phonyStr.empty() ) )
+        {
+            auto& app( Poco::Util::Application::instance() );
+            app.logger().information(
+                "Unknown value '{}' of 'phony' property of '{}' phase; Interpreted as 'false';"_format(
+                    phonyStr, getName() ) );
+        }
+        setPhony( phony );
+    }
 
     // load actions
     {
