@@ -43,7 +43,7 @@
 #include <cic/scripting/Scripting.hpp>
 #include <cic/plan/ActionFailure.hpp>
 #include <cic/plan/ActionSuccess.hpp>
-#include <cic/plan/ActionSystemCmd.hpp>
+#include <cic/plan/ActionShell.hpp>
 #include <Poco/Logger.h>
 #include <Poco/Channel.h>
 #include <Poco/PatternFormatter.h>
@@ -74,7 +74,7 @@ using Poco::XML::InputSource;
 using cic::plan::Action;
 using cic::plan::ActionFailure;
 using cic::plan::ActionSuccess;
-using cic::plan::ActionSystemCmd;
+using cic::plan::ActionShell;
 using cic::plan::DepsTreePhase;
 using cic::plan::DepsTreePlan;
 using cic::plan::LinearPlan;
@@ -136,7 +136,7 @@ void PrfrmApp::initialize( Poco::Util::Application& self )
     logger.setChannel( formattingChannel );
     logger.setLevel( Poco::Message::PRIO_DEBUG );
 
-    // Define initial cic home path
+    // define initial cic home path
     Poco::Path homePath;
     if ( Poco::Environment::has( "CIC_HOME" ) )
     {
@@ -149,7 +149,9 @@ void PrfrmApp::initialize( Poco::Util::Application& self )
 
     // try load custom config
     bool usingCustomConfig{ loadConfiguration() > 0 };
+    logger.debug( "usingCustomConfig: {}"_format( usingCustomConfig ) );
 
+    // define cic home path
     if ( !config().hasProperty( "cic.homeDir" ) )
     {
         config().setString( "cic.homeDir", homePath.toString() );
@@ -261,8 +263,8 @@ void PrfrmApp::initialize( Poco::Util::Application& self )
         reportFactory->registerId< Report >( ActionSuccess::getClassNameStatic() );
         actionFactory->registerId< ActionFailure >( ActionFailure::getClassNameStatic() );
         reportFactory->registerId< Report >( ActionFailure::getClassNameStatic() );
-        actionFactory->registerId< ActionSystemCmd >( ActionSystemCmd::getClassNameStatic() );
-        reportFactory->registerId< Report >( ActionSystemCmd::getClassNameStatic() );
+        actionFactory->registerId< ActionShell >( ActionShell::getClassNameStatic() );
+        reportFactory->registerId< Report >( ActionShell::getClassNameStatic() );
     }
 }
 
@@ -540,23 +542,21 @@ int PrfrmApp::performTask( const std::string& planFileName,
 
     // actually perform
     std::shared_ptr< Report > report{};
+    std::ofstream outStream{ "prfrm_report.log" };
+    // std::ofstream errStream{ "prfrm_report_err.log" };
     if ( only )
     {
         assert( !phaseList.empty() );
         Phase::Ptr phase{ plan->getPhase( phaseList[ 0 ] ) };
-        report = phase->plan::Action::perform( mIndustry );
+        report = phase->Action::perform( mIndustry, outStream, outStream );
     }
     else
     {
-        std::ofstream outStream{ "prfrm_report.log" };
-        // std::ofstream errStream{ "prfrm_report_err.log" };
-
         plan->setTargetPhases( phaseList );
         report = plan->Action::perform( mIndustry, outStream, outStream );
-
-        outStream.close();
-        // errStream.close();
     }
+    outStream.close();
+    // errStream.close();
 
     logger().information( "PERFORM {}"_format( report->getSuccess() ? "SUCCESS" : "FAILURE" ) );
 

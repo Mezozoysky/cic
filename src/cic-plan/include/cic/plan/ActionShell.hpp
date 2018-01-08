@@ -1,6 +1,6 @@
 //  cic
 //
-//  cic - Copyright (C) 2017 Stanislav Demyanovich <mezozoysky@gmail.com>
+//  cic - Copyright (C) 2017-2018 Stanislav Demyanovich <mezozoysky@gmail.com>
 //
 //  This software is provided 'as-is', without any express or
 //  implied warranty. In no event will the authors be held
@@ -24,13 +24,10 @@
 
 
 /// \file
-/// \brief Provides ActionSystemCmd class
+/// \brief Provides ActionShell class
 /// \author Stanislav Demyanovich <mezozoysky@gmail.com>
 /// \date 2017
 /// \copyright cic is released under the terms of zlib/png license
-///
-/// \details ActionSystemCmd class presents the action which plans system command for exit
-/// code == 0
 
 #ifndef CIC_PLAN__ACTION_SYSTEM_CMD_HPP
 #define CIC_PLAN__ACTION_SYSTEM_CMD_HPP
@@ -43,13 +40,14 @@ namespace cic
 namespace plan
 {
 
-class ActionSystemCmd : public Action
+class ActionShell : public Action
 {
-    CLASSINFO( ActionSystemCmd )
-public:
-    using Ptr = std::shared_ptr< ActionSystemCmd >;
+    CLASSINFO( ActionShell )
 
-    virtual ~ActionSystemCmd() noexcept = default;
+public:
+    using Ptr = std::shared_ptr< ActionShell >;
+
+    virtual ~ActionShell() noexcept = default;
 
     virtual void loadFromXML( Poco::XML::Element* root, cic::industry::Industry* industry ) override;
     virtual void saveToXML( Poco::XML::Element* root ) const override;
@@ -77,27 +75,27 @@ private:
     std::string mWorkDir;
 };
 
-inline const std::string& ActionSystemCmd::cmd() const noexcept
+inline const std::string& ActionShell::cmd() const noexcept
 {
     return ( mCmd );
 }
-inline std::string& ActionSystemCmd::cmd() noexcept
+inline std::string& ActionShell::cmd() noexcept
 {
     return ( mCmd );
 }
-inline const Poco::Process::Args& ActionSystemCmd::args() const noexcept
+inline const Poco::Process::Args& ActionShell::args() const noexcept
 {
     return ( mArgs );
 }
-inline Poco::Process::Args& ActionSystemCmd::args() noexcept
+inline Poco::Process::Args& ActionShell::args() noexcept
 {
     return ( mArgs );
 }
-inline const std::string& ActionSystemCmd::workDir() const noexcept
+inline const std::string& ActionShell::workDir() const noexcept
 {
     return ( mWorkDir );
 }
-inline std::string& ActionSystemCmd::workDir() noexcept
+inline std::string& ActionShell::workDir() noexcept
 {
     return ( mWorkDir );
 }

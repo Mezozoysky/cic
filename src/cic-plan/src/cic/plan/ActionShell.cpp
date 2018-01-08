@@ -1,6 +1,6 @@
 //  cic
 //
-//  cic - Copyright (C) 2017 Stanislav Demyanovich <mezozoysky@gmail.com>
+//  cic - Copyright (C) 2017-2018 Stanislav Demyanovich <mezozoysky@gmail.com>
 //
 //  This software is provided 'as-is', without any express or
 //  implied warranty. In no event will the authors be held
@@ -24,12 +24,12 @@
 
 
 /// \file
-/// \brief ActionSystemCmd realisation
+/// \brief ActionShell realisation
 /// \author Stanislav Demyanovich <mezozoysky@gmail.com>
 /// \date 2017
 /// \copyright cic is released under the terms of zlib/png license
 
-#include <cic/plan/ActionSystemCmd.hpp>
+#include <cic/plan/ActionShell.hpp>
 #include <Poco/Process.h>
 #include <Poco/PipeStream.h>
 #include <Poco/StreamCopier.h>
@@ -56,10 +56,10 @@ namespace cic
 namespace plan
 {
 
-bool ActionSystemCmd::perform( Report& report,
-                               Industry& industry,
-                               std::ostream& outStream,
-                               std::ostream& errStream ) const
+bool ActionShell::perform( Report& report,
+                           Industry& industry,
+                           std::ostream& outStream,
+                           std::ostream& errStream ) const
 {
     Poco::Pipe outPipe;
     Poco::Pipe errPipe;
@@ -79,7 +79,7 @@ bool ActionSystemCmd::perform( Report& report,
     return ( rc == 0 );
 }
 
-void ActionSystemCmd::loadFromXML( Element* root, Industry* industry )
+void ActionShell::loadFromXML( Element* root, Industry* industry )
 {
     std::string actionCmd{ root->getAttribute( "cmd" ) };
     if ( actionCmd.empty() )
@@ -122,9 +122,9 @@ void ActionSystemCmd::loadFromXML( Element* root, Industry* industry )
     }
 }
 
-void ActionSystemCmd::saveToXML( Element* root ) const {}
+void ActionShell::saveToXML( Element* root ) const {}
 
-const std::string ActionSystemCmd::formOutline() const noexcept
+const std::string ActionShell::formOutline() const noexcept
 {
     std::string outlineStr;
     {
