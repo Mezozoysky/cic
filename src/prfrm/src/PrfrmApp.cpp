@@ -114,10 +114,6 @@ void PrfrmApp::optionCallback( const std::string& name, const std::string& value
     {
         config().setBool( "cic.prfrm.options.verbose", true );
     }
-    else if ( name == "only" )
-    {
-        config().setBool( "cic.prfrm.options.only", true );
-    }
     else
     {
         assert( false );
@@ -295,12 +291,6 @@ void PrfrmApp::defineOptions( Poco::Util::OptionSet& options )
             .repeatable( false )
             .callback( Poco::Util::OptionCallback< PrfrmApp >( this, &PrfrmApp::optionCallback ) ) );
 
-    options.addOption(
-        Poco::Util::Option( "only", "1", "execute specified phase only, skip any dependencies" )
-            .required( false )
-            .repeatable( false )
-            .callback( Poco::Util::OptionCallback< PrfrmApp >( this, &PrfrmApp::optionCallback ) ) );
-
     options.addOption( Poco::Util::Option( "workspace", "w", "workspace path to operate within" )
                            .required( false )
                            .repeatable( false )
@@ -406,8 +396,7 @@ int PrfrmApp::main( const std::vector< std::string >& args )
     return ( performTask( planName,
                           phaseList,
                           workspacePath,
-                          reportPath,
-                          config().getBool( "cic.prfrm.options.only", false ) ) );
+                          reportPath ) );
 }
 
 std::string PrfrmApp::formatHelpText() const noexcept
@@ -460,8 +449,7 @@ void PrfrmApp::printConfig( const std::string& rootKey ) const
 int PrfrmApp::performTask( const std::string& planFileName,
                            const std::vector< std::string >& phaseList,
                            const Poco::Path& workspacePath,
-                           const Poco::Path& reportPath,
-                           bool only ) noexcept
+                           const Poco::Path& reportPath ) noexcept
 {
     bool verbose{ config().getBool( "cic.prfrm.options.verbose", false ) };
 
@@ -488,30 +476,14 @@ int PrfrmApp::performTask( const std::string& planFileName,
     if ( verbose )
     {
         fmt::MemoryWriter mw;
-        mw.write( "Performing {}:\n", only ? "phase" : "plan" );
+        mw.write( "Performing target:\n" );
         mw.write( "\t Plan: '{}';\n", planPath.toString() );
-        mw.write( "\t Phase list:" );
+        mw.write( "\t Phases:" );
         for ( const auto& phaseName : phaseList )
         {
             mw.write( " '{}';", phaseName );
         }
         logger().information( mw.str() );
-    }
-
-    // prfrm phase list
-    if ( only )
-    {
-        if ( phaseList.empty() )
-        {
-            logger().fatal(
-                "No phase specified - one specified phase is mandatory then --only option is used" );
-            return ( EXIT_USAGE );
-        }
-        if ( phaseList.size() > 1 )
-        {
-            logger().information(
-                "Only first specified phase will be performed: {}"_format( phaseList[ 0 ] ) );
-        }
     }
 
     // load plan xml
@@ -544,17 +516,8 @@ int PrfrmApp::performTask( const std::string& planFileName,
     std::shared_ptr< Report > report{};
     std::ofstream outStream{ "prfrm_report.log" };
     // std::ofstream errStream{ "prfrm_report_err.log" };
-    if ( only )
-    {
-        assert( !phaseList.empty() );
-        Phase::Ptr phase{ plan->getPhase( phaseList[ 0 ] ) };
-        report = phase->Action::perform( mIndustry, outStream, outStream );
-    }
-    else
-    {
-        plan->setTargetPhases( phaseList );
-        report = plan->Action::perform( mIndustry, outStream, outStream );
-    }
+    plan->setTargetPhases( phaseList );
+    report = plan->Action::perform( mIndustry, outStream, outStream );
     outStream.close();
     // errStream.close();
 

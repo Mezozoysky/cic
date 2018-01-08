@@ -67,8 +67,7 @@ protected:
     int performTask( const std::string& planFileName,
                      const std::vector< std::string >& phaseList,
                      const Poco::Path& workspacePath,
-                     const Poco::Path& reportPath,
-                     bool only = false ) noexcept;
+                     const Poco::Path& reportPath ) noexcept;
 
 private:
     bool mIsStopRequestedByOption;
