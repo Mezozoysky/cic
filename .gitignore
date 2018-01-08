@@ -40,5 +40,5 @@ GPATH
 # misc
 .projectile
 build
-check.properties
+prfrm.properties
 *.swp
