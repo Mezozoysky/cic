@@ -32,12 +32,12 @@ cmake -GXcode ..
 ```
 Build XCode project from command line
 ```bash
-# assuming we still in /path/to/CICheck/build
+# assuming we still in /path/to/cic/build
 xcodebuild -target ALL_BUILD
 ```
 Install from command line (default prefix path is /usr/local)
 ```bash
-# assuming we still in /path/to/CICheck/build
+# assuming we still in /path/to/cic/build
 xcodebuild -target install
 ```
 
