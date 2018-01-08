@@ -73,8 +73,8 @@ using Poco::XML::Element;
 using Poco::XML::InputSource;
 using cic::plan::Action;
 using cic::plan::ActionFailure;
-using cic::plan::ActionSuccess;
 using cic::plan::ActionShell;
+using cic::plan::ActionSuccess;
 using cic::plan::DepsTreePhase;
 using cic::plan::DepsTreePlan;
 using cic::plan::LinearPlan;
@@ -274,13 +274,15 @@ void PrfrmApp::defineOptions( Poco::Util::OptionSet& options )
     Poco::Util::Application::defineOptions( options );
 
     options.addOption(
-        Poco::Util::Option( "help", "h", "print help and exit" )
+        Poco::Util::Option( "help", "h", "print usage info, ignore all other options and exit;" )
             .required( false )
             .repeatable( false )
             .callback( Poco::Util::OptionCallback< PrfrmApp >( this, &PrfrmApp::optionCallback ) ) );
 
     options.addOption(
-        Poco::Util::Option( "version", "v", "print version/copyright info and exit" )
+        Poco::Util::Option( "version",
+                            "v",
+                            "print version/copyright info, ignore all other options and exit" )
             .required( false )
             .repeatable( false )
             .callback( Poco::Util::OptionCallback< PrfrmApp >( this, &PrfrmApp::optionCallback ) ) );
@@ -393,10 +395,7 @@ int PrfrmApp::main( const std::vector< std::string >& args )
                          reportPath.toString() ) );
     }
 
-    return ( performTask( planName,
-                          phaseList,
-                          workspacePath,
-                          reportPath ) );
+    return ( performTask( planName, phaseList, workspacePath, reportPath ) );
 }
 
 std::string PrfrmApp::formatHelpText() const noexcept
@@ -405,16 +404,19 @@ std::string PrfrmApp::formatHelpText() const noexcept
 
     Poco::Util::HelpFormatter hf( options() );
     hf.setCommand( commandName() );
-    hf.setUsage( "[options] [<plan> [phase]]" );
+    hf.setUsage( "[options] <plan_file> [phases...]" );
     hf.setHeader(
         R"(where:
-		plan        plan name to prfrm;
-		phase      specific phase to prfrm; plan's default phase used if no specified;
+    plan_file   path to target plan file; if relative, considered relative
+                to target workspace path; if path not found in workspace,
+                considered relative to application share dir; if the path
+                still not found considered configuration error;
+    phases...   list of 1 or more phases to perform; plan's default phases
+                used if no specified; if plan doesnt provide default phases,
+                considered configuration error;
 
-		!Note: plan should but not must to provide default phase
-
-		options are listed below:)" );
-    hf.setFooter( "MEMENTO MORI!" );
+    options are listed below:)" );
+    hf.setFooter( "Live long and prosper!" );
     hf.setWidth( 80 );
     hf.format( ss );
 
