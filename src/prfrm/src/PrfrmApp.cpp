@@ -518,8 +518,11 @@ int PrfrmApp::performTask( const std::string& planFileName,
     std::shared_ptr< Report > report{};
     std::ofstream outStream{ "prfrm_report.log" };
     // std::ofstream errStream{ "prfrm_report_err.log" };
+    outStream << "Start plan '{}'..."_format( planPath.toString() ) << std::endl;
     plan->setTargetPhases( phaseList );
     report = plan->Action::perform( mIndustry, outStream, outStream );
+    outStream << "Finished plan '{}': {}"_format( planPath.toString(),
+                                                  report->getSuccess() ? "SUCCESS" : "FAILURE" );
     outStream.close();
     // errStream.close();
 
