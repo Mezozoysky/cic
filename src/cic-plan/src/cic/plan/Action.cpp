@@ -33,6 +33,9 @@
 #include <cic/plan/Action.hpp>
 #include <cic/plan/Report.hpp>
 #include <cassert>
+#include <fmt/format.h>
+
+using namespace fmt::literals;
 
 using Industry = cic::industry::Industry;
 
@@ -63,6 +66,7 @@ bool Action::perform( Report& report,
                       std::ostream& outStream,
                       std::ostream& errStream ) const
 {
+    outStream << "Outline: {}"_format( formOutline() ) << std::endl;
     bool success{ true };
 
     for ( std::size_t i{ 0 }; i < getChildrenSize(); ++i )
@@ -71,11 +75,17 @@ bool Action::perform( Report& report,
         std::shared_ptr< Report > childReport{};
         if ( success )
         {
+            outStream << "Start action #{}...\n"_format( i );
+
             childReport = child->perform( industry, outStream, errStream );
             success = childReport->getSuccess();
+
+            outStream << "Finished action #{}: {}\n"_format( i, success ? "SUCCESS" : "FAILURE" );
         }
         else
         {
+            outStream << "Skip action #{}; considered as FAILURE\n";
+
             childReport.reset( industry.getFactory< Report >()->create( child->getClassName() ) );
             childReport->fillWithAction( *child );
         }

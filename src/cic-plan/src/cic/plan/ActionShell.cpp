@@ -61,6 +61,7 @@ bool ActionShell::perform( Report& report,
                            std::ostream& outStream,
                            std::ostream& errStream ) const
 {
+    outStream << "Outline: {}"_format( formOutline() ) << std::endl;
     Poco::Pipe outPipe;
     Poco::Pipe errPipe;
     Poco::Process::Env env;
@@ -129,11 +130,13 @@ const std::string ActionShell::formOutline() const noexcept
     std::string outlineStr;
     {
         fmt::MemoryWriter writer;
-        writer.write( cmd() );
+        writer.write( "{} launches shell command; command: '{}';"_format( getClassName(), cmd() ) );
+        writer.write( " arguments: [" );
         for ( const auto& arg : args() )
         {
-            writer.write( " {}"_format( arg ) );
+            writer.write( " \"{}\""_format( arg ) );
         }
+        writer.write( " ];" );
         outlineStr = writer.str();
     }
     return ( outlineStr );

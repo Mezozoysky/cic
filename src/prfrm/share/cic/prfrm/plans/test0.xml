@@ -44,6 +44,9 @@ test0, the plan for check testing purpose
 		</phase>
 
 		<phase name="clean_cfg">
+          <dependencies>
+            <dependency value="clean" />
+          </dependencies>
 			<actions>
 				<action class="ActionShell" cmd="echo">
                   <args>

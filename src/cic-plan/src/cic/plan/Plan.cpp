@@ -70,20 +70,39 @@ bool Plan::perform( Report& report,
     Sequence sequence;
     buildSequence( sequence );
 
+
+    // output phase sequence
+    {
+        outStream <<  "Phase sequence:";
+        for ( std::size_t index : sequence )
+        {
+            const std::string& name{ std::static_pointer_cast< Phase >( getChild( index ) )->getName() };
+            outStream << " '{}';"_format( name );
+        }
+        outStream << std::endl;
+    }
+
+
     bool success{ true };
 
-    DAGShared phase{};
+    Phase::Ptr phase{};
     for ( const std::size_t& index : sequence )
     {
-        phase = getChild( index );
+        phase = std::static_pointer_cast< Phase >( getChild( index ) );
         Report::Ptr phaseReport{};
         if ( success )
         {
+            outStream << "Start phase '{}'...\n"_format( phase->getName() );
+
             phaseReport = phase->perform( industry, outStream, errStream );
             success = phaseReport->getSuccess();
+
+            outStream << "Finished phase '{}': {}\n"_format( phase->getName(),
+                                                                        success ? "SUCCESS" : "FAILURE" );
         }
         else
         {
+            outStream << "Skip phase '{}'; considered as FAILURE\n";
             phaseReport.reset( industry.getFactory< Report >()->create( phase->getClassName() ) );
             phaseReport->fillWithAction( *phase );
             // phaseReport->setSuccess( false );
