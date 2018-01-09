@@ -122,6 +122,10 @@ void DepsTreePlan::buildSubseq( Sequence& subseq, const DepsTreePhase::Ptr& phas
     {
         for ( const auto& depName : phase->getDeps() )
         {
+            if ( getPhaseIndex( depName ) == BAD_INDEX )
+            {
+                throw( Poco::DataException{ "Phase '{}' depends on unknown phase: '{}'"_format( phase->getName(), depName, 8 ) } );
+            }
             if ( depName == phase->getName() || isADependsOnB( depName, phase->getName() ) )
             {
                 throw( Poco::DataException{
@@ -131,6 +135,10 @@ void DepsTreePlan::buildSubseq( Sequence& subseq, const DepsTreePhase::Ptr& phas
             bool needSkip{ false };
             for ( const auto& otherDepName : phase->getDeps() )
             {
+                if ( getPhaseIndex( otherDepName ) == BAD_INDEX )
+                {
+                    throw( Poco::DataException{ "Phase '{}' depends on unknown phase: '{}'"_format( phase->getName(), otherDepName, 8 ) } );
+                }
                 if ( otherDepName == depName )
                 {
                     continue;

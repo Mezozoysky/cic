@@ -34,6 +34,7 @@
 #include <cic/plan/Report.hpp>
 #include <cassert>
 #include <fmt/format.h>
+#include <Poco/Exception.h>
 
 using namespace fmt::literals;
 
@@ -56,7 +57,15 @@ std::shared_ptr< cic::plan::Report > Action::perform( industry::Industry& indust
     Report::Ptr report{ industry.getFactory< Report >()->create( this->getClassName() ) };
     assert( report );
     report->fillWithAction( *this );
-    bool success{ perform( *report, industry, outStream, errStream ) };
+    bool success{ false };
+    try
+    {
+        success = perform( *report, industry, outStream, errStream );
+    }
+    catch ( const Poco::Exception& exc )
+    {
+        errStream << exc.displayText() << std::endl;
+    }
     report->setSuccess( success );
     return ( report );
 }

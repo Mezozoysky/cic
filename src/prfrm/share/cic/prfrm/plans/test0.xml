@@ -12,7 +12,7 @@
       <dependencies>
         <dependency value="clean" />
         <dependency value="clean_assets" />
-        <dependency value="clean_cgf" />
+        <dependency value="clean_cfg" />
       </dependencies>
       <actions>
         <action class="ActionShell" cmd="echo">
