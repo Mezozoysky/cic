@@ -23,6 +23,7 @@ set(GROUP_HEADERS
     "${MODULE_ROOT}/include/${MODULE_NSPATH}/Phase.hpp"
     "${MODULE_ROOT}/include/${MODULE_NSPATH}/DepsTreePhase.hpp"
     "${MODULE_ROOT}/include/${MODULE_NSPATH}/Report.hpp"
+    "${MODULE_ROOT}/include/${MODULE_NSPATH}/Target.hpp"
     )
 set(GROUP_SOURCES
     "${MODULE_ROOT}/src/${MODULE_NSPATH}/Act.cpp"
@@ -35,6 +36,7 @@ set(GROUP_SOURCES
     "${MODULE_ROOT}/src/${MODULE_NSPATH}/Phase.cpp"
     "${MODULE_ROOT}/src/${MODULE_NSPATH}/DepsTreePhase.cpp"
     "${MODULE_ROOT}/src/${MODULE_NSPATH}/Report.cpp"
+    "${MODULE_ROOT}/src/${MODULE_NSPATH}/Target.cpp"
     )
 source_group( ${MODULE_NAME} FILES ${GROUP_HEADERS} ${GROUP_SOURCES} )
 set( MODULE_HEADERS ${MODULE_HEADERS} ${GROUP_HEADERS} )

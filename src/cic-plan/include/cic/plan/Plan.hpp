@@ -35,6 +35,7 @@
 
 #include "Act.hpp"
 #include "Phase.hpp"
+#include "Target.hpp"
 #include <string>
 #include <vector>
 #include <map>
@@ -72,13 +73,13 @@ public:
     std::size_t getPhaseIndex( const std::string& name ) const noexcept;
     Phase::Ptr getPhase( const std::string& name ) const noexcept;
 
-    inline const std::vector< std::string >& getTargetPhases() const noexcept;
-    void setTargetPhases( const std::vector< std::string >& phaseList );
+    inline Target::Ptr getTarget() const noexcept;
+    void setTarget( Target::Ptr target );
     inline const std::string& getDefaultPhaseClass() const noexcept;
     void setDefaultPhaseClass( const std::string& classId );
 
 protected:
-    virtual void onSetTargetPhases( const std::vector< std::string >& phaseList );
+    virtual void onSetTarget( Target& target );
     virtual void onSetDefaultPhaseClass( const std::string& classId );
 
 protected:
@@ -89,13 +90,13 @@ protected:
 
 private:
     IndexMap mIndexMap;
-    std::vector< std::string > mTargetPhases;
+    Target::Ptr mTarget;
     std::string mDefaultPhaseClass;
 };
 
-inline const std::vector< std::string >& Plan::getTargetPhases() const noexcept
+inline Target::Ptr Plan::getTarget() const noexcept
 {
-    return ( mTargetPhases );
+    return ( mTarget );
 }
 
 inline const std::string& Plan::getDefaultPhaseClass() const noexcept

@@ -84,6 +84,7 @@ using cic::plan::Plan;
 using cic::plan::PlanReport;
 using cic::plan::Report;
 using fmt::print;
+using cic::plan::Target;
 
 namespace cic
 {
@@ -514,12 +515,15 @@ int PrfrmApp::performTask( const std::string& planFileName,
     Plan::Ptr plan{ factory->create( planClass ) };
     plan->loadFromXML( planRoot, &mIndustry );
 
+    Target::Ptr target{ std::make_shared<Target>() };
+    target->setPhases( phaseList );
+
     // actually perform
     std::shared_ptr< Report > report{};
     std::ofstream outStream{ "prfrm_report.log" };
     // std::ofstream errStream{ "prfrm_report_err.log" };
     outStream << "Start plan '{}'..."_format( planPath.toString() ) << std::endl;
-    plan->setTargetPhases( phaseList );
+    plan->setTarget( target );
     report = plan->Act::perform( mIndustry, outStream, outStream );
     outStream << "Finished plan '{}': {}"_format( planPath.toString(),
                                                   report->getSuccess() ? "SUCCESS" : "FAILURE" );

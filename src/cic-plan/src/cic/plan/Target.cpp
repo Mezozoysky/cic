@@ -24,13 +24,14 @@
 
 
 /// \file
-/// \brief Linear plan
+/// \brief Target class implementation
 /// \author Stanislav Demyanovich <mezozoysky@gmail.com>
 /// \date 2018
 /// \copyright cic is released under the terms of zlib/png license
 
 
-#include <cic/plan/LinearPlan.hpp>
+#include <cic/plan/Target.hpp>
+#include <cic/plan/Phase.hpp>
 #include <fmt/format.h>
 #include <Poco/Exception.h>
 #include <Poco/String.h>
@@ -39,6 +40,8 @@
 #include <Poco/DOM/Element.h>
 #include <Poco/AutoPtr.h>
 #include <Poco/DOM/NodeList.h>
+#include <algorithm>
+#include <functional>
 
 using Poco::XML::Element;
 using Poco::XML::NodeList;
@@ -52,52 +55,52 @@ namespace cic
 namespace plan
 {
 
-LinearPlan::LinearPlan()
-: Plan()
+
+void Target::loadFromXML( Element* root, Industry* industry )
 {
+    Element* elem{ root->getChildElement( "phases" ) };
+    if ( elem != nullptr )
+    {
+        loadPhasesFromXML( elem, industry );
+    }
 }
 
-void LinearPlan::buildSequence( Sequence& seq ) const
+void Target::saveToXML( Element* root ) const {}
+
+void Target::setPhases( const std::vector< std::string >& phaseList )
 {
-    assert( getTarget()->getPhases().size() > 0 );
-    seq.clear();
+    onSetPhases( phaseList );
+    mPhases = phaseList;
+}
 
-    Sequence phaseIndices;
+void Target::onSetPhases( const std::vector< std::string >& phaseList )
+{
+    return;
+}
 
+void Target::loadPhasesFromXML( Element* root, Industry* industry )
+{
+    AutoPtr< NodeList > list{ root->childNodes() };
+
+    Element* elem{ nullptr };
+    std::vector< std::string > phaseNames;
+    for ( std::size_t i{ 0 }; i < list->length(); ++i )
     {
-        std::size_t index{ BAD_INDEX };
-        for ( const auto& phaseName : getTarget()->getPhases() )
+        elem = static_cast< Element* >( list->item( i ) );
+        if ( elem != nullptr && elem->nodeName() == "phase" )
         {
-            index = getPhaseIndex( phaseName );
-            if ( index == BAD_INDEX )
+            std::string value{ Poco::trim( root->getAttribute( "value" ) ) };
+            if ( value.empty() )
             {
-                throw Poco::DataException( "Plan has no requested phase: '{}'"_format( phaseName ), 8 );
+                // TODO: log warning
             }
-            phaseIndices.push_back( index );
-
-            assert( phaseIndices.size() > 0 );
-            if ( phaseIndices.size() > 1 )
+            else
             {
-                std::sort( phaseIndices.begin(), phaseIndices.end() );
+                phaseNames.push_back( value );
             }
         }
     }
-
-    {
-        std::size_t prevIMin{ 0 };
-        for ( auto it( phaseIndices.begin() ); it != phaseIndices.end(); ++it )
-        {
-            Phase::Ptr phase{ std::static_pointer_cast< Phase >( getChild( *it ) ) };
-            if ( !phase->isPhony() )
-            {
-                for ( std::size_t i{ prevIMin }; i < *it; ++i )
-                {
-                    seq.push_back( i );
-                }
-            }
-            seq.push_back( *it );
-        }
-    }
+    setPhases( phaseNames );
 }
 
 

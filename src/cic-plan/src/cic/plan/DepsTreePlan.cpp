@@ -62,13 +62,13 @@ DepsTreePlan::DepsTreePlan()
 
 void DepsTreePlan::buildSequence( Sequence& seq ) const
 {
-    assert( getTargetPhases().size() > 0 );
+    assert( getTarget()->getPhases().size() > 0 );
     seq.clear();
 
     {
         std::size_t index{ BAD_INDEX };
         DepsTreePhase::Ptr{ nullptr };
-        for ( const auto& phaseName : getTargetPhases() )
+        for ( const auto& phaseName : getTarget()->getPhases() )
         {
             index = getPhaseIndex( phaseName );
             if ( index == BAD_INDEX )

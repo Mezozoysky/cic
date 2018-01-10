@@ -67,13 +67,18 @@ bool Plan::perform( Report& report,
                     std::ostream& outStream,
                     std::ostream& errStream ) const
 {
+    if ( getTarget() == nullptr )
+    {
+        assert( false );
+    }
+
     Sequence sequence;
     buildSequence( sequence );
 
 
     // output phase sequence
     {
-        outStream <<  "Phase sequence:";
+        outStream << "Phase sequence:";
         for ( std::size_t index : sequence )
         {
             const std::string& name{ std::static_pointer_cast< Phase >( getChild( index ) )->getName() };
@@ -98,7 +103,7 @@ bool Plan::perform( Report& report,
             success = phaseReport->getSuccess();
 
             outStream << "Finished phase '{}': {}\n"_format( phase->getName(),
-                                                                        success ? "SUCCESS" : "FAILURE" );
+                                                             success ? "SUCCESS" : "FAILURE" );
         }
         else
         {
@@ -144,10 +149,10 @@ Phase::Ptr Plan::getPhase( const std::string& name ) const noexcept
     return ( phase );
 }
 
-void Plan::setTargetPhases( const std::vector< std::string >& phaseList )
+void Plan::setTarget( Target::Ptr target )
 {
-    onSetTargetPhases( phaseList );
-    mTargetPhases = phaseList;
+    onSetTarget( *target );
+    mTarget = target;
 }
 
 void Plan::setDefaultPhaseClass( const std::string& classId )
@@ -156,7 +161,7 @@ void Plan::setDefaultPhaseClass( const std::string& classId )
     mDefaultPhaseClass = classId;
 }
 
-void Plan::onSetTargetPhases( const std::vector< std::string >& phaseList )
+void Plan::onSetTarget( Target& target )
 {
     return;
 }
