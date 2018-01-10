@@ -41,9 +41,9 @@
 #include <Poco/Environment.h>
 #include <Poco/String.h>
 #include <cic/scripting/Scripting.hpp>
-#include <cic/plan/ActionFailure.hpp>
-#include <cic/plan/ActionSuccess.hpp>
-#include <cic/plan/ActionShell.hpp>
+#include <cic/plan/ActFailure.hpp>
+#include <cic/plan/ActSuccess.hpp>
+#include <cic/plan/ActShell.hpp>
 #include <Poco/Logger.h>
 #include <Poco/Channel.h>
 #include <Poco/PatternFormatter.h>
@@ -71,10 +71,10 @@ using Poco::PatternFormatter;
 using Poco::Util::AbstractConfiguration;
 using Poco::XML::Element;
 using Poco::XML::InputSource;
-using cic::plan::Action;
-using cic::plan::ActionFailure;
-using cic::plan::ActionShell;
-using cic::plan::ActionSuccess;
+using cic::plan::Act;
+using cic::plan::ActFailure;
+using cic::plan::ActShell;
+using cic::plan::ActSuccess;
 using cic::plan::DepsTreePhase;
 using cic::plan::DepsTreePlan;
 using cic::plan::LinearPlan;
@@ -254,13 +254,13 @@ void PrfrmApp::initialize( Poco::Util::Application& self )
         reportFactory->registerId< PhaseReport >( DepsTreePhase::getClassNameStatic() );
         phaseFactory->registerId< Phase >( Phase::getClassNameStatic() );
         reportFactory->registerId< PhaseReport >( Phase::getClassNameStatic() );
-        auto actionFactory = mIndustry.registerFactory< Action >();
-        actionFactory->registerId< ActionSuccess >( ActionSuccess::getClassNameStatic() );
-        reportFactory->registerId< Report >( ActionSuccess::getClassNameStatic() );
-        actionFactory->registerId< ActionFailure >( ActionFailure::getClassNameStatic() );
-        reportFactory->registerId< Report >( ActionFailure::getClassNameStatic() );
-        actionFactory->registerId< ActionShell >( ActionShell::getClassNameStatic() );
-        reportFactory->registerId< Report >( ActionShell::getClassNameStatic() );
+        auto actFactory = mIndustry.registerFactory< Act >();
+        actFactory->registerId< ActSuccess >( ActSuccess::getClassNameStatic() );
+        reportFactory->registerId< Report >( ActSuccess::getClassNameStatic() );
+        actFactory->registerId< ActFailure >( ActFailure::getClassNameStatic() );
+        reportFactory->registerId< Report >( ActFailure::getClassNameStatic() );
+        actFactory->registerId< ActShell >( ActShell::getClassNameStatic() );
+        reportFactory->registerId< Report >( ActShell::getClassNameStatic() );
     }
 }
 
@@ -520,7 +520,7 @@ int PrfrmApp::performTask( const std::string& planFileName,
     // std::ofstream errStream{ "prfrm_report_err.log" };
     outStream << "Start plan '{}'..."_format( planPath.toString() ) << std::endl;
     plan->setTargetPhases( phaseList );
-    report = plan->Action::perform( mIndustry, outStream, outStream );
+    report = plan->Act::perform( mIndustry, outStream, outStream );
     outStream << "Finished plan '{}': {}"_format( planPath.toString(),
                                                   report->getSuccess() ? "SUCCESS" : "FAILURE" );
     outStream.close();

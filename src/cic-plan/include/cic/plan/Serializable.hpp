@@ -49,6 +49,7 @@ namespace cic
 namespace plan
 {
 
+/// CLASSINFO macros defines data and methods required to store/access information about class
 #define CLASSINFO( className )                                                                               \
 public:                                                                                                      \
     static const std::string& getClassNameStatic()                                                           \
@@ -76,8 +77,6 @@ class Serializable : public ClassInfo
 public:
     Serializable() = default;
     virtual ~Serializable() noexcept = default;
-
-    // virtual const std::string& getClassName() const noexcept = 0;
 
     virtual void loadFromXML( Poco::XML::Element* root, industry::Industry* industry ) = 0;
     virtual void saveToXML( Poco::XML::Element* root ) const = 0;

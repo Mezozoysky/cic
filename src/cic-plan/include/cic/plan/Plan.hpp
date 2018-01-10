@@ -33,7 +33,7 @@
 #ifndef CIC_PLAN__PLAN_HPP
 #define CIC_PLAN__PLAN_HPP
 
-#include "Action.hpp"
+#include "Act.hpp"
 #include "Phase.hpp"
 #include <string>
 #include <vector>
@@ -45,7 +45,7 @@ namespace cic
 namespace plan
 {
 
-class Plan : public Action
+class Plan : public Act
 {
     CLASSINFO( Plan )
 

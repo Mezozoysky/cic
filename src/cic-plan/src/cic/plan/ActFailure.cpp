@@ -24,15 +24,16 @@
 
 
 /// \file
-/// \brief Provides ActionSuccess class - the action which always plans successfully
+/// \brief ActFailure realisation
 /// \author Stanislav Demyanovich <mezozoysky@gmail.com>
 /// \date 2017
 /// \copyright cic is released under the terms of zlib/png license
 
-#ifndef CIC_PLAN__ACTION_SUCCESS_HPP
-#define CIC_PLAN__ACTION_SUCCESS_HPP
+#include <cic/plan/ActFailure.hpp>
+#include <Poco/DOM/Element.h>
 
-#include "Action.hpp"
+using Poco::XML::Element;
+using cic::industry::Industry;
 
 namespace cic
 {
@@ -40,29 +41,20 @@ namespace plan
 {
 
 
-class ActionSuccess : public Action
+bool ActFailure::perform( Report& report,
+                             Industry& industry,
+                             std::ostream& outStream,
+                             std::ostream& errStream ) const
 {
-    CLASSINFO( ActionSuccess )
+    return ( false );
+}
 
-public:
-    using Ptr = std::shared_ptr< ActionSuccess >;
+void ActFailure::loadFromXML( Element* root, Industry* industry )
+{
+    // Do nothing
+}
 
-    ActionSuccess() = default;
-    virtual ~ActionSuccess() noexcept = default;
-
-
-    virtual void loadFromXML( Poco::XML::Element* xml, cic::industry::Industry* industry ) override;
-    virtual void saveToXML( Poco::XML::Element* xml ) const override;
-
-protected:
-    virtual bool perform( Report& report,
-                          cic::industry::Industry& industry,
-                          std::ostream& outStream = std::cout,
-                          std::ostream& errStream = std::cerr ) const override;
-};
-
+void ActFailure::saveToXML( Element* root ) const {}
 
 } // namespace plan
 } // namespace cic
-
-#endif /* CIC_PLAN__ACTION_SUCCESS_HPP */

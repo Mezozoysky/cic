@@ -24,12 +24,12 @@
 
 
 /// \file
-/// \brief ActionFailure realisation
+/// \brief ActSuccess realisation
 /// \author Stanislav Demyanovich <mezozoysky@gmail.com>
 /// \date 2017
 /// \copyright cic is released under the terms of zlib/png license
 
-#include <cic/plan/ActionFailure.hpp>
+#include <cic/plan/ActSuccess.hpp>
 #include <Poco/DOM/Element.h>
 
 using Poco::XML::Element;
@@ -41,20 +41,20 @@ namespace plan
 {
 
 
-bool ActionFailure::perform( Report& report,
+bool ActSuccess::perform( Report& report,
                              Industry& industry,
                              std::ostream& outStream,
                              std::ostream& errStream ) const
 {
-    return ( false );
+    return ( true );
 }
 
-void ActionFailure::loadFromXML( Element* root, Industry* industry )
+void ActSuccess::loadFromXML( Element* xml, Industry* industry )
 {
     // Do nothing
 }
 
-void ActionFailure::saveToXML( Element* root ) const {}
+void ActSuccess::saveToXML( Element* root ) const {}
 
 } // namespace plan
 } // namespace cic

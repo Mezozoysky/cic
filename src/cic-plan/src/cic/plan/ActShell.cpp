@@ -24,12 +24,12 @@
 
 
 /// \file
-/// \brief ActionShell realisation
+/// \brief ActShell realisation
 /// \author Stanislav Demyanovich <mezozoysky@gmail.com>
 /// \date 2017
 /// \copyright cic is released under the terms of zlib/png license
 
-#include <cic/plan/ActionShell.hpp>
+#include <cic/plan/ActShell.hpp>
 #include <Poco/Process.h>
 #include <Poco/PipeStream.h>
 #include <Poco/StreamCopier.h>
@@ -56,7 +56,7 @@ namespace cic
 namespace plan
 {
 
-bool ActionShell::perform( Report& report,
+bool ActShell::perform( Report& report,
                            Industry& industry,
                            std::ostream& outStream,
                            std::ostream& errStream ) const
@@ -80,17 +80,17 @@ bool ActionShell::perform( Report& report,
     return ( rc == 0 );
 }
 
-void ActionShell::loadFromXML( Element* root, Industry* industry )
+void ActShell::loadFromXML( Element* root, Industry* industry )
 {
-    std::string actionCmd{ root->getAttribute( "cmd" ) };
-    if ( actionCmd.empty() )
+    std::string actCmd{ root->getAttribute( "cmd" ) };
+    if ( actCmd.empty() )
     {
         throw( Poco::DataException{
-            "Mandatory attribute 'cmd' isnt found or empty within the 'action' element' (class='{}')"_format(
+            "Mandatory attribute 'cmd' isnt found or empty within the 'act' element' (class='{}')"_format(
                 getClassName() ),
             8 } );
     }
-    cmd() = actionCmd;
+    cmd() = actCmd;
 
     {
         Element* elem{ root->getChildElement( "args" ) };
@@ -123,9 +123,9 @@ void ActionShell::loadFromXML( Element* root, Industry* industry )
     }
 }
 
-void ActionShell::saveToXML( Element* root ) const {}
+void ActShell::saveToXML( Element* root ) const {}
 
-const std::string ActionShell::formOutline() const noexcept
+const std::string ActShell::formOutline() const noexcept
 {
     std::string outlineStr;
     {

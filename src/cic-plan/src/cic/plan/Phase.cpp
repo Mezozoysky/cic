@@ -31,7 +31,7 @@
 
 
 #include <cic/plan/Phase.hpp>
-#include <cic/plan/Action.hpp>
+#include <cic/plan/Act.hpp>
 #include <Poco/Exception.h>
 #include <Poco/String.h>
 #include <Poco/DOM/Node.h>
@@ -114,50 +114,50 @@ void Phase::loadFromXML( Element* root, Industry* industry )
         setPhony( phony );
     }
 
-    // load actions
+    // load acts
     {
-        Element* elem{ root->getChildElement( "actions" ) };
+        Element* elem{ root->getChildElement( "acts" ) };
         if ( elem != nullptr )
         {
-            loadActionsFromXML( elem, industry );
+            loadActsFromXML( elem, industry );
         }
     }
 }
 
 void Phase::saveToXML( Element* root ) const {}
 
-void Phase::loadActionsFromXML( Element* root, Industry* industry )
+void Phase::loadActsFromXML( Element* root, Industry* industry )
 {
     AutoPtr< NodeList > list{ root->childNodes() };
     Element* elem{ nullptr };
     for ( std::size_t i{ 0 }; i < list->length(); ++i )
     {
         elem = static_cast< Element* >( list->item( i ) );
-        if ( elem != nullptr && elem->nodeName() == "action" )
+        if ( elem != nullptr && elem->nodeName() == "act" )
         {
-            loadActionFromXML( elem, industry );
+            loadActFromXML( elem, industry );
         }
     }
 }
 
-void Phase::loadActionFromXML( Element* root, Industry* industry )
+void Phase::loadActFromXML( Element* root, Industry* industry )
 {
     std::string classId{ root->getAttribute( "class" ) };
     if ( classId.empty() )
     {
         throw( Poco::SyntaxException{
-            "Mandatory attribute 'class' isnt found or empty within the 'action' element", 8 } );
+            "Mandatory attribute 'class' isnt found or empty within the 'act' element", 8 } );
     }
 
-    auto actionFactory( industry->getFactory< Action >() );
-    if ( actionFactory == nullptr )
+    auto actFactory( industry->getFactory< Act >() );
+    if ( actFactory == nullptr )
     {
         throw( Poco::NotFoundException{ "No factory registered for id: '{}'"_format( classId ), 8 } );
     }
 
-    Action::Ptr action{ actionFactory->create( classId ) };
-    action->loadFromXML( root, industry );
-    addChild( action );
+    Act::Ptr act{ actFactory->create( classId ) };
+    act->loadFromXML( root, industry );
+    addChild( act );
 }
 
 

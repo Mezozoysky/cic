@@ -24,15 +24,15 @@
 
 
 /// \file
-/// \brief Provides ActionShell class
+/// \brief Provides ActShell class
 /// \author Stanislav Demyanovich <mezozoysky@gmail.com>
 /// \date 2017
 /// \copyright cic is released under the terms of zlib/png license
 
-#ifndef CIC_PLAN__ACTION_SYSTEM_CMD_HPP
-#define CIC_PLAN__ACTION_SYSTEM_CMD_HPP
+#ifndef CIC_PLAN__ACT_SYSTEM_CMD_HPP
+#define CIC_PLAN__ACT_SYSTEM_CMD_HPP
 
-#include "Action.hpp"
+#include "Act.hpp"
 #include <Poco/Process.h>
 
 namespace cic
@@ -40,14 +40,14 @@ namespace cic
 namespace plan
 {
 
-class ActionShell : public Action
+class ActShell : public Act
 {
-    CLASSINFO( ActionShell )
+    CLASSINFO( ActShell )
 
 public:
-    using Ptr = std::shared_ptr< ActionShell >;
+    using Ptr = std::shared_ptr< ActShell >;
 
-    virtual ~ActionShell() noexcept = default;
+    virtual ~ActShell() noexcept = default;
 
     virtual void loadFromXML( Poco::XML::Element* root, cic::industry::Industry* industry ) override;
     virtual void saveToXML( Poco::XML::Element* root ) const override;
@@ -75,27 +75,27 @@ private:
     std::string mWorkDir;
 };
 
-inline const std::string& ActionShell::cmd() const noexcept
+inline const std::string& ActShell::cmd() const noexcept
 {
     return ( mCmd );
 }
-inline std::string& ActionShell::cmd() noexcept
+inline std::string& ActShell::cmd() noexcept
 {
     return ( mCmd );
 }
-inline const Poco::Process::Args& ActionShell::args() const noexcept
+inline const Poco::Process::Args& ActShell::args() const noexcept
 {
     return ( mArgs );
 }
-inline Poco::Process::Args& ActionShell::args() noexcept
+inline Poco::Process::Args& ActShell::args() noexcept
 {
     return ( mArgs );
 }
-inline const std::string& ActionShell::workDir() const noexcept
+inline const std::string& ActShell::workDir() const noexcept
 {
     return ( mWorkDir );
 }
-inline std::string& ActionShell::workDir() noexcept
+inline std::string& ActShell::workDir() noexcept
 {
     return ( mWorkDir );
 }
@@ -104,4 +104,4 @@ inline std::string& ActionShell::workDir() noexcept
 } // namespace plan
 } // namespace cic
 
-#endif /* CIC_PLAN__ACTION_SYSTEM_CMD_HPP */
+#endif /* CIC_PLAN__ACT_SYSTEM_CMD_HPP */

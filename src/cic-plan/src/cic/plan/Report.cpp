@@ -32,7 +32,7 @@
 
 #include <cic/plan/Report.hpp>
 #include <Poco/DOM/Element.h>
-#include <cic/plan/Action.hpp>
+#include <cic/plan/Act.hpp>
 #include <cassert>
 
 using Poco::XML::Element;
@@ -43,9 +43,9 @@ namespace cic
 namespace plan
 {
 
-void Report::fillWithAction( const Action& action ) noexcept
+void Report::fillWithAct( const Act& act ) noexcept
 {
-    mOutline = action.formOutline();
+    mOutline = act.formOutline();
 }
 
 void Report::loadFromXML( Element* root, Industry* industry )

@@ -1,6 +1,6 @@
 //  cic
 //
-//  cic - Copyright (C) 2017-2018 Stanislav Demyanovich <mezozoysky@gmail.com>
+//  cic - Copyright (C) 2017 Stanislav Demyanovich <mezozoysky@gmail.com>
 //
 //  This software is provided 'as-is', without any express or
 //  implied warranty. In no event will the authors be held
@@ -24,52 +24,45 @@
 
 
 /// \file
-/// \brief Action - basic rule abstraction
+/// \brief Provides ActSuccess class - the act which always plans successfully
 /// \author Stanislav Demyanovich <mezozoysky@gmail.com>
 /// \date 2017
 /// \copyright cic is released under the terms of zlib/png license
 
+#ifndef CIC_PLAN__ACT_SUCCESS_HPP
+#define CIC_PLAN__ACT_SUCCESS_HPP
 
-#ifndef CIC_PLAN__ACTION_HPP
-#define CIC_PLAN__ACTION_HPP
-
-#include "DAGNode.hpp"
-#include "Serializable.hpp"
-#include <memory>
-#include <string>
-#include <iostream>
+#include "Act.hpp"
 
 namespace cic
 {
 namespace plan
 {
 
-class Report;
 
-class Action
-: public DAGNode< Action >
-, public Serializable
+class ActSuccess : public Act
 {
+    CLASSINFO( ActSuccess )
+
 public:
-    using Ptr = std::shared_ptr< Action >;
+    using Ptr = std::shared_ptr< ActSuccess >;
 
-    Action() = default;
-    virtual ~Action() noexcept = default;
+    ActSuccess() = default;
+    virtual ~ActSuccess() noexcept = default;
 
-    std::shared_ptr< Report > perform( cic::industry::Industry& industry,
-                                       std::ostream& outStream = std::cout,
-                                       std::ostream& errStream = std::cerr ) const noexcept;
 
-    virtual const std::string formOutline() const noexcept;
+    virtual void loadFromXML( Poco::XML::Element* xml, cic::industry::Industry* industry ) override;
+    virtual void saveToXML( Poco::XML::Element* xml ) const override;
 
 protected:
     virtual bool perform( Report& report,
                           cic::industry::Industry& industry,
-                          std::ostream& outStream,
-                          std::ostream& errStream ) const;
+                          std::ostream& outStream = std::cout,
+                          std::ostream& errStream = std::cerr ) const override;
 };
+
 
 } // namespace plan
 } // namespace cic
 
-#endif // CIC_PLAN__ACTION_HPP
+#endif /* CIC_PLAN__ACT_SUCCESS_HPP */

@@ -14,80 +14,80 @@
         <dependency value="clean_assets" />
         <dependency value="clean_cfg" />
       </dependencies>
-      <actions>
-        <action class="ActionShell" cmd="echo">
+      <acts>
+        <act class="ActShell" cmd="echo">
           <args>
             <arg value=":: phase_clean_all" />
           </args>
-        </action>
-      </actions>
+        </act>
+      </acts>
     </phase>
 
     <phase name="clean">
-      <actions>
-        <action class="ActionShell" cmd="echo">
+      <acts>
+        <act class="ActShell" cmd="echo">
           <args>
             <arg value=":: phase_clean" />
           </args>
-        </action>
-      </actions>
+        </act>
+      </acts>
     </phase>
 
     <phase name="clean_assets">
-      <actions>
-        <action class="ActionShell" cmd="echo">
+      <acts>
+        <act class="ActShell" cmd="echo">
           <args>
             <arg value=":: phase_clean_assets" />
           </args>
-        </action>
-      </actions>
+        </act>
+      </acts>
     </phase>
 
     <phase name="clean_cfg">
       <dependencies>
         <dependency value="clean" />
       </dependencies>
-      <actions>
-        <action class="ActionShell" cmd="echo">
+      <acts>
+        <act class="ActShell" cmd="echo">
           <args>
             <arg value=":: phase_clean_cfg" />
           </args>
-        </action>
-      </actions>
+        </act>
+      </acts>
     </phase>
 
     <phase name="assets">
       <dependencies>
         <dependency value="clean_assets" />
       </dependencies>
-      <actions>
-        <action class="ActionShell" cmd="echo">
+      <acts>
+        <act class="ActShell" cmd="echo">
           <args>
             <arg value=":: phase_assets" />
           </args>
           <workDir value="." />
-        </action>
-        <!-- <action class="ActionShell" cmd="echo"> -->
+        </act>
+        <!-- <act class="ActShell" cmd="echo"> -->
         <!--   <args> -->
         <!--     <arg value="phase_clean__remove_project" /> -->
         <!--   </args> -->
         <!--   <workDir value="." /> -->
-        <!-- </action> -->
-      </actions>
+        <!-- </act> -->
+      </acts>
     </phase>
 
     <phase name="configure">
       <dependencies>
         <dependency value="clean_cfg" />
       </dependencies>
-      <actions>
-        <action class="ActionShell" cmd="echo">
+      <acts>
+        <act class="ActShell" cmd="echo">
           <args>
             <arg value=":: phase_configure" />
           </args>
           <workDir value="." />
-        </action>
-      </actions>
+        </act>
+      </acts>
     </phase>
 
     <phase name="build" phony="true">
@@ -96,84 +96,84 @@
         <dependency value="assets" />
         <dependency value="configure" />
       </dependencies>
-      <actions>
-        <action class="ActionShell" cmd="echo">
+      <acts>
+        <act class="ActShell" cmd="echo">
           <args>
             <arg value=":: phase_build" />
           </args>
           <workDir value="." />
-        </action>
-      </actions>
+        </act>
+      </acts>
     </phase>
 
     <phase name="build_ut" phony="true">
       <dependencies>
         <dependency value="build" />
       </dependencies>
-      <actions>
-        <action class="ActionShell" cmd="echo">
+      <acts>
+        <act class="ActShell" cmd="echo">
           <args>
             <arg value=":: phase_build_ut" />
           </args>
           <workDir value="." />
-        </action>
-      </actions>
+        </act>
+      </acts>
     </phase>
 
     <phase name="run_ut" phony="true">
       <dependencies>
         <dependency value="build_ut" />
       </dependencies>
-      <actions>
-        <action class="ActionShell" cmd="echo">
+      <acts>
+        <act class="ActShell" cmd="echo">
           <args>
             <arg value=":: phase_run_ut" />
           </args>
           <workDir value="." />
-        </action>
-      </actions>
+        </act>
+      </acts>
     </phase>
 
     <phase name="check_ut" phony="false">
       <dependencies>
         <dependency value="run_ut" />
       </dependencies>
-      <actions>
-        <action class="ActionShell" cmd="echo">
+      <acts>
+        <act class="ActShell" cmd="echo">
           <args>
             <arg value=":: phase_check_ut" />
           </args>
           <workDir value="." />
-        </action>
-      </actions>
+        </act>
+      </acts>
     </phase>
 
     <phase name="distribution">
       <dependencies>
         <dependency value="build" />
       </dependencies>
-      <actions>
-        <action class="ActionShell" cmd="echo">
+      <acts>
+        <act class="ActShell" cmd="echo">
           <args>
             <arg value=":: phase_distribution" />
           </args>
           <workDir value="." />
-        </action>
-      </actions>
+        </act>
+      </acts>
     </phase>
 
     <phase name="dist_upload" phony="true">
       <dependencies>
         <dependency value="distribution" />
       </dependencies>
-      <actions>
-        <action class="ActionShell" cmd="echo">
+      <acts>
+        <act class="ActShell" cmd="echo">
           <args>
             <arg value=":: phase_dist_upload" />
           </args>
           <workDir value="." />
-        </action>
-      </actions>
+        </act>
+      </acts>
     </phase>
 
   </phases>

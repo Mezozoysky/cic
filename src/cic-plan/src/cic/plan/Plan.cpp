@@ -35,7 +35,7 @@
 #include <fmt/format.h>
 #include <Poco/Exception.h>
 #include <Poco/String.h>
-#include <cic/plan/Action.hpp>
+#include <cic/plan/Act.hpp>
 #include <cic/plan/Report.hpp>
 #include <Poco/DOM/Element.h>
 #include <Poco/AutoPtr.h>
@@ -57,7 +57,7 @@ namespace plan
 {
 
 Plan::Plan()
-: Action()
+: Act()
 , mDefaultPhaseClass( "default" )
 {
 }
@@ -104,7 +104,7 @@ bool Plan::perform( Report& report,
         {
             outStream << "Skip phase '{}'; considered as FAILURE\n";
             phaseReport.reset( industry.getFactory< Report >()->create( phase->getClassName() ) );
-            phaseReport->fillWithAction( *phase );
+            phaseReport->fillWithAct( *phase );
             // phaseReport->setSuccess( false );
         }
         report.addChild( phaseReport );

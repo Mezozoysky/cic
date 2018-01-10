@@ -45,7 +45,7 @@ namespace cic
 namespace plan
 {
 
-class Action;
+class Act;
 
 class Report
 : public DAGNode< Report >
@@ -59,7 +59,7 @@ public:
     Report() = default;
     virtual ~Report() noexcept = default;
 
-    virtual void fillWithAction( const Action& action ) noexcept;
+    virtual void fillWithAct( const Act& act ) noexcept;
 
     inline bool getSuccess() const noexcept;
     inline void setSuccess( bool success ) noexcept;

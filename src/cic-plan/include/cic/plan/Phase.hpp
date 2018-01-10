@@ -33,7 +33,7 @@
 #ifndef CIC_PLAN__PHASE_HPP
 #define CIC_PLAN__PHASE_HPP
 
-#include "Action.hpp"
+#include "Act.hpp"
 #include <memory>
 #include <vector>
 
@@ -43,7 +43,7 @@ namespace plan
 {
 
 
-class Phase : public Action
+class Phase : public Act
 {
     CLASSINFO( Phase );
 
@@ -67,8 +67,8 @@ public:
     virtual void saveToXML( Poco::XML::Element* root ) const override;
 
 protected:
-    virtual void loadActionsFromXML( Poco::XML::Element* root, cic::industry::Industry* industry );
-    virtual void loadActionFromXML( Poco::XML::Element* root, cic::industry::Industry* industry );
+    virtual void loadActsFromXML( Poco::XML::Element* root, cic::industry::Industry* industry );
+    virtual void loadActFromXML( Poco::XML::Element* root, cic::industry::Industry* industry );
 
 private:
     std::string mName;

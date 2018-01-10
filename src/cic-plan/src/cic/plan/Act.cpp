@@ -24,13 +24,13 @@
 
 
 /// \file
-/// \brief Action implementation
+/// \brief Act implementation
 /// \author Stanislav Demyanovich <mezozoysky@gmail.com>
 /// \date 2017
 /// \copyright cic is released under the terms of zlib/png license
 
 
-#include <cic/plan/Action.hpp>
+#include <cic/plan/Act.hpp>
 #include <cic/plan/Report.hpp>
 #include <cassert>
 #include <fmt/format.h>
@@ -45,18 +45,18 @@ namespace cic
 namespace plan
 {
 
-const std::string Action::formOutline() const noexcept
+const std::string Act::formOutline() const noexcept
 {
     return ( getClassName() );
 }
 
-std::shared_ptr< cic::plan::Report > Action::perform( industry::Industry& industry,
+std::shared_ptr< cic::plan::Report > Act::perform( industry::Industry& industry,
                                                       std::ostream& outStream,
                                                       std::ostream& errStream ) const noexcept
 {
     Report::Ptr report{ industry.getFactory< Report >()->create( this->getClassName() ) };
     assert( report );
-    report->fillWithAction( *this );
+    report->fillWithAct( *this );
     bool success{ false };
     try
     {
@@ -70,7 +70,7 @@ std::shared_ptr< cic::plan::Report > Action::perform( industry::Industry& indust
     return ( report );
 }
 
-bool Action::perform( Report& report,
+bool Act::perform( Report& report,
                       Industry& industry,
                       std::ostream& outStream,
                       std::ostream& errStream ) const
@@ -84,19 +84,19 @@ bool Action::perform( Report& report,
         std::shared_ptr< Report > childReport{};
         if ( success )
         {
-            outStream << "Start action #{}...\n"_format( i );
+            outStream << "Start act #{}...\n"_format( i );
 
             childReport = child->perform( industry, outStream, errStream );
             success = childReport->getSuccess();
 
-            outStream << "Finished action #{}: {}\n"_format( i, success ? "SUCCESS" : "FAILURE" );
+            outStream << "Finished act #{}: {}\n"_format( i, success ? "SUCCESS" : "FAILURE" );
         }
         else
         {
-            outStream << "Skip action #{}; considered as FAILURE\n";
+            outStream << "Skip act #{}; considered as FAILURE\n";
 
             childReport.reset( industry.getFactory< Report >()->create( child->getClassName() ) );
-            childReport->fillWithAction( *child );
+            childReport->fillWithAct( *child );
         }
         report.addChild( childReport );
     }

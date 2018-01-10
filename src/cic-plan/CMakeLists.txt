@@ -13,10 +13,10 @@ set( MODULE_SOURCES "" )
 # ===============================================
 set(GROUP_HEADERS
     "${MODULE_ROOT}/include/${MODULE_NSPATH}/DAGNode.hpp"
-    "${MODULE_ROOT}/include/${MODULE_NSPATH}/Action.hpp"
-    "${MODULE_ROOT}/include/${MODULE_NSPATH}/ActionFailure.hpp"
-    "${MODULE_ROOT}/include/${MODULE_NSPATH}/ActionSuccess.hpp"
-    "${MODULE_ROOT}/include/${MODULE_NSPATH}/ActionShell.hpp"
+    "${MODULE_ROOT}/include/${MODULE_NSPATH}/Act.hpp"
+    "${MODULE_ROOT}/include/${MODULE_NSPATH}/ActFailure.hpp"
+    "${MODULE_ROOT}/include/${MODULE_NSPATH}/ActSuccess.hpp"
+    "${MODULE_ROOT}/include/${MODULE_NSPATH}/ActShell.hpp"
     "${MODULE_ROOT}/include/${MODULE_NSPATH}/Plan.hpp"
     "${MODULE_ROOT}/include/${MODULE_NSPATH}/LinearPlan.hpp"
     "${MODULE_ROOT}/include/${MODULE_NSPATH}/DepsTreePlan.hpp"
@@ -25,10 +25,10 @@ set(GROUP_HEADERS
     "${MODULE_ROOT}/include/${MODULE_NSPATH}/Report.hpp"
     )
 set(GROUP_SOURCES
-    "${MODULE_ROOT}/src/${MODULE_NSPATH}/Action.cpp"
-    "${MODULE_ROOT}/src/${MODULE_NSPATH}/ActionFailure.cpp"
-    "${MODULE_ROOT}/src/${MODULE_NSPATH}/ActionSuccess.cpp"
-    "${MODULE_ROOT}/src/${MODULE_NSPATH}/ActionShell.cpp"
+    "${MODULE_ROOT}/src/${MODULE_NSPATH}/Act.cpp"
+    "${MODULE_ROOT}/src/${MODULE_NSPATH}/ActFailure.cpp"
+    "${MODULE_ROOT}/src/${MODULE_NSPATH}/ActSuccess.cpp"
+    "${MODULE_ROOT}/src/${MODULE_NSPATH}/ActShell.cpp"
     "${MODULE_ROOT}/src/${MODULE_NSPATH}/Plan.cpp"
     "${MODULE_ROOT}/src/${MODULE_NSPATH}/LinearPlan.cpp"
     "${MODULE_ROOT}/src/${MODULE_NSPATH}/DepsTreePlan.cpp"

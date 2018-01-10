@@ -1,6 +1,6 @@
 //  cic
 //
-//  cic - Copyright (C) 2017 Stanislav Demyanovich <mezozoysky@gmail.com>
+//  cic - Copyright (C) 2017-2018 Stanislav Demyanovich <mezozoysky@gmail.com>
 //
 //  This software is provided 'as-is', without any express or
 //  implied warranty. In no event will the authors be held
@@ -24,37 +24,52 @@
 
 
 /// \file
-/// \brief ActionSuccess realisation
+/// \brief Act class presents the entity which can be performed
 /// \author Stanislav Demyanovich <mezozoysky@gmail.com>
 /// \date 2017
 /// \copyright cic is released under the terms of zlib/png license
 
-#include <cic/plan/ActionSuccess.hpp>
-#include <Poco/DOM/Element.h>
 
-using Poco::XML::Element;
-using cic::industry::Industry;
+#ifndef CIC_PLAN__ACT_HPP
+#define CIC_PLAN__ACT_HPP
+
+#include "DAGNode.hpp"
+#include "Serializable.hpp"
+#include <memory>
+#include <string>
+#include <iostream>
 
 namespace cic
 {
 namespace plan
 {
 
+class Report;
 
-bool ActionSuccess::perform( Report& report,
-                             Industry& industry,
-                             std::ostream& outStream,
-                             std::ostream& errStream ) const
+class Act
+: public DAGNode< Act >
+, public Serializable
 {
-    return ( true );
-}
+public:
+    using Ptr = std::shared_ptr< Act >;
 
-void ActionSuccess::loadFromXML( Element* xml, Industry* industry )
-{
-    // Do nothing
-}
+    Act() = default;
+    virtual ~Act() noexcept = default;
 
-void ActionSuccess::saveToXML( Element* root ) const {}
+    std::shared_ptr< Report > perform( cic::industry::Industry& industry,
+                                       std::ostream& outStream = std::cout,
+                                       std::ostream& errStream = std::cerr ) const noexcept;
+
+    virtual const std::string formOutline() const noexcept;
+
+protected:
+    virtual bool perform( Report& report,
+                          cic::industry::Industry& industry,
+                          std::ostream& outStream,
+                          std::ostream& errStream ) const;
+};
 
 } // namespace plan
 } // namespace cic
+
+#endif // CIC_PLAN__ACT_HPP

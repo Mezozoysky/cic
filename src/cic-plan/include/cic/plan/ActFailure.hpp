@@ -24,15 +24,15 @@
 
 
 /// \file
-/// \brief Provides ActionFailure class - the action which always plans failed
+/// \brief Provides ActFailure class - the act which always plans failed
 /// \author Stanislav Demyanovich <mezozoysky@gmail.com>
 /// \date 2017
 /// \copyright cic is released under the terms of zlib/png license
 
-#ifndef CIC_PLAN__ACTION_FAILURE_HPP
-#define CIC_PLAN__ACTION_FAILURE_HPP
+#ifndef CIC_PLAN__ACT_FAILURE_HPP
+#define CIC_PLAN__ACT_FAILURE_HPP
 
-#include "Action.hpp"
+#include "Act.hpp"
 
 
 namespace cic
@@ -41,15 +41,15 @@ namespace plan
 {
 
 
-class ActionFailure : public Action
+class ActFailure : public Act
 {
-    CLASSINFO( ActionFailure );
+    CLASSINFO( ActFailure );
 
 public:
-    using Ptr = std::shared_ptr< ActionFailure >;
+    using Ptr = std::shared_ptr< ActFailure >;
 
-    ActionFailure() = default;
-    virtual ~ActionFailure() noexcept = default;
+    ActFailure() = default;
+    virtual ~ActFailure() noexcept = default;
 
     virtual void loadFromXML( Poco::XML::Element* xml, cic::industry::Industry* industry ) override;
     virtual void saveToXML( Poco::XML::Element* xml ) const override;
@@ -65,4 +65,4 @@ protected:
 } // namespace plan
 } // namespace cic
 
-#endif /* CIC_PLAN__ACTION_FAILURE_HPP */
+#endif /* CIC_PLAN__ACT_FAILURE_HPP */

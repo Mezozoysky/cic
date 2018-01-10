@@ -34,7 +34,7 @@
 #include <fmt/format.h>
 #include <Poco/Exception.h>
 #include <Poco/String.h>
-#include <cic/plan/Action.hpp>
+#include <cic/plan/Act.hpp>
 #include <cic/plan/Report.hpp>
 #include <Poco/DOM/Element.h>
 #include <Poco/AutoPtr.h>
