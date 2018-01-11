@@ -60,15 +60,15 @@ DepsTreePlan::DepsTreePlan()
     setDefaultPhaseClass( DepsTreePhase::getClassNameStatic() );
 }
 
-void DepsTreePlan::buildSequence( Sequence& seq ) const
+void DepsTreePlan::buildSequence( Sequence& seq , const Target* target ) const
 {
-    assert( getTarget()->getPhases().size() > 0 );
+    assert( target->getPhases().size() > 0 );
     seq.clear();
 
     {
         std::size_t index{ BAD_INDEX };
         DepsTreePhase::Ptr{ nullptr };
-        for ( const auto& phaseName : getTarget()->getPhases() )
+        for ( const auto& phaseName : target->getPhases() )
         {
             index = getPhaseIndex( phaseName );
             if ( index == BAD_INDEX )

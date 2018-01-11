@@ -52,7 +52,7 @@ public:
     LinearPlan();
     virtual ~LinearPlan() noexcept = default;
 
-    virtual void buildSequence( Sequence& seq ) const override;
+    virtual void buildSequence( Sequence& seq , const Target* pc ) const override;
 };
 
 

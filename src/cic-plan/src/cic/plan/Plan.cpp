@@ -62,18 +62,15 @@ Plan::Plan()
 {
 }
 
-bool Plan::perform( Report& report,
+bool Plan::perform( PerformConfig* pc,
+                    Report& report,
                     Industry& industry,
                     std::ostream& outStream,
                     std::ostream& errStream ) const
 {
-    if ( getTarget() == nullptr )
-    {
-        assert( false );
-    }
-
+    Target* target{ static_cast< Target* >( pc ) };
     Sequence sequence;
-    buildSequence( sequence );
+    buildSequence( sequence, target );
 
 
     // output phase sequence
@@ -99,7 +96,7 @@ bool Plan::perform( Report& report,
         {
             outStream << "Start phase '{}'...\n"_format( phase->getName() );
 
-            phaseReport = phase->perform( industry, outStream, errStream );
+            phaseReport = phase->perform( pc, industry, outStream, errStream );
             success = phaseReport->getSuccess();
 
             outStream << "Finished phase '{}': {}\n"_format( phase->getName(),
@@ -149,21 +146,10 @@ Phase::Ptr Plan::getPhase( const std::string& name ) const noexcept
     return ( phase );
 }
 
-void Plan::setTarget( Target::Ptr target )
-{
-    onSetTarget( *target );
-    mTarget = target;
-}
-
 void Plan::setDefaultPhaseClass( const std::string& classId )
 {
     onSetDefaultPhaseClass( classId );
     mDefaultPhaseClass = classId;
-}
-
-void Plan::onSetTarget( Target& target )
-{
-    return;
 }
 
 void Plan::onSetDefaultPhaseClass( const std::string& classId )

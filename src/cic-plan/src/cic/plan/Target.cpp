@@ -56,8 +56,17 @@ namespace plan
 {
 
 
+Target::Target()
+: PerformConfig()
+{
+}
+
 void Target::loadFromXML( Element* root, Industry* industry )
 {
+    assert( Poco::XML::fromXMLString( root->nodeName() ) == "target" );
+
+    PerformConfig::loadFromXML( root, industry );
+
     Element* elem{ root->getChildElement( "phases" ) };
     if ( elem != nullptr )
     {
@@ -74,6 +83,11 @@ void Target::setPhases( const std::vector< std::string >& phaseList )
 }
 
 void Target::onSetPhases( const std::vector< std::string >& phaseList )
+{
+    return;
+}
+
+void Target::onSetPlanPath( const std::string& phaseList )
 {
     return;
 }

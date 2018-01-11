@@ -60,26 +60,26 @@ public:
     Plan();
     virtual ~Plan() noexcept = default;
 
-    virtual bool perform( Report& report,
-                          cic::industry::Industry& industry,
-                          std::ostream& outStream,
-                          std::ostream& errStream ) const override;
-
-    virtual void buildSequence( Sequence& seq ) const = 0;
+    virtual void buildSequence( Sequence& seq, const Target* target ) const = 0;
 
     virtual void loadFromXML( Poco::XML::Element* root, cic::industry::Industry* industry ) override;
     virtual void saveToXML( Poco::XML::Element* root ) const override;
 
+protected:
+    virtual bool perform( PerformConfig* pc,
+                          Report& report,
+                          cic::industry::Industry& industry,
+                          std::ostream& outStream,
+                          std::ostream& errStream ) const override;
+
+public:
     std::size_t getPhaseIndex( const std::string& name ) const noexcept;
     Phase::Ptr getPhase( const std::string& name ) const noexcept;
 
-    inline Target::Ptr getTarget() const noexcept;
-    void setTarget( Target::Ptr target );
     inline const std::string& getDefaultPhaseClass() const noexcept;
     void setDefaultPhaseClass( const std::string& classId );
 
 protected:
-    virtual void onSetTarget( Target& target );
     virtual void onSetDefaultPhaseClass( const std::string& classId );
 
 protected:
@@ -90,14 +90,8 @@ protected:
 
 private:
     IndexMap mIndexMap;
-    Target::Ptr mTarget;
     std::string mDefaultPhaseClass;
 };
-
-inline Target::Ptr Plan::getTarget() const noexcept
-{
-    return ( mTarget );
-}
 
 inline const std::string& Plan::getDefaultPhaseClass() const noexcept
 {

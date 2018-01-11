@@ -50,9 +50,10 @@ const std::string Act::formOutline() const noexcept
     return ( getClassName() );
 }
 
-std::shared_ptr< cic::plan::Report > Act::perform( industry::Industry& industry,
-                                                      std::ostream& outStream,
-                                                      std::ostream& errStream ) const noexcept
+std::shared_ptr< cic::plan::Report > Act::perform( PerformConfig* pc,
+                                                   industry::Industry& industry,
+                                                   std::ostream& outStream,
+                                                   std::ostream& errStream ) const noexcept
 {
     Report::Ptr report{ industry.getFactory< Report >()->create( this->getClassName() ) };
     assert( report );
@@ -60,7 +61,7 @@ std::shared_ptr< cic::plan::Report > Act::perform( industry::Industry& industry,
     bool success{ false };
     try
     {
-        success = perform( *report, industry, outStream, errStream );
+        success = perform( pc, *report, industry, outStream, errStream );
     }
     catch ( const Poco::Exception& exc )
     {
@@ -70,10 +71,11 @@ std::shared_ptr< cic::plan::Report > Act::perform( industry::Industry& industry,
     return ( report );
 }
 
-bool Act::perform( Report& report,
-                      Industry& industry,
-                      std::ostream& outStream,
-                      std::ostream& errStream ) const
+bool Act::perform( PerformConfig* pc,
+                   Report& report,
+                   Industry& industry,
+                   std::ostream& outStream,
+                   std::ostream& errStream ) const
 {
     outStream << "Outline: {}"_format( formOutline() ) << std::endl;
     bool success{ true };
@@ -86,7 +88,7 @@ bool Act::perform( Report& report,
         {
             outStream << "Start act #{}...\n"_format( i );
 
-            childReport = child->perform( industry, outStream, errStream );
+            childReport = child->perform( pc, industry, outStream, errStream );
             success = childReport->getSuccess();
 
             outStream << "Finished act #{}: {}\n"_format( i, success ? "SUCCESS" : "FAILURE" );

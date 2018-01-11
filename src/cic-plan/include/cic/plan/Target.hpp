@@ -24,7 +24,7 @@
 
 
 /// \file
-/// \brief Target class, plan + phase sequence + other plan performing options
+/// \brief Target class provides perform configuration for Plan-based classes
 /// \author Stanislav Demyanovich <mezozoysky@gmail.com>
 /// \date 2018
 /// \copyright cic is released under the terms of zlib/png license
@@ -33,7 +33,7 @@
 #ifndef CIC_PLAN__TARGET_HPP
 #define CIC_PLAN__TARGET_HPP
 
-#include "Serializable.hpp"
+#include "PerformConfig.hpp"
 #include <string>
 #include <vector>
 
@@ -43,7 +43,7 @@ namespace cic
 namespace plan
 {
 
-class Target : public Serializable
+class Target : public PerformConfig
 {
     CLASSINFO( Target )
 
@@ -51,23 +51,32 @@ public:
     using Ptr = std::shared_ptr< Target >;
 
 public:
-    Target() = default;
+    Target();
     virtual ~Target() noexcept = default;
 
     virtual void loadFromXML( Poco::XML::Element* root, cic::industry::Industry* industry ) override;
     virtual void saveToXML( Poco::XML::Element* root ) const override;
 
+    inline const std::string& getPlanPath() const noexcept;
+    void setPlanPath( const std::string& planPath );
     inline const std::vector< std::string >& getPhases() const noexcept;
     void setPhases( const std::vector< std::string >& phaseList );
 
 protected:
+    virtual void onSetPlanPath( const std::string& planPath );
     virtual void onSetPhases( const std::vector< std::string >& phaseList );
 
     virtual void loadPhasesFromXML( Poco::XML::Element* root, cic::industry::Industry* industry );
 
 private:
+    std::string mPlanPath;
     std::vector< std::string > mPhases;
 };
+
+inline const std::string& Target::getPlanPath() const noexcept
+{
+    return ( mPlanPath );
+}
 
 inline const std::vector< std::string >& Target::getPhases() const noexcept
 {

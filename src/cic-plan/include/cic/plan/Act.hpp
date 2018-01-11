@@ -38,6 +38,7 @@
 #include <memory>
 #include <string>
 #include <iostream>
+#include "PerformConfig.hpp"
 
 namespace cic
 {
@@ -56,14 +57,16 @@ public:
     Act() = default;
     virtual ~Act() noexcept = default;
 
-    std::shared_ptr< Report > perform( cic::industry::Industry& industry,
-                                       std::ostream& outStream = std::cout,
-                                       std::ostream& errStream = std::cerr ) const noexcept;
+    virtual std::shared_ptr< Report > perform( PerformConfig* pc,
+                                               cic::industry::Industry& industry,
+                                               std::ostream& outStream = std::cout,
+                                               std::ostream& errStream = std::cerr ) const noexcept;
 
     virtual const std::string formOutline() const noexcept;
 
 protected:
-    virtual bool perform( Report& report,
+    virtual bool perform( PerformConfig* pc,
+                          Report& report,
                           cic::industry::Industry& industry,
                           std::ostream& outStream,
                           std::ostream& errStream ) const;

@@ -57,16 +57,16 @@ LinearPlan::LinearPlan()
 {
 }
 
-void LinearPlan::buildSequence( Sequence& seq ) const
+void LinearPlan::buildSequence( Sequence& seq , const Target* target ) const
 {
-    assert( getTarget()->getPhases().size() > 0 );
+    assert( target->getPhases().size() > 0 );
     seq.clear();
 
     Sequence phaseIndices;
 
     {
         std::size_t index{ BAD_INDEX };
-        for ( const auto& phaseName : getTarget()->getPhases() )
+        for ( const auto& phaseName : target->getPhases() )
         {
             index = getPhaseIndex( phaseName );
             if ( index == BAD_INDEX )

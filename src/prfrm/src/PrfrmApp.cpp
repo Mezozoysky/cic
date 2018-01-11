@@ -83,8 +83,8 @@ using cic::plan::PhaseReport;
 using cic::plan::Plan;
 using cic::plan::PlanReport;
 using cic::plan::Report;
-using fmt::print;
 using cic::plan::Target;
+using fmt::print;
 
 namespace cic
 {
@@ -515,7 +515,9 @@ int PrfrmApp::performTask( const std::string& planFileName,
     Plan::Ptr plan{ factory->create( planClass ) };
     plan->loadFromXML( planRoot, &mIndustry );
 
-    Target::Ptr target{ std::make_shared<Target>() };
+    Target::Ptr target{ std::make_shared< Target >() };
+    target->setWorkDir( workspacePath.toString() );
+    target->setReportDir( reportPath.toString() );
     target->setPhases( phaseList );
 
     // actually perform
@@ -523,8 +525,7 @@ int PrfrmApp::performTask( const std::string& planFileName,
     std::ofstream outStream{ "prfrm_report.log" };
     // std::ofstream errStream{ "prfrm_report_err.log" };
     outStream << "Start plan '{}'..."_format( planPath.toString() ) << std::endl;
-    plan->setTarget( target );
-    report = plan->Act::perform( mIndustry, outStream, outStream );
+    report = plan->Act::perform( target.get(), mIndustry, outStream, outStream );
     outStream << "Finished plan '{}': {}"_format( planPath.toString(),
                                                   report->getSuccess() ? "SUCCESS" : "FAILURE" );
     outStream.close();

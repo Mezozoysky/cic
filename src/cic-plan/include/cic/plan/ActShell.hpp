@@ -54,7 +54,8 @@ public:
     virtual const std::string formOutline() const noexcept override;
 
 protected:
-    virtual bool perform( Report& report,
+    virtual bool perform( PerformConfig* pc,
+                          Report& report,
                           cic::industry::Industry& industry,
                           std::ostream& outStream = std::cout,
                           std::ostream& errStream = std::cerr ) const override;

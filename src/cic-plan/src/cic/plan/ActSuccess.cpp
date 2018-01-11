@@ -41,10 +41,11 @@ namespace plan
 {
 
 
-bool ActSuccess::perform( Report& report,
-                             Industry& industry,
-                             std::ostream& outStream,
-                             std::ostream& errStream ) const
+bool ActSuccess::perform( PerformConfig* pc,
+                          Report& report,
+                          Industry& industry,
+                          std::ostream& outStream,
+                          std::ostream& errStream ) const
 {
     return ( true );
 }

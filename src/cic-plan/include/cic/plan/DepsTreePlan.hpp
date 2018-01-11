@@ -54,7 +54,7 @@ public:
     DepsTreePlan();
     virtual ~DepsTreePlan() noexcept = default;
 
-    virtual void buildSequence( Sequence& seq ) const override;
+    virtual void buildSequence( Sequence& seq, const Target* target ) const override;
     virtual bool isADependsOnB( std::size_t indexA, std::size_t indexB ) const;
     virtual bool isADependsOnB( const std::string& nameA, const std::string& nameB ) const;
 

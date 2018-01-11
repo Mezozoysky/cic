@@ -56,10 +56,11 @@ namespace cic
 namespace plan
 {
 
-bool ActShell::perform( Report& report,
-                           Industry& industry,
-                           std::ostream& outStream,
-                           std::ostream& errStream ) const
+bool ActShell::perform( PerformConfig* pc,
+                        Report& report,
+                        Industry& industry,
+                        std::ostream& outStream,
+                        std::ostream& errStream ) const
 {
     outStream << "Outline: {}"_format( formOutline() ) << std::endl;
     Poco::Pipe outPipe;
