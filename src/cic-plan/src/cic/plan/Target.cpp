@@ -76,6 +76,17 @@ void Target::loadFromXML( Element* root, Industry* industry )
 
 void Target::saveToXML( Element* root ) const {}
 
+void Target::setPlanPath( const std::string& planPath )
+{
+    onSetPlanPath( planPath );
+    mPlanPath = planPath;
+}
+
+void Target::onSetPlanPath( const std::string& planPath )
+{
+    return;
+}
+
 void Target::setPhases( const std::vector< std::string >& phaseList )
 {
     onSetPhases( phaseList );
@@ -83,11 +94,6 @@ void Target::setPhases( const std::vector< std::string >& phaseList )
 }
 
 void Target::onSetPhases( const std::vector< std::string >& phaseList )
-{
-    return;
-}
-
-void Target::onSetPlanPath( const std::string& phaseList )
 {
     return;
 }
