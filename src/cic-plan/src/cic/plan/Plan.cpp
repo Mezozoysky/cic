@@ -44,7 +44,6 @@
 #include <functional>
 
 using Poco::XML::Element;
-// using Poco::XML::Node;
 using Poco::XML::NodeList;
 using namespace fmt::literals;
 using Poco::AutoPtr;
@@ -94,13 +93,13 @@ bool Plan::perform( PerformConfig* pc,
         Report::Ptr phaseReport{};
         if ( success )
         {
-            outStream << "Start phase '{}'...\n"_format( phase->getName() );
+            outStream << "Start phase '{}'..."_format( phase->getName() ) << std::endl;
 
             phaseReport = phase->perform( pc, industry, outStream, errStream );
             success = phaseReport->getSuccess();
 
-            outStream << "Finished phase '{}': {}\n"_format( phase->getName(),
-                                                             success ? "SUCCESS" : "FAILURE" );
+            outStream << "Finished phase '{}': {}"_format( phase->getName(),
+                                                             success ? "SUCCESS" : "FAILURE" ) << std::endl;
         }
         else
         {
