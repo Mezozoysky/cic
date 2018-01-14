@@ -64,8 +64,8 @@ public:
     virtual void loadFromXML( Poco::XML::Element* root, cic::industry::Industry* industry ) override;
     virtual void saveToXML( Poco::XML::Element* root ) const override;
 
-    inline const std::string& getWorkDir() const noexcept;
-    void setWorkDir( const std::string& workDir );
+    inline const std::string& getWorkspace() const noexcept;
+    void setWorkspace( const std::string& workspace );
     inline const std::string& getReportDir() const noexcept;
     void setReportDir( const std::string& reportDir );
     inline const AConfig& props() const noexcept;
@@ -74,18 +74,18 @@ public:
 protected:
     inline Config& properties() noexcept;
 
-    virtual void onSetWorkDir( const std::string& workDir );
+    virtual void onSetWorkspace( const std::string& workspace );
     virtual void onSetReportDir( const std::string& reportDir );
 
 private:
-    std::string mWorkDir;
+    std::string mWorkspace;
     std::string mReportDir;
     ConfigPtr mProperties;
 };
 
-inline const std::string& PerformConfig::getWorkDir() const noexcept
+inline const std::string& PerformConfig::getWorkspace() const noexcept
 {
-    return ( mWorkDir );
+    return ( mWorkspace );
 }
 
 inline const std::string& PerformConfig::getReportDir() const noexcept

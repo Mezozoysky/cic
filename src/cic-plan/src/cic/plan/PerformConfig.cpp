@@ -66,11 +66,11 @@ PerformConfig::PerformConfig()
 
 void PerformConfig::loadFromXML( Element* root, Industry* industry )
 {
-    Element* elem{ root->getChildElement( "workDir" ) };
+    Element* elem{ root->getChildElement( "workspace" ) };
     if ( elem != nullptr )
     {
         std::string value{ Poco::trim( Poco::trim( elem->getAttribute( "value" ) ) ) }; // value can be empty
-        setWorkDir( value );
+        setWorkspace( value );
     }
 
     elem = root->getChildElement( "reportDir" );
@@ -89,13 +89,13 @@ void PerformConfig::loadFromXML( Element* root, Industry* industry )
 
 void PerformConfig::saveToXML( Element* root ) const {}
 
-void PerformConfig::setWorkDir( const std::string& workDir )
+void PerformConfig::setWorkspace( const std::string& workspace )
 {
-    onSetWorkDir( workDir );
-    mWorkDir = workDir;
+    onSetWorkspace( workspace );
+    mWorkspace = workspace;
 }
 
-void PerformConfig::onSetWorkDir( const std::string& workDir )
+void PerformConfig::onSetWorkspace( const std::string& workspace )
 {
     return;
 }

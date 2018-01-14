@@ -2,8 +2,8 @@
 
 <target>
 
-  <workDir value="/home/mezozoy/tmp/prfrm_workspace" />
-  <reportDir value="/home/mezozoy/tmp/prfrm/prfrm_report_dir" />
+  <workspace value="/home/mezozoy/tmp/prfrm_workspace" />
+  <reportDir value="/home/mezozoy/tmp/prfrm_report_dir" />
 
   <planPath value="test0.xml" />
 

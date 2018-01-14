@@ -321,87 +321,227 @@ int PrfrmApp::main( const std::vector< std::string >& args )
         return ( EXIT_USAGE );
     }
 
-    // fetch plan/target file path and phase list from args
-    Poco::Path filePath{ Poco::trim( args[ 0 ] ) };
-    std::vector< std::string > phaseList;
-    if ( args.size() > 1 )
-    {
-        for ( std::size_t i{ 1 }; i < args.size(); ++i )
-        {
-            phaseList.push_back( Poco::trim( args[ i ] ) );
-        }
-    }
-
-
     Poco::Path pwdPath{ Poco::Path::forDirectory( config().getString( "system.currentDir" ) ) };
+    Poco::Path sharePlansPath{ Poco::Path::forDirectory( config().getString( "cic.prfrm.shareDir" ) ) };
+    sharePlansPath.pushDirectory( "plans" );
 
-    // define workspace path
-    Poco::Path workspacePath;
-    bool isWorkspaceSpecified{ false };
+    // fetch/clarify given file path
+    Poco::Path givenFilePath{ Poco::trim( args[ 0 ] ) };
+    if ( givenFilePath.isRelative() )
     {
-        std::string workspace{ config().getString( "cic.prfrm.workspace", "" ) };
-        if ( workspace.empty() )
-        {
-            workspacePath = pwdPath;
-        }
-        else
-        {
-            isWorkspaceSpecified = true;
-            workspacePath = Poco::Path::forDirectory( workspace );
-            if ( workspacePath.isRelative() )
-            {
-                workspacePath.makeAbsolute( pwdPath );
-            }
-        }
-        workspace = workspacePath.toString();
-        // TODO: Shure for workspace directory exists
-        config().setString( "cic.prfrm.workspace", workspace );
-    }
-
-    // clarify file path
-    if ( filePath.isRelative() )
-    {
-        Poco::Path tmpPath{ filePath };
-        tmpPath.makeAbsolute( workspacePath );
+        Poco::Path tmpPath{ givenFilePath };
+        tmpPath.makeAbsolute( pwdPath );
         Poco::File file{ tmpPath };
         if ( !file.exists() )
         {
-            tmpPath.assign( filePath );
-            Poco::Path sharePlansPath{ Poco::Path::forDirectory(
-                config().getString( "cic.prfrm.shareDir" ) ) };
-            sharePlansPath.pushDirectory( "plans" );
+            tmpPath.assign( givenFilePath );
             tmpPath.makeAbsolute( sharePlansPath );
         }
         file = tmpPath;
         if ( !file.exists() )
         {
-            logger().error( "File '{}' isnt found"_format( filePath.toString() ) );
+            logger().error( "File '{}' isnt found"_format( givenFilePath.toString() ) );
             return ( EXIT_DATAERR );
         }
-        filePath.assign( tmpPath );
+        givenFilePath.assign( tmpPath );
     }
 
-    // define report dir path
-    Poco::Path reportDirPath;
-    bool isReportDirSpecified{ false };
+    Target::Ptr target{ std::make_shared< Target >() };
+    Plan::Ptr plan;
+
+    // form/load plan and target using the given file
     {
-        std::string reportDir{ config().getString( "cic.prfrm.reportDir", "" ) };
-        if ( reportDir.empty() )
+        AutoPtr< Document > doc;
+        // load xml doc
         {
-            reportDirPath = workspacePath;
+            FileInputStream istr{ givenFilePath.toString() };
+            InputSource input{ istr };
+            doc = mParser.parse( &input );
+        }
+
+        Element* root{ doc->documentElement() };
+
+        if ( root->nodeName() == "plan" ) // given file contains plan
+        {
+            // load plan from the given file
+            std::string planClass{ Poco::trim( root->getAttribute( "class" ) ) };
+            if ( planClass.empty() )
+            {
+                planClass = "default";
+            }
+            auto factory = mIndustry.getFactory< Plan >();
+            assert( factory != nullptr );
+            plan.reset( factory->create( planClass ) );
+            plan->loadFromXML( root, &mIndustry );
+            // set given file path as plan path for empty target
+            target->setPlanPath( givenFilePath.toString() );
+        }
+        else if ( root->nodeName() == "target" ) // given file contains target
+        {
+            // load target from the given file
+            target->loadFromXML( root, &mIndustry );
+            if ( target->getPlanPath().empty() )
+            {
+                logger().error( "Target '{}' has no reference to plan file" );
+                return ( EXIT_DATAERR );
+            }
+
+            // clarify target's plan path
+            {
+                Poco::Path planFilePath{ target->getPlanPath() };
+
+                Poco::Path tmpPath;
+                Poco::File tmpFile;
+                if ( planFilePath.isAbsolute() )
+                {
+                    tmpFile = planFilePath;
+                    if ( !tmpFile.exists() )
+                    {
+                        logger().error( "Plan path '{}' isnt found"_format( planFilePath.toString() ) );
+                        return ( EXIT_DATAERR );
+                    }
+                }
+                if ( planFilePath.isRelative() )
+                {
+                    tmpPath = planFilePath;
+                    tmpPath.makeAbsolute( givenFilePath.parent() ); // try relative to target parent dir
+                    tmpFile = tmpPath;
+                    if ( tmpFile.exists() )
+                    {
+                        planFilePath = tmpPath;
+                    }
+                }
+                if ( planFilePath.isRelative() )
+                {
+                    tmpPath = planFilePath;
+                    tmpPath.makeAbsolute( sharePlansPath );
+                    tmpFile = tmpPath;
+                    if ( tmpFile.exists() )
+                    {
+                        planFilePath = tmpPath;
+                    }
+                }
+                if ( planFilePath.isRelative() )
+                {
+                    logger().error( "Relative plan path '{}' isnt found"_format( planFilePath.toString() ) );
+                    return ( EXIT_DATAERR );
+                }
+
+                target->setPlanPath( planFilePath.toString() );
+            }
+
+            // load the plan from target's plan path
+            {
+                AutoPtr< Document > planDoc;
+                {
+                    FileInputStream istr{ target->getPlanPath() };
+                    InputSource input{ istr };
+                    planDoc = mParser.parse( &input );
+                }
+                Element* planRoot{ planDoc->documentElement() };
+
+                std::string planClass{ Poco::trim( planRoot->getAttribute( "class" ) ) };
+                if ( planClass.empty() )
+                {
+                    planClass = "default";
+                }
+                auto factory = mIndustry.getFactory< Plan >();
+                assert( factory != nullptr );
+                plan.reset( factory->create( planClass ) );
+                plan->loadFromXML( planRoot, &mIndustry );
+            }
+        }
+    } // target and plan are formed/loaded
+
+    // fetch/clarify workspace path
+    {
+        Poco::Path workspacePath{};
+        std::string workspace{ config().getString( "cic.prfrm.workspace", "" ) };
+        if ( workspace.empty() ) // workspace option isnt spacified
+        {
+            if ( target->getWorkspace().empty() )
+            {
+                target->setWorkspace( pwdPath.toString() );
+            }
+            else
+            {
+                workspacePath = Poco::Path::forDirectory( target->getWorkspace() );
+                if ( workspacePath.isRelative() )
+                {
+                    workspacePath.makeAbsolute( pwdPath );
+                    target->setWorkspace( workspacePath.toString() );
+                }
+            }
         }
         else
         {
-            isReportDirSpecified = true;
+            workspacePath = Poco::Path::forDirectory( workspace );
+            if ( workspacePath.isRelative() )
+            {
+                workspacePath.makeAbsolute( pwdPath );
+                target->setWorkspace( workspacePath.toString() );
+            }
+        }
+        // TODO: Shure for workspace directory exists
+        config().setString( "cic.prfrm.workspace", target->getWorkspace() );
+    }
+
+    // fetch/clarify report dir path
+    {
+        Poco::Path reportDirPath{};
+        std::string reportDir{ config().getString( "cic.prfrm.reportDir", "" ) };
+        if ( reportDir.empty() ) // report-dir option isnt spacified
+        {
+            if ( target->getReportDir().empty() )
+            {
+                target->setReportDir( pwdPath.toString() );
+            }
+            else
+            {
+                reportDirPath = Poco::Path::forDirectory( target->getReportDir() );
+                if ( reportDirPath.isRelative() )
+                {
+                    reportDirPath.makeAbsolute( pwdPath );
+                    target->setReportDir( reportDirPath.toString() );
+                }
+            }
+        }
+        else
+        {
             reportDirPath = Poco::Path::forDirectory( reportDir );
             if ( reportDirPath.isRelative() )
             {
                 reportDirPath.makeAbsolute( pwdPath );
+                target->setReportDir( reportDirPath.toString() );
             }
         }
-        reportDir = reportDirPath.toString();
         // TODO: Shure for report directory exists
-        config().setString( "cic.prfrm.reportDir", reportDir );
+        config().setString( "cic.prfrm.reportDir", target->getReportDir() );
+    }
+
+    // fetch/clarify phase list
+    {
+        std::vector< std::string > phaseList;
+        if ( args.size() > 1 )
+        {
+            for ( std::size_t i{ 1 }; i < args.size(); ++i )
+            {
+                phaseList.push_back( Poco::trim( args[ i ] ) );
+            }
+        }
+
+        if ( phaseList.empty() )
+        {
+            if ( target->getPhases().empty() )
+            {
+                logger().error( "Target phases are not specified" );
+                return ( EXIT_USAGE );
+            }
+        }
+        else
+        {
+            target->setPhases( phaseList );
+        }
     }
 
     // verbose output
@@ -417,8 +557,8 @@ int PrfrmApp::main( const std::vector< std::string >& args )
                          "\t application dir     : '{}';\n"
                          "\t cic prfrm share dir : '{}';\n"
                          "\t cic prfrm etc dir   : '{}';\n"
-                         "\t cic prfrm workspace : '{}';\n"
-                         "\t cic prfrm report dir: '{}';",
+                         "\t target workspace    : '{}';\n"
+                         "\t target report dir   : '{}';",
                          config().getString( "cic.homeDir" ),
                          config().getString( "cic.binDir" ),
                          config().getString( "cic.shareDir" ),
@@ -426,188 +566,37 @@ int PrfrmApp::main( const std::vector< std::string >& args )
                          config().getString( "application.dir" ),
                          config().getString( "cic.prfrm.shareDir" ),
                          config().getString( "cic.prfrm.etcDir" ),
-                         workspacePath.toString(),
-                         reportDirPath.toString() ) );
+                         target->getWorkspace(),
+                         target->getReportDir() ) );
     }
 
-
-    // form/load plan/target from xml and cl args/options
-    Plan::Ptr plan;
-    Target::Ptr target{ std::make_shared< Target >() };
-    bool fileIsPlan{ false };
-    { // local work on form/load plan and target
-        AutoPtr< Document > doc;
-        {
-            FileInputStream istr{ filePath.toString() };
-            InputSource input{ istr };
-            doc = mParser.parse( &input );
-        }
-        Element* root{ doc->documentElement() };
-        if ( root->nodeName() == "plan" )
-        {
-            fileIsPlan = true;
-            std::string planClass{ Poco::trim( root->getAttribute( "class" ) ) };
-            if ( planClass.empty() )
-            {
-                planClass = "default";
-            }
-            auto factory = mIndustry.getFactory< Plan >();
-            assert( factory != nullptr );
-            plan.reset( factory->create( planClass ) );
-            plan->loadFromXML( root, &mIndustry );
-
-            target->setWorkDir( workspacePath.toString() );
-            target->setReportDir( reportDirPath.toString() );
-            if ( phaseList.empty() )
-            {
-                logger().error( "Target phases are not specified" );
-                return ( EXIT_USAGE );
-            }
-            target->setPhases( phaseList );
-            target->setPlanPath( filePath.getFileName() );
-        }
-        else if ( root->nodeName() == "target" )
-        {
-            target->loadFromXML( root, &mIndustry );
-            if ( target->getPlanPath().empty() )
-            {
-                logger().error( "Target '{}' has no reference to plan file" );
-                return ( EXIT_DATAERR );
-            }
-
-            Poco::Path planFilePath{ target->getPlanPath() };
-            Poco::Path tmpPath;
-            Poco::File tmpFile;
-            if ( planFilePath.isAbsolute() )
-            {
-                tmpFile = planFilePath;
-                if ( !tmpFile.exists() )
-                {
-                    logger().error( "Plan path '{}' isnt found"_format( planFilePath.toString() ) );
-                    return ( EXIT_DATAERR );
-                }
-            }
-            if ( planFilePath.isRelative() )
-            {
-                tmpPath = planFilePath;
-                tmpPath.makeAbsolute( filePath.parent() ); // try relative to target parent dir
-                tmpFile = tmpPath;
-                if ( tmpFile.exists() )
-                {
-                    planFilePath = tmpPath;
-                }
-            }
-            if ( planFilePath.isRelative() )
-            {
-                tmpPath = planFilePath;
-                Poco::Path sharePlansPath{ Poco::Path::forDirectory(
-                    config().getString( "cic.prfrm.shareDir" ) ) };
-                sharePlansPath.pushDirectory( "plans" );
-                tmpPath.makeAbsolute( sharePlansPath );
-                tmpFile = tmpPath;
-                if ( tmpFile.exists() )
-                {
-                    planFilePath = tmpPath;
-                }
-            }
-            if ( planFilePath.isRelative() )
-            {
-                logger().error( "Relative plan path '{}' isnt found"_format( planFilePath.toString() ) );
-                return ( EXIT_DATAERR );
-            }
-
-            AutoPtr< Document > planDoc;
-            {
-                FileInputStream istr{ planFilePath.toString() };
-                InputSource input{ istr };
-                planDoc = mParser.parse( &input );
-            }
-            Element* planRoot{ planDoc->documentElement() };
-
-            // TODO: load plan here
-            std::string planClass{ Poco::trim( planRoot->getAttribute( "class" ) ) };
-            if ( planClass.empty() )
-            {
-                planClass = "default";
-            }
-            auto factory = mIndustry.getFactory< Plan >();
-            assert( factory != nullptr );
-            plan.reset( factory->create( planClass ) );
-            plan->loadFromXML( planRoot, &mIndustry );
-
-            if ( isWorkspaceSpecified || isReportDirSpecified )
-            {
-                target->setWorkDir( workspacePath.toString() );
-                target->setReportDir( reportDirPath.toString() );
-            }
-            else
-            {
-                Poco::Path targetParentPath{ filePath.parent() };
-
-                if ( target->getWorkDir().empty() )
-                {
-                    target->setWorkDir( targetParentPath.toString() );
-                }
-                else
-                {
-                    workspacePath = target->getWorkDir();
-                    if ( workspacePath.isRelative() )
-                    {
-                        workspacePath.makeAbsolute( targetParentPath );
-                        target->setWorkDir( workspacePath.toString() );
-                    }
-                }
-
-                if ( target->getReportDir().empty() )
-                {
-                    target->setReportDir( targetParentPath.toString() );
-                }
-                else
-                {
-                    reportDirPath = target->getReportDir();
-                    if ( reportDirPath.isRelative() )
-                    {
-                        reportDirPath.makeAbsolute( targetParentPath );
-                        target->setReportDir( reportDirPath.toString() );
-                    }
-                }
-            }
-
-            if ( phaseList.empty() )
-            {
-                if ( target->getPhases().empty() )
-                {
-                    logger().error( "Target phases are not specified" );
-                    return ( EXIT_USAGE );
-                }
-            }
-            else
-            {
-                target->setPhases( phaseList );
-            }
-        }
-        else
-        {
-            logger().error( "File '{}' root element has unexpected name: '{}'"_format( filePath.toString(),
-                                                                                       root->nodeName() ) );
-            return ( EXIT_DATAERR );
-        }
-    } // plan and target are formed/loaded
-
-    // return ( performTask( filePath, phaseList, workspacePath, reportDirPath ) );
+    // perform target and save report/log/etc
     std::shared_ptr< Report > report{};
-    std::ofstream outStream{ "prfrm_report.log" };
-    // std::ofstream errStream{ "prfrm_report_err.log" };
-    outStream << "Start {} '{}'..."_format( fileIsPlan ? "plan" : "target", filePath.toString() )
-              << std::endl;
+    std::ofstream outStream{};
+    Poco::Path logFilePath{ Poco::Path::forDirectory( target->getReportDir() ) };
+    {
+        logFilePath.setFileName( "perform_target.log" );
+        outStream.open( logFilePath.toString() );
+    }
+    if ( givenFilePath.toString() == target->getPlanPath() ) // given file is plan
+    {
+        outStream << "Start performing custom target for plan '{}'..."_format( target->getPlanPath() )
+                  << std::endl;
+    }
+    else // given file is target
+    {
+        outStream << "Start performing target '{}'..."_format( givenFilePath.toString() ) << std::endl;
+    }
     report = plan->Act::perform( target.get(), mIndustry, outStream, outStream );
-    outStream << "Finished {} '{}': {}"_format( fileIsPlan ? "plan" : "target",
-                                                filePath.toString(),
-                                                report->getSuccess() ? "SUCCESS" : "FAILURE" );
+    outStream << "Finished performing custom target for plan '{}': {}"_format( target->getPlanPath(),
+                                                                               report->getSuccess() ?
+                                                                                   "SUCCESS" :
+                                                                                   "FAILURE" )
+              << std::endl;
     outStream.close();
-    // errStream.close();
 
     logger().information( "PERFORM {}"_format( report->getSuccess() ? "SUCCESS" : "FAILURE" ) );
+    logger().information( "Perform log saved into '{}'"_format( logFilePath.toString() ) );
 
     return ( EXIT_OK );
 }
