@@ -607,16 +607,21 @@ std::string PrfrmApp::formatHelpText() const noexcept
 
     Poco::Util::HelpFormatter hf( options() );
     hf.setCommand( commandName() );
-    hf.setUsage( "[options] <plan_file> [phases...]" );
+    hf.setUsage( "[options] <target_file> [phase_list] [properties]\n"
+                 " prfrm [options] <plan_file>   <phase_list> [properties]" );
     hf.setHeader(
         R"(where:
-    plan_file   path to target plan file; if relative, considered relative
-                to target workspace path; if path not found in workspace,
-                considered relative to application share dir; if the path
-                still not found considered configuration error;
-    phases...   list of 1 or more phases to perform; plan's default phases
-                used if no specified; if plan doesnt provide default phases,
-                considered configuration error;
+    target_file     path to input file which should represent a target or plan;
+    /               if relative, considered relative to cwd; if not found under
+    plan_file       cwd, considered relative to application shared plans dir;
+                    if still not found, considered usage error;
+
+    phase_list      optional list of 1 or more phases which are intended to
+                    perform; if input_file is target, then phase_list replaces
+                    target's phase list; if input_file is plan or target has no
+                    phase list specified, then phase_list is mandatory;
+
+    properties      optional plan properties to customize performation;
 
     options are listed below:)" );
     hf.setFooter( "Live long and prosper!" );
