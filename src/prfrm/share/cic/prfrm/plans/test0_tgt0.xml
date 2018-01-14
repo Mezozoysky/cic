@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<target>
+
+  <workDir value="/home/mezozoy/tmp/prfrm_workspace" />
+  <reportDir value="/home/mezozoy/tmp/prfrm/prfrm_report_dir" />
+
+  <planPath value="test0.xml" />
+
+  <phases>
+    <phase value="clean_all" />
+    <phase value="build" />
+  </phases>
+
+</target>

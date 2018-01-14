@@ -178,6 +178,4 @@
 
   </phases>
 
-  <default-phase value="build" />
-
 </plan>
