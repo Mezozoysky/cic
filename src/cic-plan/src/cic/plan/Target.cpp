@@ -67,7 +67,14 @@ void Target::loadFromXML( Element* root, Industry* industry )
 
     PerformConfig::loadFromXML( root, industry );
 
-    Element* elem{ root->getChildElement( "phases" ) };
+    Element* elem{ root->getChildElement( "planPath" ) };
+    if ( elem != nullptr )
+    {
+        std::string value{ Poco::trim( Poco::trim( elem->getAttribute( "value" ) ) ) }; // value can be empty
+        setPlanPath( value );
+    }
+
+    elem = root->getChildElement( "phases" );
     if ( elem != nullptr )
     {
         loadPhasesFromXML( elem, industry );
