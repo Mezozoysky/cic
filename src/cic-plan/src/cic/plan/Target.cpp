@@ -42,6 +42,7 @@
 #include <Poco/DOM/NodeList.h>
 #include <algorithm>
 #include <functional>
+#include <Poco/Util/Application.h>
 
 using Poco::XML::Element;
 using Poco::XML::NodeList;
@@ -116,10 +117,10 @@ void Target::loadPhasesFromXML( Element* root, Industry* industry )
         elem = static_cast< Element* >( list->item( i ) );
         if ( elem != nullptr && elem->nodeName() == "phase" )
         {
-            std::string value{ Poco::trim( root->getAttribute( "value" ) ) };
+            std::string value{ Poco::trim( elem->getAttribute( "value" ) ) };
             if ( value.empty() )
             {
-                // TODO: log warning
+                Poco::Util::Application::instance().logger().error( "Element 'phase' has no (or has empty) 'value' attribute" );
             }
             else
             {
