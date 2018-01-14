@@ -516,16 +516,24 @@ int PrfrmApp::main( const std::vector< std::string >& args )
                 return ( EXIT_DATAERR );
             }
 
+            AutoPtr< Document > planDoc;
+            {
+                FileInputStream istr{ planFilePath.toString() };
+                InputSource input{ istr };
+                planDoc = mParser.parse( &input );
+            }
+            Element* planRoot{ planDoc->documentElement() };
+
             // TODO: load plan here
-            std::string planClass{ Poco::trim( root->getAttribute( "class" ) ) };
+            std::string planClass{ Poco::trim( planRoot->getAttribute( "class" ) ) };
             if ( planClass.empty() )
             {
                 planClass = "default";
             }
             auto factory = mIndustry.getFactory< Plan >();
             assert( factory != nullptr );
-            Plan::Ptr plan{ factory->create( planClass ) };
-            plan->loadFromXML( root, &mIndustry );
+            plan.reset( factory->create( planClass ) );
+            plan->loadFromXML( planRoot, &mIndustry );
 
             if ( isWorkspaceSpecified || isReportDirSpecified )
             {
