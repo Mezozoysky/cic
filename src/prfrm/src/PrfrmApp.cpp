@@ -310,6 +310,29 @@ void PrfrmApp::defineOptions( Poco::Util::OptionSet& options )
 
 int PrfrmApp::main( const std::vector< std::string >& args )
 {
+    bool verbose{ config().getBool( "cic.prfrm.options.verbose", false ) };
+    if ( verbose )
+    {
+        logger().information(
+            fmt::format( "CIC config:\n"
+                         "\t cic home dir:       : '{}';\n"
+                         "\t cic binary dir      : '{}';\n"
+                         "\t cic share dir       : '{}';\n"
+                         "\t cic etc dir         : '{}';\n",
+                         config().getString( "cic.homeDir" ),
+                         config().getString( "cic.binDir" ),
+                         config().getString( "cic.shareDir" ),
+                         config().getString( "cic.etcDir" ) ) );
+        logger().information(
+            fmt::format( "Application config:\n"
+                         "\t application dir : '{}';\n"
+                         "\t app share dir   : '{}';\n"
+                         "\t app etc dir     : '{}';",
+                         config().getString( "application.dir" ),
+                         config().getString( "cic.prfrm.shareDir" ),
+                         config().getString( "cic.prfrm.etcDir" ) ) );
+    }
+
     if ( mIsStopRequestedByOption )
     {
         return ( EXIT_OK );
@@ -545,25 +568,12 @@ int PrfrmApp::main( const std::vector< std::string >& args )
     }
 
     // verbose output
-    bool verbose{ config().getBool( "cic.prfrm.options.verbose", false ) };
     if ( verbose )
     {
         logger().information(
-            fmt::format( "Config:\n"
-                         "\t cic home dir:       : '{}';\n"
-                         "\t cic binary dir      : '{}';\n"
-                         "\t cic share dir       : '{}';\n"
-                         "\t cic etc dir         : '{}';\n"
-                         "\t application dir     : '{}';\n"
-                         "\t cic prfrm share dir : '{}';\n"
-                         "\t cic prfrm etc dir   : '{}';\n"
-                         "\t target workspace    : '{}';\n"
-                         "\t target report dir   : '{}';",
-                         config().getString( "cic.homeDir" ),
-                         config().getString( "cic.binDir" ),
-                         config().getString( "cic.shareDir" ),
-                         config().getString( "cic.etcDir" ),
-                         config().getString( "application.dir" ),
+            fmt::format( "Target config:\n"
+                         "\t Target workspace  : '{}';\n"
+                         "Target report dir : '{}';",
                          config().getString( "cic.prfrm.shareDir" ),
                          config().getString( "cic.prfrm.etcDir" ),
                          target->getWorkspace(),
@@ -607,8 +617,9 @@ std::string PrfrmApp::formatHelpText() const noexcept
 
     Poco::Util::HelpFormatter hf( options() );
     hf.setCommand( commandName() );
-    hf.setUsage( "[options] <target_file> [phase_list] [properties]\n"
-                 " prfrm [options] <plan_file>   <phase_list> [properties]" );
+    hf.setUsage(
+        "[options] <target_file> [phase_list] [properties]\n"
+        " prfrm [options] <plan_file>   <phase_list> [properties]" );
     hf.setHeader(
         R"(where:
     target_file     path to input file which should represent a target or plan;
